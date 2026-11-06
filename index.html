@@ -895,6 +895,8 @@
     const spinCanvas = document.getElementById('spinPadCanvas');
     const spinCtx = spinCanvas.getContext('2d');
 
+    // Table geometry inside 920x500 canvas
+    // Cushions/rails define the active ball bounce area (TABLE)
     const TABLE = {
       left: 60,
       top: 50,
@@ -903,16 +905,19 @@
       width: 800,
       height: 400,
       ballRadius: 13.5,
-      pocketRadius: 26
+      pocketRadius: 24, // Pocket capture radius
+      pocketHoleRadius: 27 // Visual drop pocket opening
     };
 
+    // Realistic pocket positions: set slightly back into the rails/corner castings
+    // Corner pockets recess outward diagonally by ~10px; side pockets recess outward by ~9px
     const POCKETS = [
-      { x: TABLE.left, y: TABLE.top, name: '左上底袋' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 4, name: '上中袋' },
-      { x: TABLE.right, y: TABLE.top, name: '右上底袋' },
-      { x: TABLE.left, y: TABLE.bottom, name: '左下底袋' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 4, name: '下中袋' },
-      { x: TABLE.right, y: TABLE.bottom, name: '右下底袋' }
+      { x: TABLE.left - 7, y: TABLE.top - 7, name: '左上底袋' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 10, name: '上中袋' },
+      { x: TABLE.right + 7, y: TABLE.top - 7, name: '右上底袋' },
+      { x: TABLE.left - 7, y: TABLE.bottom + 7, name: '左下底袋' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 10, name: '下中袋' },
+      { x: TABLE.right + 7, y: TABLE.bottom + 7, name: '右下底袋' }
     ];
 
     // Standard 16 Pool Balls colors
@@ -1578,6 +1583,8 @@
     }
 
     function nudgeAngle(deg) {
+      // Clear previous shot trail lines so aiming next shot stays completely clean
+      trails = [];
       aimAngle += (deg * Math.PI) / 180;
       updateAngleUI();
     }
@@ -1611,6 +1618,8 @@
 
     canvas.addEventListener('pointerdown', (e) => {
       if (isSimulating) return;
+      // Clear previous shot trails as soon as player aims next shot
+      trails = [];
       const pos = getCanvasMousePos(e);
       const cueBall = balls.find(b => b.id === 0);
       if (!cueBall) return;
@@ -1633,6 +1642,7 @@
       if (!cueBall) return;
 
       if (isDraggingCueBall) {
+        trails = [];
         const margin = TABLE.ballRadius + 4;
         const nx = Math.max(TABLE.left + margin, Math.min(TABLE.right - margin, pos.x));
         const ny = Math.max(TABLE.top + margin, Math.min(TABLE.bottom - margin, pos.y));
@@ -2175,20 +2185,28 @@
         }
       }
 
-      // 3. Draw 6 Pockets
+      // 3. Draw 6 Pockets (Recessed pockets with metallic pocket rim)
       POCKETS.forEach((p, idx) => {
+        // Outer metallic/dark pocket rim casting
         ctx.beginPath();
-        ctx.arc(p.x, p.y, TABLE.pocketRadius, 0, Math.PI * 2);
-        ctx.fillStyle = '#090d16';
+        ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#1e293b';
         ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#1e293b';
+
+        // Inner drop pocket hole
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, TABLE.pocketHoleRadius, 0, Math.PI * 2);
+        ctx.fillStyle = '#020617';
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#0f172a';
         ctx.stroke();
 
+        // Target pocket highlight glow
         if (idx === targetPocketIndex) {
           ctx.beginPath();
-          ctx.arc(p.x, p.y, TABLE.pocketRadius + 6, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(250, 204, 21, 0.7)';
+          ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 7, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(250, 204, 21, 0.75)';
           ctx.lineWidth = 2.5;
           ctx.setLineDash([5, 4]);
           ctx.stroke();
