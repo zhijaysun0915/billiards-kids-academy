@@ -86,18 +86,36 @@
 
     .nav-tabs {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       flex-wrap: wrap;
       align-items: center;
+    }
+
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.65);
+      padding: 4px 8px;
+      border-radius: 14px;
+      border: 1px solid #334155;
+    }
+
+    .nav-group-label {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #94a3b8;
+      margin-right: 4px;
+      white-space: nowrap;
     }
 
     .tab-btn {
       background: var(--bg-card);
       color: var(--text-main);
       border: 2px solid transparent;
-      padding: 8px 13px;
-      border-radius: 12px;
-      font-size: 0.88rem;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.86rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -338,21 +356,20 @@
     /* Turn Indicator Banner on Table in Match Mode */
     .turn-banner {
       position: absolute;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.88);
+      top: 14px;
+      right: 14px;
+      background: rgba(15, 23, 42, 0.92);
       border: 2px solid #38bdf8;
       border-radius: 999px;
-      padding: 5px 16px;
-      font-size: 0.88rem;
+      padding: 5px 14px;
+      font-size: 0.84rem;
       font-weight: 800;
       color: #fff;
       display: none;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       z-index: 4;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     /* Visual Helpers Bar */
@@ -819,11 +836,21 @@
     </div>
 
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchMode('academy')" id="tab-academy">🎓 闖關特訓營 (6關)</button>
-      <button class="tab-btn" onclick="switchMode('spinlab')" id="tab-spinlab">🌀 下塞桿法實驗室</button>
-      <button class="tab-btn" onclick="switchMode('cushionlab')" id="tab-cushionlab">📐 顆星鑽石實驗室</button>
-      <button class="tab-btn" onclick="switchMode('match_9ball')" id="tab-match_9ball">⚔️ 雙人 9 號球 (9顆)</button>
-      <button class="tab-btn" onclick="switchMode('match_8ball')" id="tab-match_8ball">⚔️ 雙人 8 號球 (15顆)</button>
+      <!-- 實驗室與教學特訓區 -->
+      <div class="nav-group">
+        <span class="nav-group-label">🧪 實驗室與教學：</span>
+        <button class="tab-btn active" onclick="switchMode('academy')" id="tab-academy">🎓 闖關特訓營 (6關)</button>
+        <button class="tab-btn" onclick="switchMode('spinlab')" id="tab-spinlab">🌀 下塞桿法實驗室</button>
+        <button class="tab-btn" onclick="switchMode('cushionlab')" id="tab-cushionlab">📐 顆星鑽石實驗室</button>
+      </div>
+
+      <!-- 實際遊戲對戰區 -->
+      <div class="nav-group" style="border-color:#f59e0b;">
+        <span class="nav-group-label" style="color:#fde047;">🏆 比賽對戰遊戲：</span>
+        <button class="tab-btn" onclick="switchMode('match_9ball')" id="tab-match_9ball">⚔️ 雙人 9 號球 (9顆)</button>
+        <button class="tab-btn" onclick="switchMode('match_8ball')" id="tab-match_8ball">⚔️ 雙人 8 號球 (15顆)</button>
+      </div>
+
       <button class="tab-btn" onclick="openEncyclopedia()">📖 規則百科</button>
     </div>
 
