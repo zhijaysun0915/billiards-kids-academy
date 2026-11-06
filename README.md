@@ -1,6 +1,6 @@
 # 🎱 小小撞球神射手：四年級撞球科學與實戰學院 (Billiards Kids Academy)
 
-[![版本 v2.0](https://img.shields.io/badge/版本-v2.0_手機電腦全支援-38bdf8?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
+[![版本 v2.0](https://img.shields.io/badge/版本-v2.4_真實錄音音效版-38bdf8?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
 [![立即線上遊玩 Play Online](https://img.shields.io/badge/🎱_立即線上遊玩_Play_Now-GitHub_Pages-22c55e?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
 
 專為**國小四年級學童與初學者**設計的互動式撞球科學與實戰教學網頁程式！  
@@ -15,7 +15,7 @@
 
 ---
 
-## 📱 手機與平板專屬設計 (v2.0 更新)
+## 📱 手機與平板專屬設計 (v2.4 更新)
 
 - 📱 **球桌懸浮「出桿發射鈕」**：球桌右下角常駐發射按鈕，手機玩家瞄準後拇指直接點擊即可出桿，不需要鍵盤空白鍵！
 - 📌 **底部常駐控制列 (Mobile Dock)**：手機直立或橫式瀏覽時，螢幕底部固定「微調角度」與「大按鈕出桿擊球」，操作順手不擋球桌。
@@ -25,6 +25,12 @@
 ---
 
 ## 🌟 核心模式與遊戲特色
+
+- 🔊 **真實撞球實錄音效 (Authentic Recorded Audio)**：
+  - 引用高品質酚醛樹脂（Phenolic Resin）撞球真實碰撞錄音，清脆透亮，徹底擺脫電子合成音！
+  - 實錄橡膠顆星（Cushion Rail）碰撞沉悶彈力聲、皮革網袋進袋音效、球桿皮頭擊球摩擦碰撞聲。
+  - 具備碰撞力道音量動態調節與細微音高頻率隨機飄移（Jitter），多球連續碰撞真實自然！
+  - 支援 iOS Safari / Android Chrome 觸控手勢自動解鎖，跨平台 100% 離線即時播放。
 
 ### 1. ⚔️ 雙人實戰對決模式（兩人輪流出桿，累計勝局分勝負）
 右上角特別新增了正式比賽模式，適合兩個小朋友在同一台電腦/平板上輪流對戰：

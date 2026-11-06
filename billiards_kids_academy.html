@@ -829,7 +829,7 @@
       <div class="brand-title">
         <div style="display:flex; align-items:center; gap:8px;">
           <h1>小小撞球神射手：撞球科學與實戰學院</h1>
-          <span style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#7dd3fc; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:999px;">v2.0 手機平板/電腦全適應版</span>
+          <span style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#7dd3fc; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:999px;">v2.4 真實撞球碰撞原音錄製版</span>
         </div>
         <p>專為國小四年級設計｜假想球瞄準 × 顆星反射 × 下塞物理 × 雙人比賽</p>
       </div>
@@ -955,6 +955,7 @@
           <button class="toggle-chip active" id="toggleBounce" onclick="toggleAid('bounce')">📐 顆星反射預測線</button>
           <button class="toggle-chip active" id="toggleTrail" onclick="toggleAid('trail')">✨ 實際軌跡線</button>
           <button class="toggle-chip active" id="toggleDiamonds" onclick="toggleAid('diamonds')">💎 鑽石刻度尺 (0~8)</button>
+          <button class="toggle-chip" onclick="testRealSound()" title="點擊試聽真實撞球撞擊原音" style="border-color:#38bdf8; color:#38bdf8;">🔊 試聽實錄碰撞音效</button>
         </div>
         <div style="font-size:0.82rem; color:#94a3b8;">
           💡 <b>滑鼠瞄準</b>，點擊<b>出桿按鈕</b>或按<b>空白鍵 (Space)</b>擊球！
@@ -1106,16 +1107,33 @@
       { x: TABLE.right + 5, y: TABLE.bottom + 5, name: '右下底袋', type: 'corner', side: 'bottom-right' }
     ];
 
-    // Sound System (Authentic Multi-Layer Web Audio Synthesizer for Billiards)
+    // =========================================================================
+    // Authentic Real Audio Sound System (實體錄音音效庫：子球撞擊、顆星反彈、進袋與出桿)
+    // =========================================================================
+    const REAL_AUDIO_B64 = {
+      ballSharp: "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EjCgQLLBUAohkRkHwaNFpQ4UOgODgl4WiBwCBjW2Rp0IDguAe8+tcEiBewUVPZhymSBiSyYX06VqYDSDUI0UWSIxDi19SPG5drzekLEA6w7fqYKaIgsiWMzqW2O//f17LC0ZctJNFBdDeU8ajzDn1cVyf1+v//+3rlvmeudZVFu75r/3/////8//1jL7lJD9P3WestxJgUblVNl//h+ua5r+fr//DXMNSixoMNEzov/7wETuAAfmY83+b0SA5+tp385gkA+FUSn9lAAJwpplv7CQAGK///uNEBzwkkVEPKmABkkxIHEODhRIlKoBLMnLglpV4IBUNcU7mvMvgt2YaB0BUQREHIUeHgEQ5HEizTCCpAKhHGOggrkmrRQdHMtUVZKqlMwtbXDKU0XszbSq1zLNdwzMDYVD1GaV19v1+V////Wl+V5yYOiNV4Z296Xj/UVVgOKivCnqZmYdBEQuXSAdgDqp8wmC3JhyHoKliaRbaei6wrDXcZUQilYFmmmEQJHjTrmhQ0kyxE/ElgVdauXizVSQksCJ6rMlo0ttxVdKPj4qwv3/GCyLxlarPlK42hihZx8ts/4hEoBAR4Gh4KlQpfBas6BdKq1IJIGm4gAAADuBZ7zNEsREv8kQqRPrAsRgSsiaIRIgJkiYFCckUi5pFVencjGmkWJJb5mcwiCw4GvrO////+wFVf////xCSe3rqca1kVtcQLOjUgAENNpXapBhDSyXlgCiaZYScAgo4sJkFCWkVBIlaLacSRyqltOJOCR4NDQ1PBpbrG////9n//Cbv/VkaGwgKrcF1AMRG6DLA6ABzVHmf///////////////0RUSrOrCboaPTueyQhjA6p/////////////////3EmFSJ2W1nVxFTEFNRTQuMFVVVVVVVVVVVVVVVUxBTUU0LjBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//tgROCHcn8fRmsJMXBPI2iZPCYWA0wDEAAAAABqAGIUEAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQZN2P8AAAf4AAAAgAAA/wAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=",
+      ballSoft: "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",
+      cushion: "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mu8+zWkF3IXKfsFy437r3zAl99WdJplnX/Sd9+g1+feamNHMrvOo623b/eswuxVpX+nZ3bbX/s1MzM7L/M1te14mkVnr3Zq6tenFLpi1PoOaK1WaNIyySMwcmy7vr9aNbUQB40c4A/93s97bKgADaFmFY0h0NrpbHKiwEADEZqLMmFjaECUwy2AUhDGQYMAgEzuLjAIgNODY7m6QEJx4EAAFGCRwalR5Q0wIhBKYDAAEwoGkDAZAQGIhtgiBjGBQOBYeBbQBzYoGdXibQ6EXwhcaA3wGFYG4UAYIYXxZYpgjQRgiHLBa4LQGrAGAgGLEg2BhhcAoYOopjwMiPggxWHaPY4T/+5Rk6IAT6E7Peww0SBnAuW8ACQQQpTs59YYAIHWKZraEUASPHSAQCC5AAQMLCw08AIATJcLZuYG8nj0pk2454N1A0gAoWAcDBueAMMBuBZ5zxgZpppUVpMpQtgavEAxP4aoFKEEDV67LTpOmkcZNk0j+4uci4rQZgcwZMXORMXIOYgi1P/ay/vy4T5Pm5OEwaE+XzcnC4ad2//////////l8vm5cLhoXy+bgAWjsym6S6ZtgAAAAAH+A6lE4mRzTyMP86Oorffn44GGMm3e+oMxpWnUVWZk9wuEhxdf34mYjw3Ulxjprv7Fkez3bOy10nhcWh4ICAQBgQAAAAAGAKIUGlSP/NkJGWdq/50Smwbz/8DsAAkp8B1CSgtP4FFDaAdX4LcJqCchVR3f+JcOYmjCjlJ3/4jRSOj1PHB7f/70WUkv//6Ktf///9epdFVJaKP///+pJJaKKkjIAABAACgQCAAAAAAAAALJbKnfleEuolUxBTUU0LjBVVVVVVVX/+6Rk+YAI84RK/nKAAEXEuU3GMAANXY0tuZaAAFqAZbcCAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=",
+      pocket: "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AI8/bOlN30WOuZh7IFopJQKpELCFNV3uHAD9QxD8O7cmTuI/TyWkAqFAsBgVZjX3canbqf/xqXVb3/6ga90fGINMTrZ3//////////8PtcdyKNfct+2If////////////7kRRr7/xdyH8ijvv//////////////////25ZSWJfT26SksU9Pb/////4IAMPgg5VeYdhIgAAPkAZCXBLIltQElFEtKABgQZZZAMis16XsBjL+v6CQqRImtVQv/+8RE7gAGHElN/msgAO0L2a/N6AAMFG81/YSAKckP53+wgAU2hFIAQAgiKUMVkSJE1L3HfUpSRIkUXQgoKBQUFBQZ//CFf4KDPFflf8QUGCgoKCgX////4Us0bEIrAkU5bYzECFL+lpS2qKKCrq3kETDlTLGfqCYZclrIAIFxzSKgpVdVFaZm1FRUVNooWFlgoWFhY6+VVV2KFhQU//xBQUFCgoKG/FBQX/CgrwZ/8CjYQUd/grsjf/oM//CgX/igw3/hCv/EGf/hQLVMQU1FNC4wVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=",
+      cue: "SUQzBAAAAAAAIlRTU0UAAAAOAAADTGF2ZjYzLjEuMTAyAAAAAAAAAAAAAAD/+1QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABYaW5nAAAADwAAAAQAAAgQAHd3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d6ampqampqampqampqampqampqampqampqbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW1tbW/////////////////////////////////wAAAABMYXZjNjMuMS4AAAAAAAAAAAAAAAAkAwAAAAAAAAAIEIHtBI7/+9RkAAABJQDNVQQACBZAGMmgAAFcQW8/uayiAReMqT8w9EDQsP3LvGABwQBAMWAgCCcTg+CAIHNQIYY5cHwfB/5cHwf/wfD4BLomAAH/+AeHv4Bh4eP8PDw/+h4eHu1oBlcRAgRAsiQSBcCGPLnnEjWAwPVQ8A1TFLwhsAo4nwMs/TkM6HMeJNizFi5jAI05QQDBIROdQ8Cp1jTaBIvqGDp9mAkWkUoTCmVCobDAACeHTprgREUQDhDBDrNCunIoleYI6fYsmZ6ab66FnJHctcu5Wy8DyQxLIclC9bMVtSzPDeWH44XX7YJSwO5jCJNb3ZfWrJJrdT9fzivGTpzq7jsWp3ci1BPQZds2anO/+ssOW90li39uHN9+vFo/WsWuyjdW9/5fl/db/Wfc+f/7/PX4c5jv/1lcBUFAK/f/+lJvxhQCBsTKoCF0H43AAAAFbB84+3cKDw5ntaCEeu26SrjPFL08ryHKFFby637Umyh5WM7a+3iHe2UMibgAMfCpT+fGsERRuXMlMRECAZd+H4MoEEIgElIgTfEOCulIZSST7ImuvrCJ6VFCw8KY0suGv6SRFUBuKxMikFgDGhUTWITzyFCilKiIRiXylq2Kw+oY4rKUalSJpqPiz4/5kowleLSTy4sxBSQUM2U8bxL+TW/vvwoZ0039ktexuuNnUj8ACl1lVVe/1BYRcWoK3xLr9O/7P7m75djNhAAEALb+hrRs4DSgEQWONlRkDqskMhWtCICRqlieyXcCRBX6cjpVTjAdqTENvYpvKuEzFVCGGCex8lUqUYNxJVUJxXLiRRRw/ryYOxPRgnr2qh4Jp/yVvPdSu2o9MRAqKFGTSEswbZvJZk+knU6pueJMmSo6AHmRA1pqYid+KWd9lEtkP3JIc0nQI1bd6BBwp/0f//L1L/Tgn+J/zo3sYIb6rIokgKX3YJphSwOCbppVg54gITCZedSO6HKQwfFmU1Pr6VNSwGlNZRnJFfXj0L2j1xKOolKlSdcHQjD8Rk0A/FFeVg//+5RkvIATnTTSf2EgChyhCi3kAAAQNPs97D0tYIiX5/QSiTS9mE9JCO3T1NEAVFibhTM84YVchyOCo9EjhUONkieCpWE1lVoioOamWR7AqIJ1JtKQdS15nmQ1cQnUGyYIhiqAvCn4AAaEMc44iCYIaeJExaoEk8Ofw7f0uKHq37LVvSnQp0tgEF+20F1DXQVEISQCWdEYi+SZQqstKuctO+kIjrSW7Sl3JO6OH0rWq+d6PUcSvv9L5ihq08OUyw1pzQKErjiwpKpYdsYBUgv/5iRVEcSZctO+/Z3yLP8+qDOOj1yRsYNL9Ug1LKgikKeXYeve56zLD8Qtcl4FExwDZpAFCgBUiDmkJqv8yAK/5CWo47URv9R/6f+3+dk0f64qwnZCw0NZiYl1RSJCEAPaSgCgFQDalNAZMLAeABafQRsLfmEDBW/bRp26zgwdETlzjsqH93mjllQZH1TnlsrVJ+MRkTnybZ31suwnCDE69MzKs8jPnH7QZXbZe1G9u5v/+5Rk0IAT/09OawwcWiUhOe8kKQsPeT83rCR4qKEX5rRhDjT036YcuHzQMlIBjQ4tJpeOqOTSmRGWVkBl1f6mZLKcs9A4Q4rNInqSDIjc6qE3AABNCcvJdQS1yrJs44ifJe3iX6eoW6utAGyqtt9Z+yQZQFGhsFHLaAX6MQxCYYAnmgqwJ04EVihl/XhijlFoBQLCVPiRsbLfs8bJwGeglP/+S1qKq3JJZSQEMwI0BUkBSIwXM/+kJEVMQU1FNC4wVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+4Rk2gET8k7NewwceiMBOd88YhcHtHUjpODDiDuAY2AAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU="
+    };
+
     let audioCtx = null;
     let noiseBuffer = null;
+    const realAudioBuffers = {
+      ballSharp: null,
+      ballSoft: null,
+      cushion: null,
+      pocket: null,
+      cue: null
+    };
+    let audioUnlocked = false;
 
     function initAudio() {
       if (!audioCtx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
           audioCtx = new AudioContext();
-          // Generate 0.5s of noise buffer for realistic physical collision transients
           const sampleRate = audioCtx.sampleRate;
           noiseBuffer = audioCtx.createBuffer(1, sampleRate * 0.5, sampleRate);
           const output = noiseBuffer.getChannelData(0);
@@ -1127,18 +1145,77 @@
       if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
+      if (audioCtx && !audioUnlocked) {
+        audioUnlocked = true;
+        loadRealAudioBuffers();
+      }
     }
 
-    // Realistic Sound: Multi-Harmonic Phenolic Resin Ball Collision ("Crack-Click-Ring")
-    // Real billiard balls produce a sharp click, followed by high acoustic resonance and slate table body feedback
+    // Auto-unlock audio on any first user interaction (crucial for iOS Safari / Chrome)
+    ['pointerdown', 'touchstart', 'mousedown', 'keydown', 'click'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        initAudio();
+      }, { passive: true });
+    });
+
+    function b64ToArrayBuffer(b64) {
+      const binaryString = window.atob(b64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    function loadRealAudioBuffers() {
+      if (!audioCtx) return;
+      Object.keys(REAL_AUDIO_B64).forEach(key => {
+        try {
+          const ab = b64ToArrayBuffer(REAL_AUDIO_B64[key]);
+          audioCtx.decodeAudioData(ab, (decoded) => {
+            realAudioBuffers[key] = decoded;
+          }, (err) => {
+            console.warn('Decode failed for', key, err);
+          });
+        } catch (e) {
+          console.warn('Error reading audio b64', key, e);
+        }
+      });
+    }
+
+    function playAudioBuffer(buffer, vol = 1.0, pitch = 1.0) {
+      if (!audioCtx || !buffer) return false;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const src = audioCtx.createBufferSource();
+        src.buffer = buffer;
+        src.playbackRate.value = pitch;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(Math.min(1.8, Math.max(0.08, vol)), audioCtx.currentTime);
+        src.connect(gain);
+        gain.connect(audioCtx.destination);
+        src.start(0);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Real recorded ball collision with velocity scaling and organic pitch jitter
     function playBallClackSound(intensity = 1) {
       try {
         initAudio();
+        const vol = Math.min(1.5, Math.max(0.2, intensity * 0.85));
+        const pitch = 0.96 + Math.random() * 0.08;
+        const buf = (intensity > 0.75 || !realAudioBuffers.ballSoft) ? realAudioBuffers.ballSharp : realAudioBuffers.ballSoft;
+        if (buf && playAudioBuffer(buf, vol, pitch)) {
+          return;
+        }
+
+        // Procedural Synthesizer Fallback if audio buffer is still decoding
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
-        const vol = Math.min(1.2, Math.max(0.15, intensity * 0.65));
-
-        // Layer 1: Sharp Ceramic / Hard Resin Snap (Bandpassed Noise Transient)
         if (noiseBuffer) {
           const noiseSrc = audioCtx.createBufferSource();
           noiseSrc.buffer = noiseBuffer;
@@ -1146,11 +1223,9 @@
           noiseFilter.type = 'bandpass';
           noiseFilter.frequency.setValueAtTime(3800 + Math.random() * 600, now);
           noiseFilter.Q.setValueAtTime(4.5, now);
-
           const noiseGain = audioCtx.createGain();
           noiseGain.gain.setValueAtTime(vol * 0.8, now);
           noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
-
           noiseSrc.connect(noiseFilter);
           noiseFilter.connect(noiseGain);
           noiseGain.connect(audioCtx.destination);
@@ -1158,90 +1233,40 @@
           noiseSrc.stop(now + 0.02);
         }
 
-        // Layer 2: Main Primary Impact Crack (High-Q sine dropping rapidly)
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
         osc1.type = 'triangle';
-        const primaryFreq = 2200 + (Math.random() - 0.5) * 160;
-        osc1.frequency.setValueAtTime(primaryFreq, now);
+        osc1.frequency.setValueAtTime(2200 + (Math.random() - 0.5) * 160, now);
         osc1.frequency.exponentialRampToValueAtTime(950, now + 0.028);
-
         gain1.gain.setValueAtTime(vol * 0.75, now);
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-
         osc1.connect(gain1);
         gain1.connect(audioCtx.destination);
         osc1.start(now);
         osc1.stop(now + 0.04);
-
-        // Layer 3: Solid Billiard Ball Body Resonance (Characteristic glassy ring around 1350Hz)
-        const osc2 = audioCtx.createOscillator();
-        const gain2 = audioCtx.createGain();
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(1380 + Math.random() * 80, now);
-
-        gain2.gain.setValueAtTime(vol * 0.45, now);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
-
-        osc2.connect(gain2);
-        gain2.connect(audioCtx.destination);
-        osc2.start(now);
-        osc2.stop(now + 0.07);
-
-        // Layer 4: Slate Bed & Cloth Sub-Thump (Low solid wood/slate body impact)
-        const subOsc = audioCtx.createOscillator();
-        const subGain = audioCtx.createGain();
-        subOsc.type = 'sine';
-        subOsc.frequency.setValueAtTime(320, now);
-        subOsc.frequency.exponentialRampToValueAtTime(140, now + 0.035);
-
-        subGain.gain.setValueAtTime(vol * 0.35, now);
-        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-        subOsc.connect(subGain);
-        subGain.connect(audioCtx.destination);
-        subOsc.start(now);
-        subOsc.stop(now + 0.045);
       } catch (e) {}
     }
 
-    // Realistic Sound: Vulcanized Rubber Cushion Thud ("Thwack-Bump")
+    // Real recorded vulcanized rubber cushion thud
     function playCushionThudSound(intensity = 1) {
       try {
         initAudio();
-        if (!audioCtx) return;
-        const now = audioCtx.currentTime;
-        const vol = Math.min(1.0, Math.max(0.18, intensity * 0.55));
-
-        // Layer 1: Cloth friction & rubber edge impact (Low-pass noise)
-        if (noiseBuffer) {
-          const noiseSrc = audioCtx.createBufferSource();
-          noiseSrc.buffer = noiseBuffer;
-          const filter = audioCtx.createBiquadFilter();
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(450, now);
-
-          const nGain = audioCtx.createGain();
-          nGain.gain.setValueAtTime(vol * 0.5, now);
-          nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-
-          noiseSrc.connect(filter);
-          filter.connect(nGain);
-          nGain.connect(audioCtx.destination);
-          noiseSrc.start(now);
-          noiseSrc.stop(now + 0.055);
+        const vol = Math.min(1.4, Math.max(0.25, intensity * 0.85));
+        const pitch = 0.94 + Math.random() * 0.12;
+        if (realAudioBuffers.cushion && playAudioBuffer(realAudioBuffers.cushion, vol, pitch)) {
+          return;
         }
 
-        // Layer 2: Rubber cushion compression thud
+        // Fallback
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(175, now);
         osc.frequency.exponentialRampToValueAtTime(65, now + 0.07);
-
         gain.gain.setValueAtTime(vol * 0.65, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
-
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start(now);
@@ -1249,14 +1274,17 @@
       } catch (e) {}
     }
 
-    // Realistic Sound: Satisfying Deep Leather Pocket Drop & Net Thud
+    // Real recorded pocket drop & net rattle
     function playPocketDropSound() {
       try {
         initAudio();
+        if (realAudioBuffers.pocket && playAudioBuffer(realAudioBuffers.pocket, 1.25, 0.98 + Math.random() * 0.04)) {
+          return;
+        }
+
+        // Fallback
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
-
-        // Stage 1: Pocket mouth drop
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
         osc1.type = 'sine';
@@ -1268,21 +1296,25 @@
         gain1.connect(audioCtx.destination);
         osc1.start(now);
         osc1.stop(now + 0.105);
-
-        // Stage 2: Net basket / bottom drop thud
-        const osc2 = audioCtx.createOscillator();
-        const gain2 = audioCtx.createGain();
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(180, now + 0.07);
-        osc2.frequency.exponentialRampToValueAtTime(75, now + 0.22);
-        gain2.gain.setValueAtTime(0.001, now);
-        gain2.gain.setValueAtTime(0.48, now + 0.07);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.23);
-        osc2.connect(gain2);
-        gain2.connect(audioCtx.destination);
-        osc2.start(now + 0.07);
-        osc2.stop(now + 0.24);
       } catch (e) {}
+    }
+
+    // Real recorded cue strike sound
+    function playCueStrikeSound(intensity = 1) {
+      try {
+        initAudio();
+        const vol = Math.min(1.3, Math.max(0.3, intensity * 0.9));
+        if (realAudioBuffers.cue && playAudioBuffer(realAudioBuffers.cue, vol, 1.0)) {
+          return;
+        }
+      } catch (e) {}
+    }
+
+    // Quick audio test button helper
+    function testRealSound() {
+      initAudio();
+      playBallClackSound(1.2);
+      showToast('🔊 正在試聽真實撞球撞擊原音錄音！');
     }
 
     // Standard 16 Pool Balls colors
@@ -2077,6 +2109,7 @@
       const launchAngle = aimAngle + squirtOffset;
       // Enhanced dynamic shot speed for realistic table travel & powerful cushion rebounds
       const speed = (shotPower / 100) * 29.5;
+      playCueStrikeSound(shotPower / 100);
 
       cueBall.vx = Math.cos(launchAngle) * speed;
       cueBall.vy = Math.sin(launchAngle) * speed;
