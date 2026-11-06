@@ -1105,104 +1105,182 @@
       { x: TABLE.right + 6, y: TABLE.bottom + 6, name: '右下底袋' }
     ];
 
-    // Sound System (Web Audio API for realistic billiard collisions & cushion thuds)
+    // Sound System (Authentic Multi-Layer Web Audio Synthesizer for Billiards)
     let audioCtx = null;
+    let noiseBuffer = null;
+
     function initAudio() {
       if (!audioCtx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) audioCtx = new AudioContext();
+        if (AudioContext) {
+          audioCtx = new AudioContext();
+          // Generate 0.5s of noise buffer for realistic physical collision transients
+          const sampleRate = audioCtx.sampleRate;
+          noiseBuffer = audioCtx.createBuffer(1, sampleRate * 0.5, sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          for (let i = 0; i < sampleRate * 0.5; i++) {
+            output[i] = Math.random() * 2 - 1;
+          }
+        }
       }
       if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
     }
 
-    // Sound: Crisp phenolic ball-to-ball "clack"
+    // Realistic Sound: Multi-Harmonic Phenolic Resin Ball Collision ("Crack-Click-Ring")
+    // Real billiard balls produce a sharp click, followed by high acoustic resonance and slate table body feedback
     function playBallClackSound(intensity = 1) {
       try {
         initAudio();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        const vol = Math.min(1.2, Math.max(0.15, intensity * 0.65));
 
-        // High sharp fundamental frequency of billiard resin balls (around 1600Hz dropping to 800Hz)
-        osc.type = 'triangle';
-        const baseFreq = 1600 + Math.random() * 200;
-        osc.frequency.setValueAtTime(baseFreq, now);
-        osc.frequency.exponentialRampToValueAtTime(700, now + 0.045);
+        // Layer 1: Sharp Ceramic / Hard Resin Snap (Bandpassed Noise Transient)
+        if (noiseBuffer) {
+          const noiseSrc = audioCtx.createBufferSource();
+          noiseSrc.buffer = noiseBuffer;
+          const noiseFilter = audioCtx.createBiquadFilter();
+          noiseFilter.type = 'bandpass';
+          noiseFilter.frequency.setValueAtTime(3800 + Math.random() * 600, now);
+          noiseFilter.Q.setValueAtTime(4.5, now);
 
-        // Sharp acoustic attack and rapid decay
-        const vol = Math.min(1, Math.max(0.12, intensity * 0.45));
-        gain.gain.setValueAtTime(vol, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.048);
+          const noiseGain = audioCtx.createGain();
+          noiseGain.gain.setValueAtTime(vol * 0.8, now);
+          noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.05);
+          noiseSrc.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(audioCtx.destination);
+          noiseSrc.start(now);
+          noiseSrc.stop(now + 0.02);
+        }
 
-        // Secondary high-frequency click resonance
-        const click = audioCtx.createOscillator();
-        const clickGain = audioCtx.createGain();
-        click.type = 'sine';
-        click.frequency.setValueAtTime(3200, now);
-        click.frequency.exponentialRampToValueAtTime(1400, now + 0.02);
-        clickGain.gain.setValueAtTime(vol * 0.4, now);
-        clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-        click.connect(clickGain);
-        clickGain.connect(audioCtx.destination);
-        click.start(now);
-        click.stop(now + 0.022);
+        // Layer 2: Main Primary Impact Crack (High-Q sine dropping rapidly)
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'triangle';
+        const primaryFreq = 2200 + (Math.random() - 0.5) * 160;
+        osc1.frequency.setValueAtTime(primaryFreq, now);
+        osc1.frequency.exponentialRampToValueAtTime(950, now + 0.028);
+
+        gain1.gain.setValueAtTime(vol * 0.75, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.04);
+
+        // Layer 3: Solid Billiard Ball Body Resonance (Characteristic glassy ring around 1350Hz)
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1380 + Math.random() * 80, now);
+
+        gain2.gain.setValueAtTime(vol * 0.45, now);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now);
+        osc2.stop(now + 0.07);
+
+        // Layer 4: Slate Bed & Cloth Sub-Thump (Low solid wood/slate body impact)
+        const subOsc = audioCtx.createOscillator();
+        const subGain = audioCtx.createGain();
+        subOsc.type = 'sine';
+        subOsc.frequency.setValueAtTime(320, now);
+        subOsc.frequency.exponentialRampToValueAtTime(140, now + 0.035);
+
+        subGain.gain.setValueAtTime(vol * 0.35, now);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+        subOsc.connect(subGain);
+        subGain.connect(audioCtx.destination);
+        subOsc.start(now);
+        subOsc.stop(now + 0.045);
       } catch (e) {}
     }
 
-    // Sound: Deep rubber cushion/rail "thud"
+    // Realistic Sound: Vulcanized Rubber Cushion Thud ("Thwack-Bump")
     function playCushionThudSound(intensity = 1) {
       try {
         initAudio();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
+        const vol = Math.min(1.0, Math.max(0.18, intensity * 0.55));
+
+        // Layer 1: Cloth friction & rubber edge impact (Low-pass noise)
+        if (noiseBuffer) {
+          const noiseSrc = audioCtx.createBufferSource();
+          noiseSrc.buffer = noiseBuffer;
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(450, now);
+
+          const nGain = audioCtx.createGain();
+          nGain.gain.setValueAtTime(vol * 0.5, now);
+          nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+          noiseSrc.connect(filter);
+          filter.connect(nGain);
+          nGain.connect(audioCtx.destination);
+          noiseSrc.start(now);
+          noiseSrc.stop(now + 0.055);
+        }
+
+        // Layer 2: Rubber cushion compression thud
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(175, now);
+        osc.frequency.exponentialRampToValueAtTime(65, now + 0.07);
 
-        // Low dampened frequency of rubber rail impact (around 220Hz dropping to 90Hz)
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.08);
-
-        const vol = Math.min(0.85, Math.max(0.15, intensity * 0.4));
-        gain.gain.setValueAtTime(vol, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        gain.gain.setValueAtTime(vol * 0.65, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start(now);
-        osc.stop(now + 0.085);
+        osc.stop(now + 0.08);
       } catch (e) {}
     }
 
-    // Sound: Satisfying ball drop into pocket
+    // Realistic Sound: Satisfying Deep Leather Pocket Drop & Net Thud
     function playPocketDropSound() {
       try {
         initAudio();
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
 
-        // Warm resonant pocket drop "plop-thump"
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(360, now);
-        osc.frequency.exponentialRampToValueAtTime(120, now + 0.16);
+        // Stage 1: Pocket mouth drop
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(420, now);
+        osc1.frequency.exponentialRampToValueAtTime(160, now + 0.09);
+        gain1.gain.setValueAtTime(0.55, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.105);
 
-        gain.gain.setValueAtTime(0.55, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.185);
+        // Stage 2: Net basket / bottom drop thud
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(180, now + 0.07);
+        osc2.frequency.exponentialRampToValueAtTime(75, now + 0.22);
+        gain2.gain.setValueAtTime(0.001, now);
+        gain2.gain.setValueAtTime(0.48, now + 0.07);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.23);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now + 0.07);
+        osc2.stop(now + 0.24);
       } catch (e) {}
     }
 
