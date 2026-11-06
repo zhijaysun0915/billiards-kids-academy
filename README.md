@@ -1,8 +1,10 @@
 # 🎱 小小撞球神射手：四年級撞球科學與實戰學院 (Billiards Kids Academy)
 
+[![版本 v2.0](https://img.shields.io/badge/版本-v2.0_手機電腦全支援-38bdf8?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
 [![立即線上遊玩 Play Online](https://img.shields.io/badge/🎱_立即線上遊玩_Play_Now-GitHub_Pages-22c55e?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
 
 專為**國小四年級學童與初學者**設計的互動式撞球科學與實戰教學網頁程式！  
+**支援電腦、平板與手機全裝置自適應排版**，手指觸控滑動直接瞄準，隨手點擊即可發射出桿！  
 結合 [運動島人 (Sport Islander) 撞球規則](https://sport-islander.com/billiards-rules/) 與真實物理模擬，讓孩子透過直接玩遊戲，一步步看懂**假想球瞄準 (Ghost Ball)**、**推桿／拉桿／定桿**、**顆星鑽石反射系統**、**下塞 (左塞／右塞) 顆星大轉彎**，以及 **雙人輪流對戰的 9 號球 (9顆) 與 8 號球 (15顆) 比賽規則**！
 
 ---
@@ -10,6 +12,15 @@
 ## 🚀 立即線上遊玩 (Live Demo)
 
 👉 **點擊直接打開網頁玩**：**[https://zhijaysun0915.github.io/billiards-kids-academy/](https://zhijaysun0915.github.io/billiards-kids-academy/)**
+
+---
+
+## 📱 手機與平板專屬設計 (v2.0 更新)
+
+- 📱 **球桌懸浮「出桿發射鈕」**：球桌右下角常駐發射按鈕，手機玩家瞄準後拇指直接點擊即可出桿，不需要鍵盤空白鍵！
+- 📌 **底部常駐控制列 (Mobile Dock)**：手機直立或橫式瀏覽時，螢幕底部固定「微調角度」與「大按鈕出桿擊球」，操作順手不擋球桌。
+- 👆 **手指觸控即時瞄準**：在球桌任意處滑動手指即時轉動球桿，長按母球即可移動自由球。
+- 🔄 **水平滑動導覽列**：小螢幕也能流暢滑動切換關卡與雙人對戰模式。
 
 ---
 

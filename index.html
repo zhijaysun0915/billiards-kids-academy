@@ -426,6 +426,142 @@
       color: #86efac;
     }
 
+    /* Mobile / Tablet On-Canvas Quick Shoot Button */
+    .mobile-canvas-shoot-btn {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      border: 2px solid #fdba74;
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 10px rgba(249, 115, 22, 0.4);
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .mobile-canvas-shoot-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    .mobile-canvas-shoot-btn:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .mobile-canvas-shoot-btn:disabled {
+      background: #475569;
+      border-color: #64748b;
+      cursor: not-allowed;
+      opacity: 0.6;
+      box-shadow: none;
+    }
+
+    /* Fixed Bottom Action Bar for Small Screens (Phones) */
+    .mobile-bottom-dock {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.97);
+      backdrop-filter: blur(8px);
+      border-top: 2px solid #38bdf8;
+      padding: 8px 14px;
+      z-index: 40;
+      box-shadow: 0 -6px 20px rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .mobile-bottom-dock .dock-shoot-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      font-size: 1.05rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.45);
+    }
+
+    .mobile-bottom-dock .dock-shoot-btn:disabled {
+      background: #475569;
+      opacity: 0.65;
+    }
+
+    /* Mobile Responsive Overrides */
+    @media (max-width: 900px) {
+      header {
+        padding: 8px 12px;
+        gap: 8px;
+      }
+      .brand-title h1 {
+        font-size: 1.1rem;
+      }
+      .brand-title p {
+        font-size: 0.76rem;
+      }
+      .nav-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        width: 100%;
+        padding-bottom: 4px;
+        flex-wrap: nowrap;
+      }
+      .tab-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+      }
+      .main-container {
+        padding: 8px 10px 85px 10px; /* leave room for mobile dock */
+        gap: 12px;
+      }
+      .coach-banner {
+        padding: 10px 12px;
+        gap: 8px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .coach-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 28px;
+      }
+      .coach-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .mobile-bottom-dock {
+        display: flex;
+      }
+      .control-sidebar {
+        gap: 10px;
+      }
+      .spin-control-layout {
+        grid-template-columns: 100px 1fr;
+        gap: 10px;
+      }
+      canvas#spinPadCanvas {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
     /* Right Panel: Spin Pad + Power + Physics Analysis */
     .control-sidebar {
       display: flex;
@@ -655,7 +791,10 @@
     <div class="brand">
       <div class="brand-icon">🎱</div>
       <div class="brand-title">
-        <h1>小小撞球神射手：撞球科學與實戰學院</h1>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <h1>小小撞球神射手：撞球科學與實戰學院</h1>
+          <span style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#7dd3fc; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:999px;">v2.0 手機平板/電腦全適應版</span>
+        </div>
         <p>專為國小四年級設計｜假想球瞄準 × 顆星反射 × 下塞物理 × 雙人比賽</p>
       </div>
     </div>
@@ -726,6 +865,13 @@
           <span id="turnPlayerIcon">🔵</span>
           <span id="turnPlayerText">輪到 玩家 1 出桿</span>
         </div>
+
+        <!-- On-table Floating Shoot Button for Mobile / Tablet / Single Click -->
+        <button class="mobile-canvas-shoot-btn" id="mobileCanvasShootBtn" onclick="executePlayerShot()" title="點擊擊球（等同空白鍵）">
+          <span style="font-size:1.15rem;">🚀</span>
+          <span>出桿</span>
+        </button>
+
         <canvas id="poolCanvas" width="920" height="500"></canvas>
       </div>
 
@@ -832,6 +978,17 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Mobile Fixed Bottom Action Bar (手機隨手按空白鍵出桿 & 角度微調) -->
+  <div class="mobile-bottom-dock">
+    <div style="display:flex; gap:4px;">
+      <button class="preset-btn" style="padding:10px 8px; font-size:0.8rem;" onclick="nudgeAngle(-0.5)">↺ -0.5°</button>
+      <button class="preset-btn" style="padding:10px 8px; font-size:0.8rem;" onclick="nudgeAngle(0.5)">↻ +0.5°</button>
+    </div>
+    <button class="dock-shoot-btn" id="mobileDockShootBtn" onclick="executePlayerShot()">
+      <span>🚀 出桿擊球 (點我出桿)</span>
+    </button>
   </div>
 
   <!-- Rules & Knowledge Encyclopedia Modal -->
@@ -1685,6 +1842,10 @@
       isSimulating = true;
       ballInHand = false;
       document.getElementById('shootBtn').disabled = true;
+      const mCanvasBtn = document.getElementById('mobileCanvasShootBtn');
+      if (mCanvasBtn) mCanvasBtn.disabled = true;
+      const mDockBtn = document.getElementById('mobileDockShootBtn');
+      if (mDockBtn) mDockBtn.disabled = true;
 
       shotStats = {
         firstHitBall: null,
@@ -1870,6 +2031,10 @@
       if (!anyMoving) {
         isSimulating = false;
         document.getElementById('shootBtn').disabled = false;
+        const mCanvasBtn = document.getElementById('mobileCanvasShootBtn');
+        if (mCanvasBtn) mCanvasBtn.disabled = false;
+        const mDockBtn = document.getElementById('mobileDockShootBtn');
+        if (mDockBtn) mDockBtn.disabled = false;
         onShotFinished();
       }
     }
