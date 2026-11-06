@@ -1090,20 +1090,121 @@
       width: 800,
       height: 400,
       ballRadius: 13.5,
-      pocketRadius: 25, // Distance threshold for falling into pocket
+      pocketRadius: 32, // Enhanced catch radius so well-aimed cut shots easily drop in!
+      pocketFunnelRadius: 42, // Gravitational funnel radius drawing balls smoothly into hole
       pocketHoleRadius: 28 // Visual dark hole radius
     };
 
-    // Realistic pocket placements recessed far back into table frame/corner castings:
-    // Corner pockets recess outward diagonally by 16px; side pockets recess upward/downward by 18px.
+    // Realistic pocket placements recessed into corner castings & side rail notches
     const POCKETS = [
-      { x: TABLE.left - 12, y: TABLE.top - 12, name: '左上底袋' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 18, name: '上中袋' },
-      { x: TABLE.right + 12, y: TABLE.top - 12, name: '右上底袋' },
-      { x: TABLE.left - 12, y: TABLE.bottom + 12, name: '左下底袋' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 18, name: '下中袋' },
-      { x: TABLE.right + 12, y: TABLE.bottom + 12, name: '右下底袋' }
+      { x: TABLE.left - 6, y: TABLE.top - 6, name: '左上底袋' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 12, name: '上中袋' },
+      { x: TABLE.right + 6, y: TABLE.top - 6, name: '右上底袋' },
+      { x: TABLE.left - 6, y: TABLE.bottom + 6, name: '左下底袋' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 12, name: '下中袋' },
+      { x: TABLE.right + 6, y: TABLE.bottom + 6, name: '右下底袋' }
     ];
+
+    // Sound System (Web Audio API for realistic billiard collisions & cushion thuds)
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Sound: Crisp phenolic ball-to-ball "clack"
+    function playBallClackSound(intensity = 1) {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        // High sharp fundamental frequency of billiard resin balls (around 1600Hz dropping to 800Hz)
+        osc.type = 'triangle';
+        const baseFreq = 1600 + Math.random() * 200;
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(700, now + 0.045);
+
+        // Sharp acoustic attack and rapid decay
+        const vol = Math.min(1, Math.max(0.12, intensity * 0.45));
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.048);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+
+        // Secondary high-frequency click resonance
+        const click = audioCtx.createOscillator();
+        const clickGain = audioCtx.createGain();
+        click.type = 'sine';
+        click.frequency.setValueAtTime(3200, now);
+        click.frequency.exponentialRampToValueAtTime(1400, now + 0.02);
+        clickGain.gain.setValueAtTime(vol * 0.4, now);
+        clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+        click.connect(clickGain);
+        clickGain.connect(audioCtx.destination);
+        click.start(now);
+        click.stop(now + 0.022);
+      } catch (e) {}
+    }
+
+    // Sound: Deep rubber cushion/rail "thud"
+    function playCushionThudSound(intensity = 1) {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        // Low dampened frequency of rubber rail impact (around 220Hz dropping to 90Hz)
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.08);
+
+        const vol = Math.min(0.85, Math.max(0.15, intensity * 0.4));
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.085);
+      } catch (e) {}
+    }
+
+    // Sound: Satisfying ball drop into pocket
+    function playPocketDropSound() {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        // Warm resonant pocket drop "plop-thump"
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(360, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.16);
+
+        gain.gain.setValueAtTime(0.55, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.185);
+      } catch (e) {}
+    }
 
     // Standard 16 Pool Balls colors
     const BALL_COLORS = {
@@ -1914,12 +2015,22 @@
           b.spinX *= Math.pow(0.995, 1 / subSteps);
           b.spinY *= Math.pow(0.993, 1 / subSteps);
 
-          // 2. Check Pockets
+          // 2. Check Pockets & Pocket Entry Funnel
           for (const p of POCKETS) {
-            if (Math.hypot(b.x - p.x, b.y - p.y) < TABLE.pocketRadius) {
+            const distToPocket = Math.hypot(b.x - p.x, b.y - p.y);
+
+            // Natural mouth gravitational funnel: draws balls toward pocket center smoothly
+            if (distToPocket < TABLE.pocketFunnelRadius) {
+              const pullFactor = (1 - distToPocket / TABLE.pocketFunnelRadius) * 0.42;
+              b.vx += ((p.x - b.x) / distToPocket) * pullFactor;
+              b.vy += ((p.y - b.y) / distToPocket) * pullFactor;
+            }
+
+            if (distToPocket < TABLE.pocketRadius) {
               b.pocketed = true;
               b.vx = 0;
               b.vy = 0;
+              playPocketDropSound();
               if (b.id === 0) {
                 shotStats.cueScratch = true;
               } else {
@@ -1936,7 +2047,9 @@
           const r = TABLE.ballRadius;
           if (b.y - r < TABLE.top) {
             b.y = TABLE.top + r;
+            const impactSpd = Math.abs(b.vy);
             b.vy = -b.vy * 0.90;
+            if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
               b.vx += b.spinX * 4.6;
               b.spinX *= 0.65;
@@ -1944,7 +2057,9 @@
             }
           } else if (b.y + r > TABLE.bottom) {
             b.y = TABLE.bottom - r;
+            const impactSpd = Math.abs(b.vy);
             b.vy = -b.vy * 0.90;
+            if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
               b.vx -= b.spinX * 4.6;
               b.spinX *= 0.65;
@@ -1954,7 +2069,9 @@
 
           if (b.x - r < TABLE.left) {
             b.x = TABLE.left + r;
+            const impactSpd = Math.abs(b.vx);
             b.vx = -b.vx * 0.90;
+            if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
               b.vy -= b.spinX * 4.6;
               b.spinX *= 0.65;
@@ -1962,7 +2079,9 @@
             }
           } else if (b.x + r > TABLE.right) {
             b.x = TABLE.right - r;
+            const impactSpd = Math.abs(b.vx);
             b.vx = -b.vx * 0.90;
+            if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
               b.vy += b.spinX * 4.6;
               b.spinX *= 0.65;
@@ -2009,6 +2128,9 @@
               const ky = b1.vy - b2.vy;
               const p = nx * kx + ny * ky;
               if (p > 0) {
+                // Play authentic ball clack sound on collision
+                playBallClackSound(p / 14);
+
                 b1.vx -= p * nx * 0.97;
                 b1.vy -= p * ny * 0.97;
                 b2.vx += p * nx * 0.97;
