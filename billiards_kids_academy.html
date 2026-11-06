@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎱 小小撞球神射手：四年級撞球科學與實戰學院</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-panel: #1e293b;
+      --bg-card: #334155;
+      --accent: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-yellow: #facc15;
+      --accent-orange: #fb923c;
+      --accent-red: #f87171;
+      --accent-purple: #c084fc;
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --wood-dark: #451a03;
+      --wood-mid: #78350f;
+      --cloth-green: #0d9488;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0%, #090d16 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Header */
+    header {
+      background: rgba(15, 23, 42, 0.92);
+      border-bottom: 2px solid #334155;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      font-size: 32px;
+      background: linear-gradient(135deg, #facc15, #f97316);
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+    }
+
+    .brand-title h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #38bdf8, #a7f3d0, #facc15);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-title p {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 2px solid transparent;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn:hover {
+      background: #475569;
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border-color: #7dd3fc;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+    }
+
+    .score-badge {
+      background: rgba(34, 197, 94, 0.15);
+      border: 2px solid #22c55e;
+      color: #86efac;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Main Workspace Layout */
+    .main-container {
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      gap: 16px;
+      padding: 16px 20px;
+      max-width: 1480px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    @media (max-width: 1120px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Area: Table + Bottom Controls */
+    .stage-area {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+    }
+
+    /* Coach Banner */
+    .coach-banner {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+      border: 2px solid #38bdf8;
+      border-radius: 16px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    }
+
+    .coach-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .coach-avatar {
+      font-size: 38px;
+      background: #0284c7;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #bae6fd;
+      flex-shrink: 0;
+    }
+
+    .coach-text h2 {
+      font-size: 1.08rem;
+      color: #fde047;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .coach-text p {
+      font-size: 0.95rem;
+      color: #f1f5f9;
+      line-height: 1.45;
+    }
+
+    .coach-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-action {
+      background: #334155;
+      color: #fff;
+      border: 1px solid #64748b;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-action:hover {
+      background: #475569;
+    }
+
+    .btn-action.primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-color: #86efac;
+    }
+
+    .btn-action.primary:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Canvas Wrapper */
+    .table-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 920px;
+      aspect-ratio: 920 / 500;
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.65), 0 0 0 4px #1e293b;
+      overflow: hidden;
+      background: #1e293b;
+    }
+
+    canvas#poolCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Overlay Toast on Table */
+    .shot-toast {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.88);
+      border: 2px solid #facc15;
+      color: #fef08a;
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 1rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      z-index: 5;
+      white-space: nowrap;
+    }
+
+    .shot-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(4px);
+    }
+
+    /* Visual Helpers Bar */
+    .helpers-bar {
+      width: 100%;
+      max-width: 920px;
+      background: var(--bg-panel);
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .toggle-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0f172a;
+      border: 1.5px solid #475569;
+      color: #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .toggle-chip.active {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: #38bdf8;
+      color: #7dd3fc;
+    }
+
+    .level-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .level-pill {
+      background: #0f172a;
+      border: 1.5px solid #475569;
+      color: #cbd5e1;
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .level-pill.active {
+      background: #f59e0b;
+      color: #0f172a;
+      border-color: #fde047;
+    }
+
+    .level-pill.done {
+      border-color: #22c55e;
+      color: #86efac;
+    }
+
+    /* Right Panel: Spin Pad + Power + Physics Analysis + Knowledge Cards */
+    .control-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel-card {
+      background: var(--bg-panel);
+      border: 1.5px solid #334155;
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Cue Ball Spin Selector */
+    .spin-control-layout {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .cue-ball-pad-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    canvas#spinPadCanvas {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+
+    .spin-presets {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #e2e8f0;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .preset-btn:hover {
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    .spin-readout {
+      grid-column: 1 / -1;
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 0.86rem;
+      border-left: 4px solid #facc15;
+      line-height: 1.45;
+    }
+
+    /* Power & Shoot Controls */
+    .power-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #f97316;
+      height: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .shoot-btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 13px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      font-size: 1.08rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(234, 88, 12, 0.45);
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .shoot-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .shoot-btn:disabled {
+      background: #475569;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* Live Physics & Kid Explanation Card */
+    .physics-explain-box {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+    }
+
+    .physics-explain-box strong {
+      color: #fde047;
+    }
+
+    .badge-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      margin-right: 4px;
+    }
+
+    /* Encyclopedia Modal / Drawer View */
+    .knowledge-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 50;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .knowledge-modal.open {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .knowledge-content {
+      background: #1e293b;
+      border: 2px solid #38bdf8;
+      border-radius: 20px;
+      max-width: 980px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    }
+
+    .knowledge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .k-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .k-card h3 {
+      color: #fde047;
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .k-card p, .k-card li {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+
+    .k-card ul {
+      padding-left: 18px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🎱</div>
+      <div class="brand-title">
+        <h1>小小撞球神射手：撞球科學與實戰學院</h1>
+        <p>專為國小四年級設計｜互動遊戲 × 假想球瞄準 × 顆星反射 × 下塞物理</p>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchMode('academy')" id="tab-academy">🎓 闖關特訓營 (6關)</button>
+      <button class="tab-btn" onclick="switchMode('spinlab')" id="tab-spinlab">🌀 下塞與桿法實驗室</button>
+      <button class="tab-btn" onclick="switchMode('cushionlab')" id="tab-cushionlab">📐 顆星鑽石實驗室</button>
+      <button class="tab-btn" onclick="switchMode('nineball')" id="tab-nineball">🏆 小小 9 號球比賽</button>
+      <button class="tab-btn" onclick="openEncyclopedia()">📖 撞球規則與知識百科</button>
+    </div>
+
+    <div class="score-badge">
+      <span>⭐ 星星徽章：<span id="starCount">0</span> / 6</span>
+      <span>｜</span>
+      <span>🎯 進球數：<span id="pocketCount">0</span></span>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="main-container">
+    <!-- Left Column: Coach + Pool Table + Toggles -->
+    <div class="stage-area">
+      <!-- Coach Banner -->
+      <div class="coach-banner">
+        <div class="coach-left">
+          <div class="coach-avatar" id="coachAvatar">🦉</div>
+          <div class="coach-text">
+            <h2 id="missionTitle">第 1 關：直球進袋與「假想球」祕密</h2>
+            <p id="missionDesc">移動滑鼠對準「白色虛線假想球」，把 1 號黃球直接打進右邊袋口吧！你也可以直接拖曳白球後方的球桿喔！</p>
+          </div>
+        </div>
+        <div class="coach-actions">
+          <button class="btn-action" onclick="resetCurrentScene()">🔄 重新擺球</button>
+          <button class="btn-action primary" onclick="demoShot()" id="demoBtn">👀 看教練示範一桿</button>
+        </div>
+      </div>
+
+      <!-- Level selector bar (visible in Academy Mode) -->
+      <div class="helpers-bar" id="levelSelectorBar">
+        <span style="font-size:0.88rem; font-weight:800; color:#94a3b8;">🎯 選擇訓練關卡：</span>
+        <div class="level-pills" id="levelPills"></div>
+      </div>
+
+      <!-- Pool Table Canvas -->
+      <div class="table-wrapper">
+        <div class="shot-toast" id="shotToast">🎉 好球！精準進袋！</div>
+        <canvas id="poolCanvas" width="920" height="500"></canvas>
+      </div>
+
+      <!-- Visual Aid Toggles -->
+      <div class="helpers-bar">
+        <div class="toggle-group">
+          <span style="font-size:0.85rem; font-weight:800; color:#94a3b8;">🔍 科學透視輔助：</span>
+          <button class="toggle-chip active" id="toggleGhost" onclick="toggleAid('ghost')">👻 假想球 (Ghost Ball)</button>
+          <button class="toggle-chip active" id="toggleBounce" onclick="toggleAid('bounce')">📐 顆星反射預測線</button>
+          <button class="toggle-chip active" id="toggleTrail" onclick="toggleAid('trail')">✨ 母球與子球實際軌跡線</button>
+          <button class="toggle-chip active" id="toggleDiamonds" onclick="toggleAid('diamonds')">💎 鑽石刻度尺 (0~8)</button>
+        </div>
+        <div style="font-size:0.82rem; color:#94a3b8;">
+          💡 操作小撇步：在球桌上<b>移動滑鼠點擊瞄準</b>，或<b>按空白鍵 / 點擊出桿按鈕</b>擊球！
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Spin Pad + Power + Real-time Physics Guide -->
+    <div class="control-sidebar">
+      <!-- Spin / English Control Card -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>🎯 母球打點與下塞控制 (打哪裡？)</span>
+          <span style="font-size:0.78rem; color:#94a3b8; font-weight:600;">點擊白球改變打點</span>
+        </div>
+
+        <div class="spin-control-layout">
+          <div class="cue-ball-pad-wrap">
+            <canvas id="spinPadCanvas" width="120" height="120"></canvas>
+            <span style="font-size:0.76rem; color:#cbd5e1;" id="spinCoordLabel">正中桿 (0, 0)</span>
+          </div>
+
+          <div class="spin-presets">
+            <button class="preset-btn" onclick="setSpinPreset(0, 0)">🎯 中桿 (定桿)</button>
+            <button class="preset-btn" onclick="setSpinPreset(0, 0.72)">⬆️ 推桿 (往前追)</button>
+            <button class="preset-btn" onclick="setSpinPreset(0, -0.78)">⬇️ 拉桿 (倒退嚕)</button>
+            <button class="preset-btn" onclick="setSpinPreset(-0.72, 0)">⬅️ 左塞 (左旋轉)</button>
+            <button class="preset-btn" onclick="setSpinPreset(0.72, 0)">➡️ 右塞 (右旋轉)</button>
+            <button class="preset-btn" onclick="setSpinPreset(0.6, 0.6)">↗️ 右上順塞</button>
+          </div>
+
+          <div class="spin-readout" id="spinReadout">
+            <strong>🎯 目前桿法：正中桿（定桿）</strong><br/>
+            打在白球正中間，白球撞到子球或顆星時不會額外往前衝或倒退，最穩定！
+          </div>
+        </div>
+      </div>
+
+      <!-- Power & Shoot Button Card -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>💪 出桿力道與角度微調</span>
+          <span id="angleReadout" style="font-size:0.82rem; color:#fde047;">角度: 0°</span>
+        </div>
+
+        <div class="power-row">
+          <div class="slider-label">
+            <span>出桿力道 (Power)</span>
+            <span id="powerValueText" style="color:#fb923c;">55% (適中)</span>
+          </div>
+          <input type="range" id="powerSlider" min="15" max="100" value="55" oninput="updatePowerUI()" />
+
+          <div style="display:flex; gap:6px; margin-top:4px;">
+            <button class="preset-btn" style="flex:1;" onclick="nudgeAngle(-0.5)">↺ 微調左轉 0.5°</button>
+            <button class="preset-btn" style="flex:1;" onclick="nudgeAngle(0.5)">↻ 微調右轉 0.5°</button>
+          </div>
+
+          <button class="shoot-btn" id="shootBtn" onclick="executePlayerShot()">
+            🚀 出桿擊球！(或按空白鍵 Space)
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Physics & Trajectory Legend Card -->
+      <div class="panel-card" style="flex:1;">
+        <div class="panel-title">
+          <span>🔬 球實際怎麼跑？即時物理小教室</span>
+        </div>
+
+        <div class="physics-explain-box" id="livePhysicsExplain">
+          <div style="margin-bottom:8px;">
+            <span class="badge-tag" style="background:#38bdf8; color:#0f172a;">白線</span> 母球前進與反射路線
+            <span class="badge-tag" style="background:#facc15; color:#0f172a; margin-left:6px;">黃線</span> 目標球進袋路線
+          </div>
+          <p id="physicsDetailText">
+            <strong>👻 什麼是「假想球」？</strong><br/>
+            想像在目標球的背後，貼著一顆隱形的白球（畫面上的虛線圓圈）。只要讓你的母球中心撞上這顆「假想球」的位置，目標球就會乖乖照著黃色箭頭滾進球袋喔！
+          </p>
+          <hr style="border:none; border-top:1px solid #334155; margin:10px 0;" />
+          <div id="lastShotSummary" style="font-size:0.84rem; color:#94a3b8;">
+            📊 <b>上一桿軌跡紀錄：</b>尚未出桿。打出一桿後，這裡會分析母球撞了幾顆星、有沒有因為下塞轉彎喔！
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules & Knowledge Encyclopedia Modal -->
+  <div class="knowledge-modal" id="encyclopediaModal">
+    <div class="knowledge-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:12px;">
+        <h2 style="color:#38bdf8; font-size:1.35rem;">📖 小小撞球百科全書（結合運動島人撞球規則與物理觀念）</h2>
+        <button class="btn-action primary" onclick="closeEncyclopedia()">✖ 關閉回到球桌</button>
+      </div>
+
+      <div class="knowledge-grid">
+        <div class="k-card">
+          <h3>🎱 1. 認識球桌與「顆星」</h3>
+          <p>撞球桌四周有彈性的橡膠邊框叫做<strong>「顆星 (Cushion)」</strong>！</p>
+          <ul>
+            <li><b>長顆星 / 短顆星：</b>球桌長邊叫長顆星，短邊叫短顆星。</li>
+            <li><b>一顆星 / 二顆星：</b>如果白球先撞到邊框 1 次才撞到目標球，就叫「一顆星解球」；撞 2 次叫「二顆星」。</li>
+            <li><b>鏡面反射定律：</b>不加旋轉時，進來的角度（入射角）會等於彈出去的角度（反射角），就像照鏡子一樣！</li>
+          </ul>
+        </div>
+
+        <div class="k-card">
+          <h3>👻 2. 百發百中的「假想球瞄準法」</h3>
+          <p>為什麼打斜角球常常打不進？因為不能直接瞄準目標球的中心！</p>
+          <ul>
+            <li><b>步驟一：</b>從「球袋中心」穿過「目標球中心」畫一條進球線。</li>
+            <li><b>步驟二：</b>在目標球正後方緊貼著想像一顆隱形的白球，叫做<b>「假想球 (Ghost Ball)」</b>。</li>
+            <li><b>步驟三：</b>把你的白球中心瞄準「假想球的中心」打過去，兩顆球接觸的瞬間就會把目標球推進袋口！</li>
+          </ul>
+        </div>
+
+        <div class="k-card">
+          <h3>🌀 3. 高手必學的「桿法與下塞」</h3>
+          <p>球桿打在白球的不同位置，會讓白球產生神奇的旋轉：</p>
+          <ul>
+            <li><b>⬆️ 推桿 (高桿)：</b>打白球上方，白球撞完子球後會繼續<b>往前追</b>（劃出向前的弧線）。</li>
+            <li><b>🎯 定桿 (中桿)：</b>打白球正中心，白球撞完子球後停在原地或走90度切線。</li>
+            <li><b>⬇️ 拉桿 (低桿)：</b>打白球下方，白球撞到子球後會像倒車一樣<b>往後退</b>！</li>
+            <li><b>⬅️➡️ 左塞 / 右塞 (下塞)：</b>打白球左邊或右邊。撞到顆星時，<b>順塞</b>會讓反射角變大跑得更快；<b>反塞</b>會讓反射角變小甚至煞車！</li>
+          </ul>
+        </div>
+
+        <div class="k-card">
+          <h3>🏆 4. 常見撞球比賽規則（運動島人整理）</h3>
+          <ul>
+            <li><b>9 號球 (Nine-Ball)：</b>桌上有 1~9 號球，每次<b>一定要先撞到場上數字最小的球</b>！只要合法把 9 號球打進袋就獲勝！</li>
+            <li><b>8 號球 (大小花)：</b>1~7 號是全色球（小花），9~15 號是條紋球（大花）。把自己的球組全部打完後，最後打進黑 8 號球獲勝。</li>
+            <li><b>犯規與自由球 (Ball-in-Hand)：</b>如果白球掉進袋（洗袋）、沒撞到任何球、或沒先撞最小號球就算犯規！對手可以把白球放在桌上任何地方（自由球）！</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. 遊戲常數與球桌設定 (Canvas 920 x 500)
+    // =========================================================================
+    const canvas = document.getElementById('poolCanvas');
+    const ctx = canvas.getContext('2d');
+    const spinCanvas = document.getElementById('spinPadCanvas');
+    const spinCtx = spinCanvas.getContext('2d');
+
+    // Table geometry inside 920x500 canvas
+    const TABLE = {
+      left: 60,
+      top: 50,
+      right: 860,
+      bottom: 450,
+      width: 800,
+      height: 400,
+      ballRadius: 14,
+      pocketRadius: 27
+    };
+
+    const POCKETS = [
+      { x: TABLE.left, y: TABLE.top, name: '左上底袋' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 4, name: '上中袋' },
+      { x: TABLE.right, y: TABLE.top, name: '右上底袋' },
+      { x: TABLE.left, y: TABLE.bottom, name: '左下底袋' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 4, name: '下中袋' },
+      { x: TABLE.right, y: TABLE.bottom, name: '右下底袋' }
+    ];
+
+    const BALL_COLORS = {
+      0: '#ffffff', // Cue ball
+      1: '#facc15', // 1 Yellow
+      2: '#2563eb', // 2 Blue
+      3: '#ef4444', // 3 Red
+      4: '#9333ea', // 4 Purple
+      5: '#f97316', // 5 Orange
+      6: '#16a34a', // 6 Green
+      7: '#991b1b', // 7 Maroon
+      8: '#1e293b', // 8 Black
+      9: '#facc15'  // 9 Yellow Stripe
+    };
+
+    // State
+    let currentMode = 'academy'; // 'academy', 'spinlab', 'cushionlab', 'nineball'
+    let currentLevelIdx = 0;
+    let completedLevels = new Set();
+    let totalPocketedCount = 0;
+
+    let balls = [];
+    let obstacles = []; // Optional blockers for kick shots
+    let targetPocketIndex = null; // Highlighted pocket if mission specifies
+    let trails = []; // Recorded path trails of last shot: { id, color, points: [{x,y}] }
+
+    // Aim & Spin State
+    let aimAngle = 0; // Radians
+    let shotPower = 55; // 15..100
+    let spinX = 0; // -1 (left english) to +1 (right english)
+    let spinY = 0; // -1 (draw/backspin) to +1 (follow/topspin)
+    let isSimulating = false;
+    let ballInHand = false;
+    let isDraggingCueBall = false;
+
+    // Shot Tracking for Coaching Analysis
+    let shotStats = {
+      firstHitBall: null,
+      cushionHits: 0,
+      pocketedBalls: [],
+      cueScratch: false,
+      spinUsed: { x: 0, y: 0 }
+    };
+
+    // Visual Toggles
+    let aids = {
+      ghost: true,
+      bounce: true,
+      trail: true,
+      diamonds: true
+    };
+
+    // =========================================================================
+    // 2. 六大互動教學關卡定義 (適合國小四年級循序漸進)
+    // =========================================================================
+    const ACADEMY_LEVELS = [
+      {
+        title: '第 1 關：直球進袋與「假想球」瞄準',
+        desc: '歡迎來到撞球學院！移動滑鼠讓白球對準 1 號黃球後方的「白色虛線圓圈（假想球）」，按下【出桿擊球】把 1 號球打進右邊底袋！',
+        coachTip: '瞄準時眼睛要看「假想球中心」，出桿穩穩推出去就進囉！',
+        targetPocket: 5,
+        setup: () => {
+          balls = [
+            createBall(0, 240, 250),
+            createBall(1, 580, 320)
+          ];
+          obstacles = [];
+          setSpinPreset(0, 0);
+          shotPower = 50;
+          updatePowerSlider();
+          // Default aim roughly towards ball 1 ghost ball
+          aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
+        },
+        demo: () => {
+          setSpinPreset(0, 0);
+          shotPower = 52;
+          updatePowerSlider();
+          aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
+        },
+        checkWin: (stats) => stats.pocketedBalls.includes(1) && !stats.cueScratch
+      },
+      {
+        title: '第 2 關：切球角度與「假想球」大考驗',
+        desc: '這次 2 號藍球在斜角位置！如果直接瞄準藍球正中心會打不進喔。請把滑鼠對準藍球背後的「假想球虛線圈」，把 2 號球切進右上底袋！',
+        coachTip: '這就是「切球」！母球撞到假想球位置後，子球就會沿著黃色虛線進袋！',
+        targetPocket: 2,
+        setup: () => {
+          balls = [
+            createBall(0, 260, 300),
+            createBall(2, 620, 220)
+          ];
+          obstacles = [];
+          setSpinPreset(0, 0);
+          shotPower = 55;
+          updatePowerSlider();
+          aimAtGhostBall(balls[0], balls[1], POCKETS[2]);
+        },
+        demo: () => {
+          setSpinPreset(0, 0);
+          shotPower = 55;
+          updatePowerSlider();
+          aimAtGhostBall(balls[0], balls[1], POCKETS[2]);
+        },
+        checkWin: (stats) => stats.pocketedBalls.includes(2) && !stats.cueScratch
+      },
+      {
+        title: '第 3 關：推桿 (高桿) vs 拉桿 (低桿) 的魔法',
+        desc: '打進 3 號紅球後，小心別讓白球直直衝進袋口（洗袋）！請在右側點選【⬇️ 拉桿 (倒退嚕)】，讓白球撞完紅球後帥氣倒車！',
+        coachTip: '打在白球下方叫做「低桿（拉桿）」，白球會帶著逆旋轉，撞到紅球後就會往後倒退嚕！',
+        targetPocket: 5,
+        setup: () => {
+          balls = [
+            createBall(0, 380, 290),
+            createBall(3, 660, 375)
+          ];
+          obstacles = [];
+          setSpinPreset(0, -0.82);
+          shotPower = 65;
+          updatePowerSlider();
+          aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
+        },
+        demo: () => {
+          setSpinPreset(0, -0.82);
+          shotPower = 68;
+          updatePowerSlider();
+          aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
+        },
+        checkWin: (stats) => stats.pocketedBalls.includes(3) && !stats.cueScratch
+      },
+      {
+        title: '第 4 關：認識「一顆星」鏡面反射解球',
+        desc: '糟糕！8 號黑球擋在中間，沒辦法直接打到 4 號紫球！請利用上方邊框（長顆星）像鏡子一樣反射（入射角＝反射角），先撞一顆星再去把 4 號紫球打進右下底袋！',
+        coachTip: '看畫面上的「藍色顆星反射預測線」，利用球桌邊緣的鑽石刻度 4 號點反射過去！',
+        targetPocket: 5,
+        setup: () => {
+          balls = [
+            createBall(0, 220, 320),
+            createBall(4, 730, 340),
+            createBall(8, 460, 330) // Blocker
+          ];
+          obstacles = [];
+          setSpinPreset(0, 0);
+          shotPower = 72;
+          updatePowerSlider();
+          // Aim at top rail around x = 465 to bounce into ghost ball of 4
+          aimAngle = -0.785;
+        },
+        demo: () => {
+          setSpinPreset(0, 0);
+          shotPower = 74;
+          updatePowerSlider();
+          // Calculate exact 1-cushion mirror point to ball 4 ghost ball
+          const pocket = POCKETS[5];
+          const b4 = balls.find(b => b.id === 4);
+          const dirX = pocket.x - b4.x;
+          const dirY = pocket.y - b4.y;
+          const len = Math.hypot(dirX, dirY);
+          const ghostX = b4.x - (dirX / len) * (TABLE.ballRadius * 2);
+          const ghostY = b4.y - (dirY / len) * (TABLE.ballRadius * 2);
+          const topRailY = TABLE.top + TABLE.ballRadius;
+          const mirrorGhostY = topRailY - (ghostY - topRailY);
+          aimAngle = Math.atan2(mirrorGhostY - balls[0].y, ghostX - balls[0].x);
+        },
+        checkWin: (stats) => stats.pocketedBalls.includes(4) && stats.cushionHits >= 1 && !stats.cueScratch
+      },
+      {
+        title: '第 5 關：「下塞（左塞／右塞）」顆星大轉彎！',
+        desc: '白球正對著上方顆星，前面卻被障礙球擋住，怎麼繞過去撞進 5 號橘球？請點選右側【➡️ 右塞 (右旋轉)】，白球撞到上方顆星時就會神奇地往右邊大轉彎！',
+        coachTip: '當白球帶著右旋轉（右塞）撞上顆星時，齒輪效應會把白球用力往右邊彈出去！',
+        targetPocket: 2,
+        setup: () => {
+          balls = [
+            createBall(0, 420, 360),
+            createBall(5, 760, 145)
+          ];
+          obstacles = [];
+          setSpinPreset(0.82, 0.2);
+          shotPower = 68;
+          updatePowerSlider();
+          aimAngle = -1.33; // Slightly right of straight up, right spin throws it to ball 5
+        },
+        demo: () => {
+          setSpinPreset(0.85, 0.25);
+          shotPower = 70;
+          updatePowerSlider();
+          aimAngle = -1.31;
+        },
+        checkWin: (stats) => stats.pocketedBalls.includes(5) && !stats.cueScratch
+      },
+      {
+        title: '第 6 關：畢業考！做球走位連續進袋 (1號 ➔ 9號)',
+        desc: '真正的撞球高手在打第一顆球時，就會想好白球會停在哪裡！請先打進 1 號黃球，再接著把場上的 9 號球打進袋，完成雙球清台！',
+        coachTip: '按照 9 號球規則，要從數字小的球開始打喔！打進 1 號後再瞄準 9 號球！',
+        targetPocket: null,
+        setup: () => {
+          balls = [
+            createBall(0, 220, 260),
+            createBall(1, 450, 140),
+            createBall(9, 680, 330)
+          ];
+          obstacles = [];
+          setSpinPreset(0, -0.35);
+          shotPower = 52;
+          updatePowerSlider();
+          aimAtGhostBall(balls[0], balls[1], POCKETS[1]);
+        },
+        demo: () => {
+          const b1 = balls.find(b => b.id === 1 && !b.pocketed);
+          const b9 = balls.find(b => b.id === 9 && !b.pocketed);
+          if (b1) {
+            setSpinPreset(0, -0.35);
+            shotPower = 52;
+            updatePowerSlider();
+            aimAtGhostBall(balls[0], b1, POCKETS[1]);
+          } else if (b9) {
+            setSpinPreset(0, 0);
+            shotPower = 58;
+            updatePowerSlider();
+            aimAtGhostBall(balls[0], b9, POCKETS[5]);
+          }
+        },
+        checkWin: () => {
+          const b1 = balls.find(b => b.id === 1);
+          const b9 = balls.find(b => b.id === 9);
+          return b1 && b1.pocketed && b9 && b9.pocketed;
+        }
+      }
+    ];
+
+    // =========================================================================
+    // 3. 建立球體與輔助函式
+    // =========================================================================
+    function createBall(id, x, y) {
+      return {
+        id,
+        x,
+        y,
+        vx: 0,
+        vy: 0,
+        spinX: 0, // side spin (-1..1)
+        spinY: 0, // top/back spin (-1..1)
+        pocketed: false,
+        color: BALL_COLORS[id] || '#facc15',
+        isStripe: id >= 9
+      };
+    }
+
+    function aimAtGhostBall(cueBall, targetBall, pocket) {
+      if (!cueBall || !targetBall || !pocket) return;
+      const dx = pocket.x - targetBall.x;
+      const dy = pocket.y - targetBall.y;
+      const dist = Math.hypot(dx, dy);
+      const ghostX = targetBall.x - (dx / dist) * (TABLE.ballRadius * 2);
+      const ghostY = targetBall.y - (dy / dist) * (TABLE.ballRadius * 2);
+      aimAngle = Math.atan2(ghostY - cueBall.y, ghostX - cueBall.x);
+      updateAngleUI();
+    }
+
+    // =========================================================================
+    // 4. 模式切換與關卡載入
+    // =========================================================================
+    function renderLevelPills() {
+      const container = document.getElementById('levelPills');
+      container.innerHTML = '';
+      ACADEMY_LEVELS.forEach((lvl, idx) => {
+        const btn = document.createElement('button');
+        const isDone = completedLevels.has(idx);
+        btn.className = 'level-pill' + (idx === currentLevelIdx ? ' active' : '') + (isDone ? ' done' : '');
+        btn.innerHTML = (isDone ? '⭐ ' : '') + `第 ${idx + 1} 關`;
+        btn.onclick = () => loadAcademyLevel(idx);
+        container.appendChild(btn);
+      });
+      document.getElementById('starCount').textContent = completedLevels.size;
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      const activeTab = document.getElementById('tab-' + mode);
+      if (activeTab) activeTab.classList.add('active');
+
+      const levelBar = document.getElementById('levelSelectorBar');
+      levelBar.style.display = mode === 'academy' ? 'flex' : 'none';
+
+      trails = [];
+      isSimulating = false;
+      ballInHand = false;
+
+      if (mode === 'academy') {
+        loadAcademyLevel(currentLevelIdx);
+      } else if (mode === 'spinlab') {
+        setupSpinLab();
+      } else if (mode === 'cushionlab') {
+        setupCushionLab();
+      } else if (mode === 'nineball') {
+        setupNineBallGame();
+      }
+    }
+
+    function loadAcademyLevel(idx) {
+      currentLevelIdx = idx;
+      const lvl = ACADEMY_LEVELS[idx];
+      document.getElementById('missionTitle').textContent = lvl.title;
+      document.getElementById('missionDesc').textContent = lvl.desc;
+      targetPocketIndex = lvl.targetPocket;
+      trails = [];
+      isSimulating = false;
+      lvl.setup();
+      renderLevelPills();
+      updateAngleUI();
+    }
+
+    function setupSpinLab() {
+      document.getElementById('missionTitle').textContent = '🌀 下塞與桿法實驗室：觀察母球實際怎麼跑！';
+      document.getElementById('missionDesc').textContent = '自由切換右側的「推桿、拉桿、左塞、右塞」，看看藍色預測線與實際打出去的軌跡有什麼不同！';
+      targetPocketIndex = null;
+      balls = [
+        createBall(0, 320, 260),
+        createBall(1, 560, 260),
+        createBall(2, 620, 140),
+        createBall(3, 620, 370)
+      ];
+      setSpinPreset(0.75, 0.4);
+      shotPower = 65;
+      updatePowerSlider();
+      aimAngle = -1.15;
+      updateAngleUI();
+    }
+
+    function setupCushionLab() {
+      document.getElementById('missionTitle').textContent = '📐 顆星鑽石實驗室：一顆星、二顆星反射與鑽石刻度';
+      document.getElementById('missionDesc').textContent = '觀察球桌邊框上的「💎 鑽石刻度 (1~7)」。試著不加塞（入射角=反射角）與加順塞/反塞，比較母球在顆星上的反射路線！';
+      targetPocketIndex = 5;
+      balls = [
+        createBall(0, 220, 350),
+        createBall(6, 720, 340),
+        createBall(8, 470, 345)
+      ];
+      setSpinPreset(0, 0);
+      shotPower = 75;
+      updatePowerSlider();
+      aimAngle = -0.82;
+      updateAngleUI();
+    }
+
+    function setupNineBallGame() {
+      document.getElementById('missionTitle').textContent = '🏆 小小 9 號球實戰賽（運動島人規則實戰）';
+      document.getElementById('missionDesc').textContent = '規則：每次出桿「必須先撞到桌上數字最小的球」！只要合法把 9 號球打進袋就獲勝！如果洗袋或撞錯球，可以自由擺放白球喔！';
+      targetPocketIndex = null;
+      // Simplified kid-friendly 5-ball 9-ball rack (1, 2, 3, 5, 9) so 4th graders can clear quickly
+      const apexX = 620;
+      const apexY = 250;
+      const r = TABLE.ballRadius * 2.05;
+      balls = [
+        createBall(0, 230, 250),
+        createBall(1, apexX, apexY),
+        createBall(2, apexX + r * 0.88, apexY - r * 0.52),
+        createBall(3, apexX + r * 0.88, apexY + r * 0.52),
+        createBall(9, apexX + r * 1.76, apexY),
+        createBall(5, apexX + r * 2.64, apexY)
+      ];
+      setSpinPreset(0, 0.2);
+      shotPower = 78;
+      updatePowerSlider();
+      aimAngle = 0;
+      updateAngleUI();
+    }
+
+    function resetCurrentScene() {
+      switchMode(currentMode);
+      showToast('🔄 球桌已重新擺好！');
+    }
+
+    function demoShot() {
+      if (isSimulating) return;
+      if (currentMode === 'academy') {
+        ACADEMY_LEVELS[currentLevelIdx].demo();
+        showToast('🦉 教練已幫你調整好最佳瞄準角度與下塞點，正在示範出桿！');
+        setTimeout(() => executePlayerShot(), 350);
+      } else {
+        // Find lowest numbered object ball and aim at best pocket
+        const cue = balls.find(b => b.id === 0);
+        const objBalls = balls.filter(b => b.id !== 0 && !b.pocketed).sort((a, b) => a.id - b.id);
+        if (cue && objBalls.length > 0) {
+          const target = objBalls[0];
+          // Pick closest aligned pocket
+          let bestPocket = POCKETS[0];
+          let bestScore = -999;
+          POCKETS.forEach(p => {
+            const v1x = target.x - cue.x, v1y = target.y - cue.y;
+            const v2x = p.x - target.x, v2y = p.y - target.y;
+            const d1 = Math.hypot(v1x, v1y), d2 = Math.hypot(v2x, v2y);
+            const cos = (v1x * v2x + v1y * v2y) / (d1 * d2 + 0.001);
+            const score = cos - d2 * 0.001;
+            if (score > bestScore) {
+              bestScore = score;
+              bestPocket = p;
+            }
+          });
+          aimAtGhostBall(cue, target, bestPocket);
+          shotPower = 62;
+          updatePowerSlider();
+          showToast(`🦉 教練瞄準 ${target.id} 號球的假想球示範出桿！`);
+          setTimeout(() => executePlayerShot(), 350);
+        }
+      }
+    }
+
+    // =========================================================================
+    // 5. 下塞圓盤 (Spin Pad) 繪製與互動
+    // =========================================================================
+    function drawSpinPad() {
+      const w = spinCanvas.width;
+      const h = spinCanvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const r = w / 2 - 6;
+
+      spinCtx.clearRect(0, 0, w, h);
+
+      // Sphere shading
+      const grad = spinCtx.createRadialGradient(cx - 16, cy - 16, 8, cx, cy, r);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.75, '#e2e8f0');
+      grad.addColorStop(1, '#94a3b8');
+
+      spinCtx.beginPath();
+      spinCtx.arc(cx, cy, r, 0, Math.PI * 2);
+      spinCtx.fillStyle = grad;
+      spinCtx.fill();
+      spinCtx.lineWidth = 3;
+      spinCtx.strokeStyle = '#38bdf8';
+      spinCtx.stroke();
+
+      // Safe zone circle
+      spinCtx.beginPath();
+      spinCtx.arc(cx, cy, r * 0.82, 0, Math.PI * 2);
+      spinCtx.setLineDash([4, 4]);
+      spinCtx.strokeStyle = 'rgba(15, 23, 42, 0.3)';
+      spinCtx.lineWidth = 1.5;
+      spinCtx.stroke();
+      spinCtx.setLineDash([]);
+
+      // Crosshairs
+      spinCtx.beginPath();
+      spinCtx.moveTo(cx - r, cy);
+      spinCtx.lineTo(cx + r, cy);
+      spinCtx.moveTo(cx, cy - r);
+      spinCtx.lineTo(cx, cy + r);
+      spinCtx.strokeStyle = 'rgba(15, 23, 42, 0.25)';
+      spinCtx.lineWidth = 1.5;
+      spinCtx.stroke();
+
+      // Direction labels on ball
+      spinCtx.fillStyle = '#334155';
+      spinCtx.font = 'bold 11px sans-serif';
+      spinCtx.textAlign = 'center';
+      spinCtx.fillText('推(高)', cx, 18);
+      spinCtx.fillText('拉(低)', cx, h - 10);
+      spinCtx.fillText('左塞', 20, cy + 4);
+      spinCtx.fillText('右塞', w - 20, cy + 4);
+
+      // Current Tip Contact Point (spinX, -spinY in screen coords)
+      const dotX = cx + spinX * (r * 0.78);
+      const dotY = cy - spinY * (r * 0.78);
+
+      spinCtx.beginPath();
+      spinCtx.arc(dotX, dotY, 9, 0, Math.PI * 2);
+      spinCtx.fillStyle = '#ef4444';
+      spinCtx.fill();
+      spinCtx.lineWidth = 2.5;
+      spinCtx.strokeStyle = '#ffffff';
+      spinCtx.stroke();
+    }
+
+    function setSpinPreset(sx, sy) {
+      spinX = sx;
+      spinY = sy;
+      drawSpinPad();
+      updateSpinExplanation();
+    }
+
+    spinCanvas.addEventListener('pointerdown', handleSpinPadPointer);
+    spinCanvas.addEventListener('pointermove', (e) => {
+      if (e.buttons === 1) handleSpinPadPointer(e);
+    });
+
+    function handleSpinPadPointer(e) {
+      const rect = spinCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const maxR = (rect.width / 2) * 0.78;
+
+      let dx = (x - cx) / maxR;
+      let dy = -(y - cy) / maxR;
+      const mag = Math.hypot(dx, dy);
+      if (mag > 0.92) {
+        dx = (dx / mag) * 0.92;
+        dy = (dy / mag) * 0.92;
+      }
+      spinX = Number(dx.toFixed(2));
+      spinY = Number(dy.toFixed(2));
+      drawSpinPad();
+      updateSpinExplanation();
+    }
+
+    function updateSpinExplanation() {
+      const coordLabel = document.getElementById('spinCoordLabel');
+      const readout = document.getElementById('spinReadout');
+      const detail = document.getElementById('physicsDetailText');
+
+      let vertName = '中桿';
+      if (spinY > 0.28) vertName = '推桿 (高桿)';
+      else if (spinY < -0.28) vertName = '拉桿 (低桿)';
+
+      let sideName = '無側塞';
+      if (spinX < -0.22) sideName = '左塞 (逆時針側旋)';
+      else if (spinX > 0.22) sideName = '右塞 (順時針側旋)';
+
+      coordLabel.textContent = `${vertName} / ${sideName}`;
+
+      let desc = '';
+      if (Math.abs(spinX) <= 0.22 && Math.abs(spinY) <= 0.28) {
+        desc = `<strong>🎯 目前桿法：正中桿（定桿）</strong><br/>打在白球中心，撞擊子球後白球會沿著 90 度切線穩定移動；撞到顆星時「入射角＝反射角」。`;
+      } else {
+        const parts = [];
+        if (spinY > 0.28) parts.push(`<b>⬆️ 推桿效果：</b>白球帶有向前滾動（Top Spin），撞到目標球後會繼續<b>往前追</b>！`);
+        if (spinY < -0.28) parts.push(`<b>⬇️ 拉桿效果：</b>白球帶有向後逆旋（Back Spin），撞到目標球後會像倒車一樣<b>往後退（倒退嚕）</b>！`);
+        if (spinX < -0.22) parts.push(`<b>⬅️ 左塞效果：</b>白球撞上顆星時，會因為旋轉抓地力<b>往左邊方向偏轉彈出</b>！`);
+        if (spinX > 0.22) parts.push(`<b>➡️ 右塞效果：</b>白球撞上顆星時，會因為旋轉抓地力<b>往右邊方向偏轉彈出</b>！`);
+        desc = parts.join('<br/>');
+      }
+      readout.innerHTML = desc;
+      detail.innerHTML = desc;
+    }
+
+    // =========================================================================
+    // 6. 球桌滑鼠互動、微調與出桿
+    // =========================================================================
+    function updatePowerUI() {
+      shotPower = Number(document.getElementById('powerSlider').value);
+      let label = '適中';
+      if (shotPower < 35) label = '輕柔';
+      else if (shotPower > 75) label = '強力';
+      document.getElementById('powerValueText').textContent = `${shotPower}% (${label})`;
+    }
+
+    function updatePowerSlider() {
+      document.getElementById('powerSlider').value = shotPower;
+      updatePowerUI();
+    }
+
+    function nudgeAngle(deg) {
+      aimAngle += (deg * Math.PI) / 180;
+      updateAngleUI();
+    }
+
+    function updateAngleUI() {
+      let deg = Math.round(((aimAngle * 180) / Math.PI + 360) % 360);
+      document.getElementById('angleReadout').textContent = `角度: ${deg}°`;
+    }
+
+    function toggleAid(key) {
+      aids[key] = !aids[key];
+      const mapId = {
+        ghost: 'toggleGhost',
+        bounce: 'toggleBounce',
+        trail: 'toggleTrail',
+        diamonds: 'toggleDiamonds'
+      };
+      document.getElementById(mapId[key]).classList.toggle('active', aids[key]);
+    }
+
+    function getCanvasMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      if (isSimulating) return;
+      const pos = getCanvasMousePos(e);
+      const cueBall = balls.find(b => b.id === 0);
+      if (!cueBall) return;
+
+      // Check if dragging cue ball in Ball-In-Hand or Lab mode
+      if (ballInHand || currentMode === 'spinlab' || currentMode === 'cushionlab') {
+        if (Math.hypot(pos.x - cueBall.x, pos.y - cueBall.y) <= TABLE.ballRadius * 1.8) {
+          isDraggingCueBall = true;
+          return;
+        }
+      }
+
+      aimAngle = Math.atan2(pos.y - cueBall.y, pos.x - cueBall.x);
+      updateAngleUI();
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+      if (isSimulating) return;
+      const pos = getCanvasMousePos(e);
+      const cueBall = balls.find(b => b.id === 0);
+      if (!cueBall) return;
+
+      if (isDraggingCueBall) {
+        const margin = TABLE.ballRadius + 4;
+        const nx = Math.max(TABLE.left + margin, Math.min(TABLE.right - margin, pos.x));
+        const ny = Math.max(TABLE.top + margin, Math.min(TABLE.bottom - margin, pos.y));
+        // Avoid overlapping other balls
+        const overlap = balls.some(b => b.id !== 0 && !b.pocketed && Math.hypot(nx - b.x, ny - b.y) < TABLE.ballRadius * 2.2);
+        if (!overlap) {
+          cueBall.x = nx;
+          cueBall.y = ny;
+        }
+        return;
+      }
+
+      if (e.buttons === 1) {
+        aimAngle = Math.atan2(pos.y - cueBall.y, pos.x - cueBall.x);
+        updateAngleUI();
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (isDraggingCueBall) {
+        isDraggingCueBall = false;
+        ballInHand = false;
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !isSimulating) {
+        e.preventDefault();
+        executePlayerShot();
+      }
+    });
+
+    // =========================================================================
+    // 7. 物理引擎：出桿、下塞偏轉(Squirt)、推拉桿弧線與顆星順反塞反射
+    // =========================================================================
+    function executePlayerShot() {
+      if (isSimulating) return;
+      const cueBall = balls.find(b => b.id === 0);
+      if (!cueBall || cueBall.pocketed) return;
+
+      isSimulating = true;
+      ballInHand = false;
+      document.getElementById('shootBtn').disabled = true;
+
+      // Reset shot stats & trails
+      shotStats = {
+        firstHitBall: null,
+        cushionHits: 0,
+        pocketedBalls: [],
+        cueScratch: false,
+        spinUsed: { x: spinX, y: spinY }
+      };
+
+      trails = balls.filter(b => !b.pocketed).map(b => ({
+        id: b.id,
+        color: b.id === 0 ? '#ffffff' : b.color,
+        points: [{ x: b.x, y: b.y }]
+      }));
+
+      // Slight squirt/deflection when using strong side english (taught in real pool!)
+      const squirtOffset = -spinX * 0.012;
+      const launchAngle = aimAngle + squirtOffset;
+      const speed = (shotPower / 100) * 16.5;
+
+      cueBall.vx = Math.cos(launchAngle) * speed;
+      cueBall.vy = Math.sin(launchAngle) * speed;
+      cueBall.spinX = spinX;
+      cueBall.spinY = spinY;
+    }
+
+    function stepPhysics() {
+      if (!isSimulating) return;
+
+      const subSteps = 4;
+      for (let s = 0; s < subSteps; s++) {
+        // 1. Move balls
+        for (const b of balls) {
+          if (b.pocketed) continue;
+          b.x += b.vx / subSteps;
+          b.y += b.vy / subSteps;
+
+          // Friction per substep
+          b.vx *= Math.pow(0.986, 1 / subSteps);
+          b.vy *= Math.pow(0.986, 1 / subSteps);
+
+          // Gradual spin decay
+          b.spinX *= Math.pow(0.992, 1 / subSteps);
+          b.spinY *= Math.pow(0.988, 1 / subSteps);
+
+          // 2. Check Pockets
+          for (const p of POCKETS) {
+            if (Math.hypot(b.x - p.x, b.y - p.y) < TABLE.pocketRadius) {
+              b.pocketed = true;
+              b.vx = 0;
+              b.vy = 0;
+              if (b.id === 0) {
+                shotStats.cueScratch = true;
+              } else {
+                shotStats.pocketedBalls.push(b.id);
+                totalPocketedCount++;
+                document.getElementById('pocketCount').textContent = totalPocketedCount;
+              }
+              break;
+            }
+          }
+          if (b.pocketed) continue;
+
+          // 3. Check Cushion (Rail) Collisions with English / Side Spin Throw!
+          const r = TABLE.ballRadius;
+          let hitRail = false;
+
+          // Top rail
+          if (b.y - r < TABLE.top) {
+            b.y = TABLE.top + r;
+            b.vy = -b.vy * 0.84;
+            if (b.id === 0) {
+              // Running / Checking English on Top Rail: +spinX pushes ball to the right (+vx)
+              b.vx += b.spinX * 3.8;
+              b.spinX *= 0.55;
+              shotStats.cushionHits++;
+            }
+            hitRail = true;
+          }
+          // Bottom rail
+          else if (b.y + r > TABLE.bottom) {
+            b.y = TABLE.bottom - r;
+            b.vy = -b.vy * 0.84;
+            if (b.id === 0) {
+              // On Bottom Rail: +spinX pushes ball to the left (-vx)
+              b.vx -= b.spinX * 3.8;
+              b.spinX *= 0.55;
+              shotStats.cushionHits++;
+            }
+            hitRail = true;
+          }
+
+          // Left rail
+          if (b.x - r < TABLE.left) {
+            b.x = TABLE.left + r;
+            b.vx = -b.vx * 0.84;
+            if (b.id === 0) {
+              // On Left Rail: +spinX pushes ball up (-vy)
+              b.vy -= b.spinX * 3.8;
+              b.spinX *= 0.55;
+              shotStats.cushionHits++;
+            }
+            hitRail = true;
+          }
+          // Right rail
+          else if (b.x + r > TABLE.right) {
+            b.x = TABLE.right - r;
+            b.vx = -b.vx * 0.84;
+            if (b.id === 0) {
+              // On Right Rail: +spinX pushes ball down (+vy)
+              b.vy += b.spinX * 3.8;
+              b.spinX *= 0.55;
+              shotStats.cushionHits++;
+            }
+            hitRail = true;
+          }
+        }
+
+        // 4. Ball-to-Ball Collisions (including Follow/Draw spin action!)
+        for (let i = 0; i < balls.length; i++) {
+          for (let j = i + 1; j < balls.length; j++) {
+            const b1 = balls[i];
+            const b2 = balls[j];
+            if (b1.pocketed || b2.pocketed) continue;
+
+            const dx = b2.x - b1.x;
+            const dy = b2.y - b1.y;
+            const dist = Math.hypot(dx, dy);
+            const minDist = TABLE.ballRadius * 2;
+
+            if (dist > 0 && dist < minDist) {
+              // Separate overlapping balls
+              const nx = dx / dist;
+              const ny = dy / dist;
+              const overlap = (minDist - dist) / 2;
+              b1.x -= nx * overlap;
+              b1.y -= ny * overlap;
+              b2.x += nx * overlap;
+              b2.y += ny * overlap;
+
+              // Record first hit ball for cue ball
+              if (b1.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b2.id;
+              if (b2.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b1.id;
+
+              // Pre-collision cue ball speed & direction for follow/draw calculation
+              const cue = b1.id === 0 ? b1 : (b2.id === 0 ? b2 : null);
+              let preSpeed = 0, preDirX = 0, preDirY = 0;
+              if (cue) {
+                preSpeed = Math.hypot(cue.vx, cue.vy);
+                if (preSpeed > 0.1) {
+                  preDirX = cue.vx / preSpeed;
+                  preDirY = cue.vy / preSpeed;
+                }
+              }
+
+              // Elastic impulse along normal
+              const kx = b1.vx - b2.vx;
+              const ky = b1.vy - b2.vy;
+              const p = nx * kx + ny * ky;
+              if (p > 0) {
+                b1.vx -= p * nx * 0.96;
+                b1.vy -= p * ny * 0.96;
+                b2.vx += p * nx * 0.96;
+                b2.vy += p * ny * 0.96;
+
+                // Apply Top Spin (Follow) / Back Spin (Draw) impulse to Cue Ball!
+                if (cue && Math.abs(cue.spinY) > 0.08 && preSpeed > 0.5) {
+                  // Follow pushes along pre-impact direction; Draw pulls backwards along line of centers
+                  const spinForce = cue.spinY * preSpeed * 0.52;
+                  if (cue.spinY > 0) {
+                    cue.vx += preDirX * spinForce;
+                    cue.vy += preDirY * spinForce;
+                  } else {
+                    const sign = cue === b1 ? 1 : -1;
+                    cue.vx += nx * sign * spinForce * 1.15;
+                    cue.vy += ny * sign * spinForce * 1.15;
+                  }
+                  cue.spinY *= 0.25; // Spin transfers into cloth after object ball hit
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Record trail points every frame
+      for (const t of trails) {
+        const b = balls.find(ball => ball.id === t.id);
+        if (b && !b.pocketed) {
+          const last = t.points[t.points.length - 1];
+          if (!last || Math.hypot(b.x - last.x, b.y - last.y) > 4) {
+            t.points.push({ x: b.x, y: b.y });
+          }
+        }
+      }
+
+      // Check if all balls stopped
+      let anyMoving = false;
+      for (const b of balls) {
+        if (b.pocketed) continue;
+        if (Math.hypot(b.vx, b.vy) < 0.08) {
+          b.vx = 0;
+          b.vy = 0;
+        } else {
+          anyMoving = true;
+        }
+      }
+
+      if (!anyMoving) {
+        isSimulating = false;
+        document.getElementById('shootBtn').disabled = false;
+        onShotFinished();
+      }
+    }
+
+    // =========================================================================
+    // 8. 出桿結果分析與過關判定
+    // =========================================================================
+    function onShotFinished() {
+      const cueBall = balls.find(b => b.id === 0);
+
+      // Update Last Shot Summary Box
+      const summaryEl = document.getElementById('lastShotSummary');
+      let spinDesc = '中桿';
+      if (shotStats.spinUsed.y > 0.28) spinDesc = '推桿(高桿)';
+      else if (shotStats.spinUsed.y < -0.28) spinDesc = '拉桿(低桿)';
+      if (shotStats.spinUsed.x < -0.22) spinDesc += ' + 左塞';
+      else if (shotStats.spinUsed.x > 0.22) spinDesc += ' + 右塞';
+
+      summaryEl.innerHTML = `
+        📊 <b>上一桿軌跡分析：</b><br/>
+        • 使用桿法：<b style="color:#38bdf8">${spinDesc}</b><br/>
+        • 第一顆碰到的球：<b>${shotStats.firstHitBall ? shotStats.firstHitBall + ' 號球' : '沒碰到半顆球 (空桿)'}</b><br/>
+        • 母球碰撞顆星次數：<b>${shotStats.cushionHits} 顆星</b><br/>
+        • 進袋球號：<b>${shotStats.pocketedBalls.length > 0 ? shotStats.pocketedBalls.join(', ') + ' 號球' : '無'}</b>
+      `;
+
+      // Handle Cue Ball Scratch (洗袋犯規)
+      if (shotStats.cueScratch) {
+        cueBall.pocketed = false;
+        cueBall.x = 230;
+        cueBall.y = 250;
+        cueBall.vx = 0;
+        cueBall.vy = 0;
+        ballInHand = true;
+        showToast('⚠️ 哎呀！白球掉進球袋（洗袋犯規）！你可以拖曳白球自由擺放喔！');
+        return;
+      }
+
+      // Academy Mode Evaluation
+      if (currentMode === 'academy') {
+        const lvl = ACADEMY_LEVELS[currentLevelIdx];
+        if (lvl.checkWin(shotStats)) {
+          completedLevels.add(currentLevelIdx);
+          renderLevelPills();
+          showToast(`🎉 太棒了！成功通過【${lvl.title}】！獲得 1 顆星星徽章 ⭐`);
+          if (currentLevelIdx < ACADEMY_LEVELS.length - 1) {
+            setTimeout(() => {
+              if (currentMode === 'academy') {
+                loadAcademyLevel(currentLevelIdx + 1);
+              }
+            }, 2200);
+          }
+        } else if (shotStats.pocketedBalls.length > 0) {
+          showToast('👍 進了一顆球！繼續加油完成關卡目標！');
+        } else {
+          showToast('💡 差一點點！可以觀察剛才的軌跡線，或點「重新擺球 / 看教練示範」再試一次！');
+        }
+      }
+      // 9-Ball Mode Evaluation
+      else if (currentMode === 'nineball') {
+        const remainingBefore = balls.filter(b => b.id !== 0 && (!b.pocketed || shotStats.pocketedBalls.includes(b.id))).map(b => b.id).sort((a,b)=>a-b);
+        const lowestBall = remainingBefore[0];
+
+        if (shotStats.firstHitBall !== lowestBall) {
+          ballInHand = true;
+          showToast(`⚠️ 犯規！場上最小號是 ${lowestBall} 號球，但白球先碰到了 ${shotStats.firstHitBall || '空氣'}！獲得自由球（可拖曳白球）`);
+          // If 9 ball was pocketed on a foul, spot it back!
+          if (shotStats.pocketedBalls.includes(9)) {
+            const b9 = balls.find(b => b.id === 9);
+            b9.pocketed = false;
+            b9.x = 650;
+            b9.y = 250;
+          }
+          return;
+        }
+
+        if (shotStats.pocketedBalls.includes(9)) {
+          showToast('🏆 恭喜獲勝！！你合法打進了 9 號致勝球！太神準啦！');
+        } else if (shotStats.pocketedBalls.length > 0) {
+          showToast(`🎯 好球！成功打進 ${shotStats.pocketedBalls.join(', ')} 號球！繼續瞄準下一顆最小號碼球！`);
+        }
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('shotToast');
+      el.textContent = msg;
+      el.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 3600);
+    }
+
+    // =========================================================================
+    // 9. 繪圖引擎：球桌、鑽石點、假想球預測、顆星反射預測、實際軌跡
+    // =========================================================================
+    function renderTable() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1. Outer Wood Frame
+      const woodGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      woodGrad.addColorStop(0, '#5c2408');
+      woodGrad.addColorStop(0.5, '#3b1504');
+      woodGrad.addColorStop(1, '#4a1c06');
+      ctx.fillStyle = woodGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Cushion Rubber Border
+      ctx.fillStyle = '#0f766e';
+      ctx.fillRect(TABLE.left - 14, TABLE.top - 14, TABLE.width + 28, TABLE.height + 28);
+
+      // Playing Cloth Surface
+      const clothGrad = ctx.createRadialGradient(
+        canvas.width / 2, canvas.height / 2, 50,
+        canvas.width / 2, canvas.height / 2, 520
+      );
+      clothGrad.addColorStop(0, '#0d9488');
+      clothGrad.addColorStop(1, '#0f766e');
+      ctx.fillStyle = clothGrad;
+      ctx.fillRect(TABLE.left, TABLE.top, TABLE.width, TABLE.height);
+
+      // Head string line (發球線) & Foot spot (腳點)
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(TABLE.left + TABLE.width * 0.25, TABLE.top);
+      ctx.lineTo(TABLE.left + TABLE.width * 0.25, TABLE.bottom);
+      ctx.stroke();
+
+      // 2. Diamond Sights (鑽石刻度 1~7 on long rails, 1~3 on short rails)
+      if (aids.diamonds) {
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+
+        for (let i = 1; i <= 7; i++) {
+          if (i === 4) continue; // Middle pocket
+          const dx = TABLE.left + (TABLE.width / 8) * i;
+          // Top diamonds
+          drawDiamondMark(dx, TABLE.top - 28);
+          ctx.fillText(i.toString(), dx, TABLE.top - 35);
+          // Bottom diamonds
+          drawDiamondMark(dx, TABLE.bottom + 28);
+          ctx.fillText(i.toString(), dx, TABLE.bottom + 43);
+        }
+
+        for (let j = 1; j <= 3; j++) {
+          const dy = TABLE.top + (TABLE.height / 4) * j;
+          // Left diamonds
+          drawDiamondMark(TABLE.left - 28, dy);
+          ctx.fillText(j.toString(), TABLE.left - 42, dy + 4);
+          // Right diamonds
+          drawDiamondMark(TABLE.right + 28, dy);
+          ctx.fillText(j.toString(), TABLE.right + 42, dy + 4);
+        }
+      }
+
+      // 3. Draw 6 Pockets
+      POCKETS.forEach((p, idx) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, TABLE.pocketRadius, 0, Math.PI * 2);
+        ctx.fillStyle = '#090d16';
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#1e293b';
+        ctx.stroke();
+
+        // Highlight target pocket pulse
+        if (idx === targetPocketIndex) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, TABLE.pocketRadius + 6, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(250, 204, 21, 0.7)';
+          ctx.lineWidth = 2.5;
+          ctx.setLineDash([5, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      });
+
+      // 4. Draw Actual Recorded Trails of Previous Shot
+      if (aids.trail && trails.length > 0) {
+        for (const t of trails) {
+          if (t.points.length < 2) continue;
+          ctx.beginPath();
+          ctx.moveTo(t.points[0].x, t.points[0].y);
+          for (let i = 1; i < t.points.length; i++) {
+            ctx.lineTo(t.points[i].x, t.points[i].y);
+          }
+          ctx.strokeStyle = t.id === 0 ? 'rgba(255, 255, 255, 0.55)' : hexToRgba(t.color, 0.65);
+          ctx.lineWidth = t.id === 0 ? 3 : 2.5;
+          ctx.setLineDash([6, 5]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      // 5. Highlight Minimum Ball in 9-Ball Mode
+      if (currentMode === 'nineball' && !isSimulating) {
+        const objBalls = balls.filter(b => b.id !== 0 && !b.pocketed).sort((a, b) => a.id - b.id);
+        if (objBalls.length > 0) {
+          const minBall = objBalls[0];
+          ctx.beginPath();
+          ctx.arc(minBall.x, minBall.y, TABLE.ballRadius + 7, 0, Math.PI * 2);
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 3]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      // 6. Aiming Prediction Raycast (Ghost Ball, Object Ball Line, Cushion Reflection + English Curve)
+      const cueBall = balls.find(b => b.id === 0);
+      if (cueBall && !cueBall.pocketed && !isSimulating) {
+        drawAimingAndScienceAids(cueBall);
+      }
+
+      // 7. Draw All Balls
+      for (const b of balls) {
+        if (b.pocketed) continue;
+        drawPoolBall(b);
+      }
+
+      // 8. Draw Cue Stick when aiming
+      if (cueBall && !cueBall.pocketed && !isSimulating) {
+        drawCueStick(cueBall);
+      }
+    }
+
+    function drawDiamondMark(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.beginPath();
+      ctx.moveTo(0, -5);
+      ctx.lineTo(5, 0);
+      ctx.lineTo(0, 5);
+      ctx.lineTo(-5, 0);
+      ctx.closePath();
+      ctx.fillStyle = '#fde047';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawAimingAndScienceAids(cueBall) {
+      const r = TABLE.ballRadius;
+      const dirX = Math.cos(aimAngle);
+      const dirY = Math.sin(aimAngle);
+
+      // Raycast from cueBall along aimAngle to find first hit (either another ball or cushion)
+      let hitType = null; // 'ball' or 'rail'
+      let hitDist = 2000;
+      let hitBall = null;
+      let ghostX = 0, ghostY = 0;
+
+      // Check intersection with all active object balls (circle-circle sweep of radius 2r)
+      for (const b of balls) {
+        if (b.id === 0 || b.pocketed) continue;
+        const ocX = b.x - cueBall.x;
+        const ocY = b.y - cueBall.y;
+        const proj = ocX * dirX + ocY * dirY;
+        if (proj <= 0) continue;
+
+        const perpSq = (ocX * ocX + ocY * ocY) - proj * proj;
+        const collideRadiusSq = (2 * r) * (2 * r);
+        if (perpSq < collideRadiusSq) {
+          const offset = Math.sqrt(collideRadiusSq - perpSq);
+          const dist = proj - offset;
+          if (dist > 0 && dist < hitDist) {
+            hitDist = dist;
+            hitType = 'ball';
+            hitBall = b;
+            ghostX = cueBall.x + dirX * dist;
+            ghostY = cueBall.y + dirY * dist;
+          }
+        }
+      }
+
+      // Check intersection with 4 cushions
+      const railHits = [];
+      if (dirX > 0.0001) railHits.push({ d: (TABLE.right - r - cueBall.x) / dirX, side: 'right' });
+      if (dirX < -0.0001) railHits.push({ d: (TABLE.left + r - cueBall.x) / dirX, side: 'left' });
+      if (dirY > 0.0001) railHits.push({ d: (TABLE.bottom - r - cueBall.y) / dirY, side: 'bottom' });
+      if (dirY < -0.0001) railHits.push({ d: (TABLE.top + r - cueBall.y) / dirY, side: 'top' });
+
+      let hitRailSide = null;
+      for (const rh of railHits) {
+        if (rh.d > 0 && rh.d < hitDist) {
+          hitDist = rh.d;
+          hitType = 'rail';
+          hitRailSide = rh.side;
+          ghostX = cueBall.x + dirX * rh.d;
+          ghostY = cueBall.y + dirY * rh.d;
+        }
+      }
+
+      // Draw primary aiming line from cueBall to ghost contact point
+      ctx.beginPath();
+      ctx.moveTo(cueBall.x, cueBall.y);
+      ctx.lineTo(ghostX, ghostY);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.lineWidth = 2.2;
+      ctx.setLineDash([7, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Case A: Hits an Object Ball -> Show Ghost Ball + Object Ball Line + Cue Ball Follow/Draw/Tangent Line
+      if (hitType === 'ball' && hitBall && aids.ghost) {
+        // 1. Ghost Ball Circle
+        ctx.beginPath();
+        ctx.arc(ghostX, ghostY, r, 0, Math.PI * 2);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([4, 3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
+        ctx.fill();
+
+        // 2. Object Ball Target Line (Yellow arrow)
+        const obDirX = (hitBall.x - ghostX) / (2 * r);
+        const obDirY = (hitBall.y - ghostY) / (2 * r);
+        ctx.beginPath();
+        ctx.moveTo(hitBall.x, hitBall.y);
+        ctx.lineTo(hitBall.x + obDirX * 190, hitBall.y + obDirY * 190);
+        ctx.strokeStyle = '#fde047';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // 3. Cue Ball Post-Impact Deflection + Follow/Draw Preview (Cyan line)
+        // Tangent direction
+        const dot = dirX * obDirX + dirY * obDirY;
+        let tanX = dirX - dot * obDirX;
+        let tanY = dirY - dot * obDirY;
+        const tanLen = Math.hypot(tanX, tanY);
+        if (tanLen > 0.01) {
+          tanX /= tanLen;
+          tanY /= tanLen;
+        }
+        // Blend tangent with follow (+dir) or draw (-obDir)
+        const cbPostX = tanX * 70 + (spinY > 0 ? dirX * spinY * 95 : -obDirX * (-spinY) * 95);
+        const cbPostY = tanY * 70 + (spinY > 0 ? dirY * spinY * 95 : -obDirY * (-spinY) * 95);
+
+        ctx.beginPath();
+        ctx.moveTo(ghostX, ghostY);
+        ctx.quadraticCurveTo(
+          ghostX + tanX * 35,
+          ghostY + tanY * 35,
+          ghostX + cbPostX,
+          ghostY + cbPostY
+        );
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      }
+
+      // Case B: Hits a Cushion Rail first -> Show Mirror Reflection vs Side Spin (English) Reflection!
+      if (hitType === 'rail' && aids.bounce) {
+        ctx.beginPath();
+        ctx.arc(ghostX, ghostY, r * 0.7, 0, Math.PI * 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fill();
+
+        // Compute natural mirror reflection vector
+        let refX = dirX;
+        let refY = dirY;
+        if (hitRailSide === 'top' || hitRailSide === 'bottom') refY = -refY;
+        if (hitRailSide === 'left' || hitRailSide === 'right') refX = -refX;
+
+        // If side spin is applied, show faded natural reflection for comparison
+        if (Math.abs(spinX) > 0.15) {
+          ctx.beginPath();
+          ctx.moveTo(ghostX, ghostY);
+          ctx.lineTo(ghostX + refX * 160, ghostY + refY * 160);
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Compute English-modified reflection vector (matching physics engine!)
+        let spinRefX = refX * 0.84;
+        let spinRefY = refY * 0.84;
+        const englishShift = (spinX * 3.8) / ((shotPower / 100) * 16.5 + 0.1);
+
+        if (hitRailSide === 'top') spinRefX += englishShift;
+        else if (hitRailSide === 'bottom') spinRefX -= englishShift;
+        else if (hitRailSide === 'left') spinRefY -= englishShift;
+        else if (hitRailSide === 'right') spinRefY += englishShift;
+
+        const norm = Math.hypot(spinRefX, spinRefY) || 1;
+        spinRefX /= norm;
+        spinRefY /= norm;
+
+        ctx.beginPath();
+        ctx.moveTo(ghostX, ghostY);
+        ctx.lineTo(ghostX + spinRefX * 260, ghostY + spinRefY * 260);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+    }
+
+    function drawPoolBall(b) {
+      const r = TABLE.ballRadius;
+      ctx.save();
+
+      // Drop shadow
+      ctx.beginPath();
+      ctx.arc(b.x + 2, b.y + 3, r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
+      ctx.fill();
+
+      // Base sphere
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = b.isStripe ? '#ffffff' : b.color;
+      ctx.fill();
+
+      // Stripe band for 9-ball
+      if (b.isStripe) {
+        ctx.save();
+        ctx.clip();
+        ctx.fillStyle = b.color;
+        ctx.fillRect(b.x - r, b.y - r * 0.55, r * 2, r * 1.1);
+        ctx.restore();
+      }
+
+      // Cue ball red spin dot indicator
+      if (b.id === 0) {
+        const dotX = b.x + (isSimulating ? b.spinX : spinX) * (r * 0.55);
+        const dotY = b.y - (isSimulating ? b.spinY : spinY) * (r * 0.55);
+        ctx.beginPath();
+        ctx.arc(dotX, dotY, 3.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+      } else {
+        // Number circle
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, r * 0.48, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+        ctx.fill();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(b.id.toString(), b.x, b.y + 0.5);
+      }
+
+      // Gloss highlight
+      ctx.beginPath();
+      ctx.arc(b.x - r * 0.32, b.y - r * 0.32, r * 0.28, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawCueStick(cueBall) {
+      ctx.save();
+      ctx.translate(cueBall.x, cueBall.y);
+      ctx.rotate(aimAngle + Math.PI);
+
+      // Pull back distance proportional to power
+      const pullBack = 18 + (shotPower / 100) * 38;
+      const stickLen = 220;
+
+      // Cue tip (blue chalk)
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(pullBack, -3, 6, 6);
+
+      // Ferrule (white)
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(pullBack + 6, -3, 8, 6);
+
+      // Maple shaft
+      ctx.fillStyle = '#fde68a';
+      ctx.beginPath();
+      ctx.moveTo(pullBack + 14, -3);
+      ctx.lineTo(pullBack + 120, -4.8);
+      ctx.lineTo(pullBack + 120, 4.8);
+      ctx.lineTo(pullBack + 14, 3);
+      ctx.closePath();
+      ctx.fill();
+
+      // Butt handle
+      ctx.fillStyle = '#7c2d12';
+      ctx.beginPath();
+      ctx.moveTo(pullBack + 120, -4.8);
+      ctx.lineTo(pullBack + stickLen, -6.5);
+      ctx.lineTo(pullBack + stickLen, 6.5);
+      ctx.lineTo(pullBack + 120, 4.8);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function hexToRgba(hex, alpha) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const r = (num >> 16) & 255;
+      const g = (num >> 8) & 255;
+      const b = num & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    // =========================================================================
+    // 10. 百科全書開關與主迴圈啟動
+    // =========================================================================
+    function openEncyclopedia() {
+      document.getElementById('encyclopediaModal').classList.add('open');
+    }
+
+    function closeEncyclopedia() {
+      document.getElementById('encyclopediaModal').classList.remove('open');
+    }
+
+    function gameLoop() {
+      stepPhysics();
+      renderTable();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Initialize everything on load
+    drawSpinPad();
+    switchMode('academy');
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
