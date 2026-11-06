@@ -785,13 +785,23 @@
         <div class="power-row">
           <div class="slider-label">
             <span>出桿力道 (Power)</span>
-            <span id="powerValueText" style="color:#fb923c;">55% (適中)</span>
+            <span id="powerValueText" style="color:#fb923c;">50% (適中)</span>
           </div>
-          <input type="range" id="powerSlider" min="15" max="100" value="55" oninput="updatePowerUI()" />
+          <input type="range" id="powerSlider" min="10" max="100" value="50" oninput="updatePowerUI()" />
 
-          <div style="display:flex; gap:6px; margin-top:4px;">
-            <button class="preset-btn" style="flex:1;" onclick="nudgeAngle(-0.5)">↺ 微調左轉 0.5°</button>
-            <button class="preset-btn" style="flex:1;" onclick="nudgeAngle(0.5)">↻ 微調右轉 0.5°</button>
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:6px;">
+            <!-- Fine Angle Adjustments -->
+            <div style="display:flex; gap:4px;">
+              <button class="preset-btn" style="flex:1; padding:6px 4px; font-size:0.75rem;" onclick="nudgeAngle(-0.1)">↶ 超細 -0.1°</button>
+              <button class="preset-btn" style="flex:1; padding:6px 4px; font-size:0.75rem;" onclick="nudgeAngle(-0.5)">↺ 微調 -0.5°</button>
+              <button class="preset-btn" style="flex:1; padding:6px 4px; font-size:0.75rem;" onclick="nudgeAngle(0.5)">↻ 微調 +0.5°</button>
+              <button class="preset-btn" style="flex:1; padding:6px 4px; font-size:0.75rem;" onclick="nudgeAngle(0.1)">↷ 超細 +0.1°</button>
+            </div>
+            <!-- Quick Angle Steps -->
+            <div style="display:flex; gap:4px;">
+              <button class="preset-btn" style="flex:1; padding:5px 4px; font-size:0.74rem;" onclick="nudgeAngle(-2.0)">⏮ -2.0°</button>
+              <button class="preset-btn" style="flex:1; padding:5px 4px; font-size:0.74rem;" onclick="nudgeAngle(2.0)">⏭ +2.0°</button>
+            </div>
           </div>
 
           <button class="shoot-btn" id="shootBtn" onclick="executePlayerShot()">
@@ -988,13 +998,13 @@
             createBall(1, 580, 320)
           ];
           setSpinPreset(0, 0);
-          shotPower = 50;
+          shotPower = 40;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
         },
         demo: () => {
           setSpinPreset(0, 0);
-          shotPower = 52;
+          shotPower = 42;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
         },
@@ -1011,13 +1021,13 @@
             createBall(2, 620, 220)
           ];
           setSpinPreset(0, 0);
-          shotPower = 55;
+          shotPower = 45;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[2]);
         },
         demo: () => {
           setSpinPreset(0, 0);
-          shotPower = 55;
+          shotPower = 45;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[2]);
         },
@@ -1034,13 +1044,13 @@
             createBall(3, 660, 375)
           ];
           setSpinPreset(0, -0.82);
-          shotPower = 65;
+          shotPower = 52;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
         },
         demo: () => {
           setSpinPreset(0, -0.82);
-          shotPower = 68;
+          shotPower = 52;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
         },
@@ -1058,13 +1068,13 @@
             createBall(8, 460, 330)
           ];
           setSpinPreset(0, 0);
-          shotPower = 72;
+          shotPower = 58;
           updatePowerSlider();
           aimAngle = -0.785;
         },
         demo: () => {
           setSpinPreset(0, 0);
-          shotPower = 74;
+          shotPower = 60;
           updatePowerSlider();
           const pocket = POCKETS[5];
           const b4 = balls.find(b => b.id === 4);
@@ -1090,13 +1100,13 @@
             createBall(5, 760, 145)
           ];
           setSpinPreset(0.82, 0.2);
-          shotPower = 68;
+          shotPower = 56;
           updatePowerSlider();
           aimAngle = -1.33;
         },
         demo: () => {
           setSpinPreset(0.85, 0.25);
-          shotPower = 70;
+          shotPower = 58;
           updatePowerSlider();
           aimAngle = -1.31;
         },
@@ -1114,7 +1124,7 @@
             createBall(9, 680, 330)
           ];
           setSpinPreset(0, -0.35);
-          shotPower = 52;
+          shotPower = 44;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[1]);
         },
@@ -1123,12 +1133,12 @@
           const b9 = balls.find(b => b.id === 9 && !b.pocketed);
           if (b1) {
             setSpinPreset(0, -0.35);
-            shotPower = 52;
+            shotPower = 44;
             updatePowerSlider();
             aimAtGhostBall(balls[0], b1, POCKETS[1]);
           } else if (b9) {
             setSpinPreset(0, 0);
-            shotPower = 58;
+            shotPower = 48;
             updatePowerSlider();
             aimAtGhostBall(balls[0], b9, POCKETS[5]);
           }
@@ -1555,8 +1565,10 @@
     function updatePowerUI() {
       shotPower = Number(document.getElementById('powerSlider').value);
       let label = '適中';
-      if (shotPower < 35) label = '輕柔';
-      else if (shotPower > 75) label = '強力';
+      if (shotPower < 30) label = '輕柔推球';
+      else if (shotPower <= 65) label = '標準中力';
+      else if (shotPower <= 85) label = '強力衝刺';
+      else label = '⚡ 狂暴開球 (多顆星奔馳)';
       document.getElementById('powerValueText').textContent = `${shotPower}% (${label})`;
     }
 
@@ -1571,8 +1583,9 @@
     }
 
     function updateAngleUI() {
-      let deg = Math.round(((aimAngle * 180) / Math.PI + 360) % 360);
-      document.getElementById('angleReadout').textContent = `角度: ${deg}°`;
+      let deg = ((aimAngle * 180) / Math.PI) % 360;
+      if (deg < 0) deg += 360;
+      document.getElementById('angleReadout').textContent = `角度: ${deg.toFixed(1)}°`;
     }
 
     function toggleAid(key) {
@@ -1679,7 +1692,8 @@
 
       const squirtOffset = -spinX * 0.012;
       const launchAngle = aimAngle + squirtOffset;
-      const speed = (shotPower / 100) * 16.5;
+      // Enhanced dynamic shot speed for realistic table travel & powerful cushion rebounds
+      const speed = (shotPower / 100) * 29.5;
 
       cueBall.vx = Math.cos(launchAngle) * speed;
       cueBall.vy = Math.sin(launchAngle) * speed;
@@ -1698,10 +1712,11 @@
           b.x += b.vx / subSteps;
           b.y += b.vy / subSteps;
 
-          b.vx *= Math.pow(0.986, 1 / subSteps);
-          b.vy *= Math.pow(0.986, 1 / subSteps);
-          b.spinX *= Math.pow(0.992, 1 / subSteps);
-          b.spinY *= Math.pow(0.988, 1 / subSteps);
+          // Natural cloth rolling friction (approx 0.993 per sub-step gives smooth 3~5 cushion travel on full power)
+          b.vx *= Math.pow(0.993, 1 / subSteps);
+          b.vy *= Math.pow(0.993, 1 / subSteps);
+          b.spinX *= Math.pow(0.995, 1 / subSteps);
+          b.spinY *= Math.pow(0.993, 1 / subSteps);
 
           // 2. Check Pockets
           for (const p of POCKETS) {
@@ -1721,40 +1736,40 @@
           }
           if (b.pocketed) continue;
 
-          // 3. Check Cushion Collisions with English
+          // 3. Check Cushion Collisions with English (High-rebound rubber cushion: 0.90)
           const r = TABLE.ballRadius;
           if (b.y - r < TABLE.top) {
             b.y = TABLE.top + r;
-            b.vy = -b.vy * 0.84;
+            b.vy = -b.vy * 0.90;
             if (b.id === 0) {
-              b.vx += b.spinX * 3.8;
-              b.spinX *= 0.55;
+              b.vx += b.spinX * 4.6;
+              b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           } else if (b.y + r > TABLE.bottom) {
             b.y = TABLE.bottom - r;
-            b.vy = -b.vy * 0.84;
+            b.vy = -b.vy * 0.90;
             if (b.id === 0) {
-              b.vx -= b.spinX * 3.8;
-              b.spinX *= 0.55;
+              b.vx -= b.spinX * 4.6;
+              b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           }
 
           if (b.x - r < TABLE.left) {
             b.x = TABLE.left + r;
-            b.vx = -b.vx * 0.84;
+            b.vx = -b.vx * 0.90;
             if (b.id === 0) {
-              b.vy -= b.spinX * 3.8;
-              b.spinX *= 0.55;
+              b.vy -= b.spinX * 4.6;
+              b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           } else if (b.x + r > TABLE.right) {
             b.x = TABLE.right - r;
-            b.vx = -b.vx * 0.84;
+            b.vx = -b.vx * 0.90;
             if (b.id === 0) {
-              b.vy += b.spinX * 3.8;
-              b.spinX *= 0.55;
+              b.vy += b.spinX * 4.6;
+              b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           }
@@ -1798,10 +1813,10 @@
               const ky = b1.vy - b2.vy;
               const p = nx * kx + ny * ky;
               if (p > 0) {
-                b1.vx -= p * nx * 0.96;
-                b1.vy -= p * ny * 0.96;
-                b2.vx += p * nx * 0.96;
-                b2.vy += p * ny * 0.96;
+                b1.vx -= p * nx * 0.97;
+                b1.vy -= p * ny * 0.97;
+                b2.vx += p * nx * 0.97;
+                b2.vy += p * ny * 0.97;
 
                 if (cue && Math.abs(cue.spinY) > 0.08 && preSpeed > 0.5) {
                   const spinForce = cue.spinY * preSpeed * 0.52;
