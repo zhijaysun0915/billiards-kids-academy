@@ -1080,8 +1080,7 @@
     const spinCanvas = document.getElementById('spinPadCanvas');
     const spinCtx = spinCanvas.getContext('2d');
 
-    // Realistic Pool Table Geometry & Pocket Openings
-    // TABLE defines the active ball bounce boundary (rubber cushions).
+    // Standard table geometry: 800x400 playing field inside 920x500 canvas
     const TABLE = {
       left: 60,
       top: 50,
@@ -1090,19 +1089,21 @@
       width: 800,
       height: 400,
       ballRadius: 13.5,
-      pocketRadius: 32, // Enhanced catch radius so well-aimed cut shots easily drop in!
-      pocketFunnelRadius: 42, // Gravitational funnel radius drawing balls smoothly into hole
-      pocketHoleRadius: 28 // Visual dark hole radius
+      pocketRadius: 32, // Catch threshold for balls dropping in
+      pocketFunnelRadius: 44, // Smooth pocket entry guide
+      pocketHoleRadius: 26
     };
 
-    // Realistic pocket placements recessed into corner castings & side rail notches
+    // Pockets:
+    // Corner pockets (0, 2, 3, 5): 45-degree angle pocket mouth
+    // Side pockets (1, 4): Authentic straight-cut side pockets recessed into rail border
     const POCKETS = [
-      { x: TABLE.left - 6, y: TABLE.top - 6, name: '左上底袋' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 12, name: '上中袋' },
-      { x: TABLE.right + 6, y: TABLE.top - 6, name: '右上底袋' },
-      { x: TABLE.left - 6, y: TABLE.bottom + 6, name: '左下底袋' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 12, name: '下中袋' },
-      { x: TABLE.right + 6, y: TABLE.bottom + 6, name: '右下底袋' }
+      { x: TABLE.left - 5, y: TABLE.top - 5, name: '左上底袋', type: 'corner', side: 'top-left' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 6, name: '上中袋', type: 'side', side: 'top' },
+      { x: TABLE.right + 5, y: TABLE.top - 5, name: '右上底袋', type: 'corner', side: 'top-right' },
+      { x: TABLE.left - 5, y: TABLE.bottom + 5, name: '左下底袋', type: 'corner', side: 'bottom-left' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 6, name: '下中袋', type: 'side', side: 'bottom' },
+      { x: TABLE.right + 5, y: TABLE.bottom + 5, name: '右下底袋', type: 'corner', side: 'bottom-right' }
     ];
 
     // Sound System (Authentic Multi-Layer Web Audio Synthesizer for Billiards)
@@ -1568,6 +1569,13 @@
 
     function switchMode(mode) {
       currentMode = mode;
+      isSimulating = false;
+      const sBtn = document.getElementById('shootBtn');
+      if (sBtn) {
+        sBtn.disabled = false;
+        sBtn.removeAttribute('disabled');
+      }
+
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       const activeTab = document.getElementById('tab-' + mode);
       if (activeTab) activeTab.classList.add('active');
@@ -2242,10 +2250,13 @@
         }
       }
 
+      // Check if all balls stopped moving
       let anyMoving = false;
       for (const b of balls) {
         if (b.pocketed) continue;
-        if (Math.hypot(b.vx, b.vy) < 0.08) {
+        const spd = Math.hypot(b.vx, b.vy);
+        // Clean snap to stop below threshold so simulation never hangs
+        if (spd < 0.14) {
           b.vx = 0;
           b.vy = 0;
         } else {
@@ -2256,7 +2267,10 @@
       if (!anyMoving) {
         isSimulating = false;
         const sBtn = document.getElementById('shootBtn');
-        if (sBtn) sBtn.disabled = false;
+        if (sBtn) {
+          sBtn.disabled = false;
+          sBtn.removeAttribute('disabled');
+        }
         onShotFinished();
       }
     }
@@ -2572,28 +2586,61 @@
         }
       }
 
-      // 3. Draw 6 Pockets (Recessed deeply into cushions & corner castings)
+      // 3. Draw 6 Realistic Pockets (Corner angled pockets + Straight-cut horizontal side pockets)
       POCKETS.forEach((p, idx) => {
-        // Outer metallic casting rim
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 6, 0, Math.PI * 2);
-        ctx.fillStyle = '#1e293b';
-        ctx.fill();
+        ctx.save();
+        if (p.type === 'side') {
+          // Authentic Side Pocket: Cuts cleanly into cushion border, cloth runs straight horizontally
+          const isTop = p.side === 'top';
+          const pocketWidth = 42;
+          const pocketDepth = 24;
+          const py = isTop ? TABLE.top - pocketDepth : TABLE.bottom;
 
-        // Leather/rubber pocket liner
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 2, 0, Math.PI * 2);
-        ctx.fillStyle = '#0f172a';
-        ctx.fill();
+          // Metal casting bracket
+          ctx.fillStyle = '#1e293b';
+          ctx.beginPath();
+          if (isTop) {
+            ctx.roundRect(p.x - pocketWidth / 2 - 3, py - 4, pocketWidth + 6, pocketDepth + 4, [10, 10, 0, 0]);
+          } else {
+            ctx.roundRect(p.x - pocketWidth / 2 - 3, py, pocketWidth + 6, pocketDepth + 4, [0, 0, 10, 10]);
+          }
+          ctx.fill();
 
-        // Inner drop pocket hole
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, TABLE.pocketHoleRadius, 0, Math.PI * 2);
-        ctx.fillStyle = '#020617';
-        ctx.fill();
-        ctx.lineWidth = 2.5;
-        ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#334155';
-        ctx.stroke();
+          // Pocket drop hole (cut straight at the cloth cushion edge)
+          ctx.fillStyle = '#020617';
+          ctx.beginPath();
+          if (isTop) {
+            ctx.roundRect(p.x - pocketWidth / 2, py, pocketWidth, pocketDepth, [8, 8, 0, 0]);
+          } else {
+            ctx.roundRect(p.x - pocketWidth / 2, py, pocketWidth, pocketDepth, [0, 0, 8, 8]);
+          }
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#334155';
+          ctx.stroke();
+
+          // Green cloth boundary straight horizontal cut line
+          ctx.strokeStyle = '#0f766e';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(p.x - pocketWidth / 2, isTop ? TABLE.top : TABLE.bottom);
+          ctx.lineTo(p.x + pocketWidth / 2, isTop ? TABLE.top : TABLE.bottom);
+          ctx.stroke();
+        } else {
+          // Corner Angled Pocket
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 6, 0, Math.PI * 2);
+          ctx.fillStyle = '#1e293b';
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, TABLE.pocketHoleRadius, 0, Math.PI * 2);
+          ctx.fillStyle = '#020617';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#334155';
+          ctx.stroke();
+        }
 
         // Target pocket highlight glow
         if (idx === targetPocketIndex) {
@@ -2605,6 +2652,7 @@
           ctx.stroke();
           ctx.setLineDash([]);
         }
+        ctx.restore();
       });
 
       // 4. Actual Recorded Trails
