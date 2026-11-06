@@ -426,42 +426,61 @@
       color: #86efac;
     }
 
-    /* Mobile / Tablet On-Canvas Quick Shoot Button */
-    .mobile-canvas-shoot-btn {
-      position: absolute;
-      right: 14px;
-      bottom: 14px;
-      background: linear-gradient(135deg, #f97316, #ea580c);
-      color: white;
-      border: 2px solid #fdba74;
-      border-radius: 999px;
-      padding: 8px 18px;
-      font-size: 0.95rem;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 10px rgba(249, 115, 22, 0.4);
-      z-index: 6;
+    /* Table Direct Controls (Right Below Pool Table) */
+    .table-direct-controls {
+      width: 100%;
+      max-width: 920px;
+      background: var(--bg-panel);
+      border: 2px solid #38bdf8;
+      border-radius: 18px;
+      padding: 14px 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .quick-shot-action-bar {
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
     }
 
-    .mobile-canvas-shoot-btn:hover:not(:disabled) {
-      transform: scale(1.05);
-      filter: brightness(1.1);
+    .angle-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      flex: 1;
     }
 
-    .mobile-canvas-shoot-btn:active:not(:disabled) {
-      transform: scale(0.95);
+    .angle-btn-group .preset-btn {
+      padding: 8px 10px;
+      font-size: 0.82rem;
+      flex: 1;
+      min-width: 52px;
     }
 
-    .mobile-canvas-shoot-btn:disabled {
-      background: #475569;
-      border-color: #64748b;
-      cursor: not-allowed;
-      opacity: 0.6;
-      box-shadow: none;
+    .shoot-btn.direct-shoot {
+      margin-top: 0;
+      width: auto;
+      min-width: 200px;
+      padding: 12px 24px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 900px) {
+      .quick-shot-action-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .angle-btn-group {
+        width: 100%;
+      }
+      .shoot-btn.direct-shoot {
+        width: 100%;
+        min-width: unset;
+      }
     }
 
     /* Fixed Bottom Action Bar for Small Screens (Phones) */
@@ -528,7 +547,7 @@
         flex-shrink: 0;
       }
       .main-container {
-        padding: 8px 10px 85px 10px; /* leave room for mobile dock */
+        padding: 8px 10px 24px 10px; /* clean layout without clutter */
         gap: 12px;
       }
       .coach-banner {
@@ -547,7 +566,7 @@
         justify-content: flex-end;
       }
       .mobile-bottom-dock {
-        display: flex;
+        display: none !important; /* completely disabled to prevent blocking cards and text */
       }
       .control-sidebar {
         gap: 10px;
@@ -866,13 +885,39 @@
           <span id="turnPlayerText">輪到 玩家 1 出桿</span>
         </div>
 
-        <!-- On-table Floating Shoot Button for Mobile / Tablet / Single Click -->
-        <button class="mobile-canvas-shoot-btn" id="mobileCanvasShootBtn" onclick="executePlayerShot()" title="點擊擊球（等同空白鍵）">
-          <span style="font-size:1.15rem;">🚀</span>
-          <span>出桿</span>
-        </button>
-
         <canvas id="poolCanvas" width="920" height="500"></canvas>
+      </div>
+
+      <!-- Compact Quick Shot Controls directly below Pool Table (出桿力道與角度微調移至球桌正下方) -->
+      <div class="table-direct-controls">
+        <div class="power-row">
+          <div class="slider-label">
+            <span style="display:flex; align-items:center; gap:6px;">
+              <span>💪 出桿力道 (Power)：</span>
+              <span id="powerValueText" style="color:#fb923c;">50% (適中)</span>
+            </span>
+            <span id="angleReadout" style="font-size:0.9rem; color:#fde047; font-weight:800;">角度: 0.0°</span>
+          </div>
+          <input type="range" id="powerSlider" min="10" max="100" value="50" oninput="updatePowerUI()" />
+
+          <div class="quick-shot-action-bar">
+            <!-- Angle Nudge Buttons -->
+            <div class="angle-btn-group">
+              <button class="preset-btn" onclick="nudgeAngle(-2.0)">⏮ -2°</button>
+              <button class="preset-btn" onclick="nudgeAngle(-0.5)">↺ -0.5°</button>
+              <button class="preset-btn" onclick="nudgeAngle(-0.1)">↶ -0.1°</button>
+              <button class="preset-btn" onclick="nudgeAngle(0.1)">↷ +0.1°</button>
+              <button class="preset-btn" onclick="nudgeAngle(0.5)">↻ +0.5°</button>
+              <button class="preset-btn" onclick="nudgeAngle(2.0)">⏭ +2°</button>
+            </div>
+
+            <!-- Main Shoot Button (等同空白鍵) -->
+            <button class="shoot-btn direct-shoot" id="shootBtn" onclick="executePlayerShot()">
+              <span style="font-size:1.25rem;">🚀</span>
+              <span>出桿擊球！(空白鍵)</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Visual Aid Toggles -->
@@ -921,40 +966,7 @@
         </div>
       </div>
 
-      <!-- Power & Shoot Button Card -->
-      <div class="panel-card">
-        <div class="panel-title">
-          <span>💪 出桿力道與角度微調</span>
-          <span id="angleReadout" style="font-size:0.82rem; color:#fde047;">角度: 0°</span>
-        </div>
 
-        <div class="power-row">
-          <div class="slider-label">
-            <span>出桿力道 (Power)</span>
-            <span id="powerValueText" style="color:#fb923c;">50% (適中)</span>
-          </div>
-          <input type="range" id="powerSlider" min="10" max="100" value="50" oninput="updatePowerUI()" />
-
-          <div style="display:flex; flex-direction:column; gap:6px; margin-top:6px;">
-            <!-- Fine Angle Adjustments -->
-            <div style="display:flex; gap:4px;">
-              <button class="preset-btn" style="flex:1; padding:6px 4px; font-size:0.75rem;" onclick="nudgeAngle(-0.1)">↶ 超細 -0.1°</button>
-              <button class="preset-btn" style="flex:1; padding:6px 4px; font-size:0.75rem;" onclick="nudgeAngle(-0.5)">↺ 微調 -0.5°</button>
-              <button class="preset-btn" style="flex:1; padding:6px 4px; font-size:0.75rem;" onclick="nudgeAngle(0.5)">↻ 微調 +0.5°</button>
-              <button class="preset-btn" style="flex:1; padding:6px 4px; font-size:0.75rem;" onclick="nudgeAngle(0.1)">↷ 超細 +0.1°</button>
-            </div>
-            <!-- Quick Angle Steps -->
-            <div style="display:flex; gap:4px;">
-              <button class="preset-btn" style="flex:1; padding:5px 4px; font-size:0.74rem;" onclick="nudgeAngle(-2.0)">⏮ -2.0°</button>
-              <button class="preset-btn" style="flex:1; padding:5px 4px; font-size:0.74rem;" onclick="nudgeAngle(2.0)">⏭ +2.0°</button>
-            </div>
-          </div>
-
-          <button class="shoot-btn" id="shootBtn" onclick="executePlayerShot()">
-            🚀 出桿擊球！(或按空白鍵 Space)
-          </button>
-        </div>
-      </div>
 
       <!-- Live Physics & Match Card -->
       <div class="panel-card" style="flex:1;">
@@ -978,17 +990,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Mobile Fixed Bottom Action Bar (手機隨手按空白鍵出桿 & 角度微調) -->
-  <div class="mobile-bottom-dock">
-    <div style="display:flex; gap:4px;">
-      <button class="preset-btn" style="padding:10px 8px; font-size:0.8rem;" onclick="nudgeAngle(-0.5)">↺ -0.5°</button>
-      <button class="preset-btn" style="padding:10px 8px; font-size:0.8rem;" onclick="nudgeAngle(0.5)">↻ +0.5°</button>
-    </div>
-    <button class="dock-shoot-btn" id="mobileDockShootBtn" onclick="executePlayerShot()">
-      <span>🚀 出桿擊球 (點我出桿)</span>
-    </button>
   </div>
 
   <!-- Rules & Knowledge Encyclopedia Modal -->
@@ -1052,8 +1053,8 @@
     const spinCanvas = document.getElementById('spinPadCanvas');
     const spinCtx = spinCanvas.getContext('2d');
 
-    // Table geometry inside 920x500 canvas
-    // Cushions/rails define the active ball bounce area (TABLE)
+    // Realistic Pool Table Geometry & Pocket Openings
+    // TABLE defines the active ball bounce boundary (rubber cushions).
     const TABLE = {
       left: 60,
       top: 50,
@@ -1062,19 +1063,19 @@
       width: 800,
       height: 400,
       ballRadius: 13.5,
-      pocketRadius: 24, // Pocket capture radius
-      pocketHoleRadius: 27 // Visual drop pocket opening
+      pocketRadius: 25, // Distance threshold for falling into pocket
+      pocketHoleRadius: 28 // Visual dark hole radius
     };
 
-    // Realistic pocket positions: set slightly back into the rails/corner castings
-    // Corner pockets recess outward diagonally by ~10px; side pockets recess outward by ~9px
+    // Realistic pocket placements recessed far back into table frame/corner castings:
+    // Corner pockets recess outward diagonally by 16px; side pockets recess upward/downward by 18px.
     const POCKETS = [
-      { x: TABLE.left - 7, y: TABLE.top - 7, name: '左上底袋' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 10, name: '上中袋' },
-      { x: TABLE.right + 7, y: TABLE.top - 7, name: '右上底袋' },
-      { x: TABLE.left - 7, y: TABLE.bottom + 7, name: '左下底袋' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 10, name: '下中袋' },
-      { x: TABLE.right + 7, y: TABLE.bottom + 7, name: '右下底袋' }
+      { x: TABLE.left - 12, y: TABLE.top - 12, name: '左上底袋' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 18, name: '上中袋' },
+      { x: TABLE.right + 12, y: TABLE.top - 12, name: '右上底袋' },
+      { x: TABLE.left - 12, y: TABLE.bottom + 12, name: '左下底袋' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 18, name: '下中袋' },
+      { x: TABLE.right + 12, y: TABLE.bottom + 12, name: '右下底袋' }
     ];
 
     // Standard 16 Pool Balls colors
@@ -1841,11 +1842,8 @@
 
       isSimulating = true;
       ballInHand = false;
-      document.getElementById('shootBtn').disabled = true;
-      const mCanvasBtn = document.getElementById('mobileCanvasShootBtn');
-      if (mCanvasBtn) mCanvasBtn.disabled = true;
-      const mDockBtn = document.getElementById('mobileDockShootBtn');
-      if (mDockBtn) mDockBtn.disabled = true;
+      const sBtn = document.getElementById('shootBtn');
+      if (sBtn) sBtn.disabled = true;
 
       shotStats = {
         firstHitBall: null,
@@ -2030,11 +2028,8 @@
 
       if (!anyMoving) {
         isSimulating = false;
-        document.getElementById('shootBtn').disabled = false;
-        const mCanvasBtn = document.getElementById('mobileCanvasShootBtn');
-        if (mCanvasBtn) mCanvasBtn.disabled = false;
-        const mDockBtn = document.getElementById('mobileDockShootBtn');
-        if (mDockBtn) mDockBtn.disabled = false;
+        const sBtn = document.getElementById('shootBtn');
+        if (sBtn) sBtn.disabled = false;
         onShotFinished();
       }
     }
@@ -2298,9 +2293,9 @@
       ctx.fillStyle = woodGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Cushion Rubber Border
+      // Cushion Rubber Border (Extended outwards around recessed pockets)
       ctx.fillStyle = '#0f766e';
-      ctx.fillRect(TABLE.left - 14, TABLE.top - 14, TABLE.width + 28, TABLE.height + 28);
+      ctx.fillRect(TABLE.left - 20, TABLE.top - 20, TABLE.width + 40, TABLE.height + 40);
 
       // Playing Cloth Surface
       const clothGrad = ctx.createRadialGradient(
@@ -2335,27 +2330,33 @@
         for (let i = 1; i <= 7; i++) {
           if (i === 4) continue;
           const dx = TABLE.left + (TABLE.width / 8) * i;
-          drawDiamondMark(dx, TABLE.top - 28);
-          ctx.fillText(i.toString(), dx, TABLE.top - 35);
-          drawDiamondMark(dx, TABLE.bottom + 28);
-          ctx.fillText(i.toString(), dx, TABLE.bottom + 43);
+          drawDiamondMark(dx, TABLE.top - 30);
+          ctx.fillText(i.toString(), dx, TABLE.top - 37);
+          drawDiamondMark(dx, TABLE.bottom + 30);
+          ctx.fillText(i.toString(), dx, TABLE.bottom + 45);
         }
 
         for (let j = 1; j <= 3; j++) {
           const dy = TABLE.top + (TABLE.height / 4) * j;
-          drawDiamondMark(TABLE.left - 28, dy);
-          ctx.fillText(j.toString(), TABLE.left - 42, dy + 4);
-          drawDiamondMark(TABLE.right + 28, dy);
-          ctx.fillText(j.toString(), TABLE.right + 42, dy + 4);
+          drawDiamondMark(TABLE.left - 30, dy);
+          ctx.fillText(j.toString(), TABLE.left - 44, dy + 4);
+          drawDiamondMark(TABLE.right + 30, dy);
+          ctx.fillText(j.toString(), TABLE.right + 44, dy + 4);
         }
       }
 
-      // 3. Draw 6 Pockets (Recessed pockets with metallic pocket rim)
+      // 3. Draw 6 Pockets (Recessed deeply into cushions & corner castings)
       POCKETS.forEach((p, idx) => {
-        // Outer metallic/dark pocket rim casting
+        // Outer metallic casting rim
         ctx.beginPath();
-        ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 4, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 6, 0, Math.PI * 2);
         ctx.fillStyle = '#1e293b';
+        ctx.fill();
+
+        // Leather/rubber pocket liner
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#0f172a';
         ctx.fill();
 
         // Inner drop pocket hole
@@ -2364,13 +2365,13 @@
         ctx.fillStyle = '#020617';
         ctx.fill();
         ctx.lineWidth = 2.5;
-        ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#0f172a';
+        ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#334155';
         ctx.stroke();
 
         // Target pocket highlight glow
         if (idx === targetPocketIndex) {
           ctx.beginPath();
-          ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 7, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 8, 0, Math.PI * 2);
           ctx.strokeStyle = 'rgba(250, 204, 21, 0.75)';
           ctx.lineWidth = 2.5;
           ctx.setLineDash([5, 4]);
