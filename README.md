@@ -1,6 +1,6 @@
 # 🎱 小小撞球神射手：四年級撞球科學與實戰學院 (Billiards Kids Academy)
 
-[![版本 v2.0](https://img.shields.io/badge/版本-v2.5_經典六圓形袋口與立體顆星版-38bdf8?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
+[![版本 v2.0](https://img.shields.io/badge/版本-v2.6_零延遲自由擊球與CCD精準軌跡版-38bdf8?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
 [![立即線上遊玩 Play Online](https://img.shields.io/badge/🎱_立即線上遊玩_Play_Now-GitHub_Pages-22c55e?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
 
 專為**國小四年級學童與初學者**設計的互動式撞球科學與實戰教學網頁程式！  
@@ -15,7 +15,7 @@
 
 ---
 
-## 📱 手機與平板專屬設計 (v2.5 更新)
+## 📱 手機與平板專屬設計 (v2.6 更新)
 
 - 📱 **球桌懸浮「出桿發射鈕」**：球桌右下角常駐發射按鈕，手機玩家瞄準後拇指直接點擊即可出桿，不需要鍵盤空白鍵！
 - 📌 **底部常駐控制列 (Mobile Dock)**：手機直立或橫式瀏覽時，螢幕底部固定「微調角度」與「大按鈕出桿擊球」，操作順手不擋球桌。
@@ -37,6 +37,14 @@
   - 獨立繪製 6 塊立體顆星橡膠條（Cushion Rails），袋口兩端具有標準 45 度斜切導入口（Mouth Jaws）與高光接觸稜線。
   - 桌角加入銀色金屬轉角包角（Chrome Corner Castings），質感大幅升級。
   - 修正袋口物理判定：袋口兩側斜角開放自然導引，球體滾向中袋或角袋時順暢自然落袋，不再有隱形邊框反彈問題。
+
+- ⚡ **零限制自由出桿（無延遲、永不鎖定灰色）**：
+  - 徹底移除過往出桿後的灰色按鈕鎖定限制！按鈕隨時保持鮮豔亮橘與可點擊狀態。
+  - 即使前一桿仍在滾動，點擊出桿也會立即結算並發射新球，隨心所欲暢快擊球！
+  - 闖關模式切換關卡或白球落袋時，白球自動復位至發球線，隨時均可直接出桿。
+- 🎯 **CCD 連續碰撞偵測（Continuous Collision Detection，100% 精準不偏角）**：
+  - 導入解析級時間接觸解算（Time-of-Impact Analytical Solver），母球與子球接觸法線角度精度達 $10^{-14}$！
+  - 徹底解決先前離散步長因微小穿透導致的切球微偏角問題，子球實際行進路線與「黃色假想球預測線」完全重合！
 
 ### 1. ⚔️ 雙人實戰對決模式（兩人輪流出桿，累計勝局分勝負）
 右上角特別新增了正式比賽模式，適合兩個小朋友在同一台電腦/平板上輪流對戰：

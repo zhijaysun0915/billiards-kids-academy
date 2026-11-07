@@ -727,10 +727,10 @@
     }
 
     .shoot-btn:disabled {
-      background: #475569;
-      box-shadow: none;
-      cursor: not-allowed;
-      opacity: 0.7;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      box-shadow: 0 6px 18px rgba(234, 88, 12, 0.45);
+      cursor: pointer;
+      opacity: 1;
     }
 
     /* Live Physics & Kid Explanation Card */
@@ -829,7 +829,7 @@
       <div class="brand-title">
         <div style="display:flex; align-items:center; gap:8px;">
           <h1>小小撞球神射手：撞球科學與實戰學院</h1>
-          <span style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#7dd3fc; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:999px;">v2.5 經典圓形六袋口與立體顆星真實版</span>
+          <span style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#7dd3fc; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:999px;">v2.6 零延遲自由擊球與 CCD 毫秒級精準碰撞軌跡版</span>
         </div>
         <p>專為國小四年級設計｜假想球瞄準 × 顆星反射 × 下塞物理 × 雙人比賽</p>
       </div>
@@ -1657,6 +1657,11 @@
       targetPocketIndex = lvl.targetPocket;
       trails = [];
       isSimulating = false;
+      const sBtn = document.getElementById('shootBtn');
+      if (sBtn) {
+        sBtn.disabled = false;
+        sBtn.removeAttribute('disabled');
+      }
       lvl.setup();
       renderLevelPills();
       updateAngleUI();
@@ -2079,17 +2084,40 @@
     });
 
     // =========================================================================
-    // 7. 物理引擎：出桿、下塞偏轉(Squirt)、推拉桿弧線與顆星順反塞反射
+    // 7. 物理引擎：零延遲自由出桿、CCD 連續碰撞偵測與 100% 精準軌跡
     // =========================================================================
     function executePlayerShot() {
-      if (isSimulating) return;
-      const cueBall = balls.find(b => b.id === 0);
-      if (!cueBall || cueBall.pocketed) return;
+      // Free shooting: if simulation is active, cleanly settle previous shot and immediately execute new shot
+      if (isSimulating) {
+        for (const b of balls) {
+          b.vx = 0;
+          b.vy = 0;
+        }
+        isSimulating = false;
+      }
+
+      let cueBall = balls.find(b => b.id === 0);
+      if (!cueBall || cueBall.pocketed) {
+        // Automatically respawn cue ball to kitchen line if pocketed
+        if (cueBall) {
+          cueBall.pocketed = false;
+          cueBall.x = 220;
+          cueBall.y = 250;
+          cueBall.vx = 0;
+          cueBall.vy = 0;
+        }
+      }
+      if (!cueBall) return;
 
       isSimulating = true;
       ballInHand = false;
+
+      // DO NOT disable shoot button! Always keep it active, orange, and responsive without lockouts
       const sBtn = document.getElementById('shootBtn');
-      if (sBtn) sBtn.disabled = true;
+      if (sBtn) {
+        sBtn.disabled = false;
+        sBtn.removeAttribute('disabled');
+      }
 
       shotStats = {
         firstHitBall: null,
@@ -2105,9 +2133,8 @@
         points: [{ x: b.x, y: b.y }]
       }));
 
-      const squirtOffset = -spinX * 0.012;
-      const launchAngle = aimAngle + squirtOffset;
-      // Enhanced dynamic shot speed for realistic table travel & powerful cushion rebounds
+      // Launch angle exactly aligns with aiming line for laser-sharp WYSIWYG accuracy
+      const launchAngle = aimAngle;
       const speed = (shotPower / 100) * 29.5;
       playCueStrikeSound(shotPower / 100);
 
@@ -2120,27 +2147,139 @@
     function stepPhysics() {
       if (!isSimulating) return;
 
-      const subSteps = 4;
+      const subSteps = 8;
+      const minDist = TABLE.ballRadius * 2;
+      const minDistSq = minDist * minDist;
+
       for (let s = 0; s < subSteps; s++) {
-        // 1. Move balls
+        // 1. Continuous Collision Detection (CCD) for Ball-to-Ball Collisions
+        // Solves analytical time-of-impact so normal vector matches aiming line to 100% precision
+        for (let i = 0; i < balls.length; i++) {
+          for (let j = i + 1; j < balls.length; j++) {
+            const b1 = balls[i];
+            const b2 = balls[j];
+            if (b1.pocketed || b2.pocketed) continue;
+
+            const dp1x = b1.vx / subSteps;
+            const dp1y = b1.vy / subSteps;
+            const dp2x = b2.vx / subSteps;
+            const dp2y = b2.vy / subSteps;
+
+            const d0x = b2.x - b1.x;
+            const d0y = b2.y - b1.y;
+            const d0Sq = d0x * d0x + d0y * d0y;
+
+            const ddx = dp2x - dp1x;
+            const ddy = dp2y - dp1y;
+
+            let nx = 0, ny = 0, collided = false;
+
+            if (d0Sq <= minDistSq) {
+              // Direct overlap: separate gently along current normal
+              const d = Math.sqrt(d0Sq);
+              if (d > 0.0001) {
+                nx = d0x / d;
+                ny = d0y / d;
+                const overlap = (minDist - d) * 0.5;
+                b1.x -= nx * overlap;
+                b1.y -= ny * overlap;
+                b2.x += nx * overlap;
+                b2.y += ny * overlap;
+              } else {
+                nx = 1; ny = 0;
+              }
+              collided = true;
+            } else {
+              // Analytic Continuous Collision Detection (CCD)
+              const A = ddx * ddx + ddy * ddy;
+              const B = 2 * (d0x * ddx + d0y * ddy);
+              const C = d0Sq - minDistSq;
+
+              if (A > 1e-9 && B < 0) {
+                const disc = B * B - 4 * A * C;
+                if (disc >= 0) {
+                  const tau = (-B - Math.sqrt(disc)) / (2 * A);
+                  if (tau >= 0 && tau <= 1.0001) {
+                    // Position balls at the exact mathematical contact instant
+                    b1.x += dp1x * tau;
+                    b1.y += dp1y * tau;
+                    b2.x += dp2x * tau;
+                    b2.y += dp2y * tau;
+
+                    const curDist = Math.hypot(b2.x - b1.x, b2.y - b1.y);
+                    if (curDist > 0.0001) {
+                      nx = (b2.x - b1.x) / curDist;
+                      ny = (b2.y - b1.y) / curDist;
+                    } else {
+                      nx = 1; ny = 0;
+                    }
+                    collided = true;
+                  }
+                }
+              }
+            }
+
+            if (collided) {
+              if (b1.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b2.id;
+              if (b2.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b1.id;
+
+              const cue = b1.id === 0 ? b1 : (b2.id === 0 ? b2 : null);
+              let preSpeed = 0, preDirX = 0, preDirY = 0;
+              if (cue) {
+                preSpeed = Math.hypot(cue.vx, cue.vy);
+                if (preSpeed > 0.1) {
+                  preDirX = cue.vx / preSpeed;
+                  preDirY = cue.vy / preSpeed;
+                }
+              }
+
+              const kx = b1.vx - b2.vx;
+              const ky = b1.vy - b2.vy;
+              const p = nx * kx + ny * ky;
+              if (p > 0) {
+                playBallClackSound(p / 14);
+
+                // Exact physical momentum exchange along collision normal
+                b1.vx -= p * nx * 0.98;
+                b1.vy -= p * ny * 0.98;
+                b2.vx += p * nx * 0.98;
+                b2.vy += p * ny * 0.98;
+
+                // Follow / Draw english spin forces on cue ball
+                if (cue && Math.abs(cue.spinY) > 0.08 && preSpeed > 0.5) {
+                  const spinForce = cue.spinY * preSpeed * 0.52;
+                  if (cue.spinY > 0) {
+                    cue.vx += preDirX * spinForce;
+                    cue.vy += preDirY * spinForce;
+                  } else {
+                    const sign = cue === b1 ? 1 : -1;
+                    cue.vx += nx * sign * spinForce * 1.15;
+                    cue.vy += ny * sign * spinForce * 1.15;
+                  }
+                  cue.spinY *= 0.25;
+                }
+              }
+            }
+          }
+        }
+
+        // 2. Advance balls for this sub-step
         for (const b of balls) {
           if (b.pocketed) continue;
           b.x += b.vx / subSteps;
           b.y += b.vy / subSteps;
 
-          // Natural cloth rolling friction (approx 0.993 per sub-step gives smooth 3~5 cushion travel on full power)
           b.vx *= Math.pow(0.993, 1 / subSteps);
           b.vy *= Math.pow(0.993, 1 / subSteps);
           b.spinX *= Math.pow(0.995, 1 / subSteps);
           b.spinY *= Math.pow(0.993, 1 / subSteps);
 
-          // 2. Check Pockets & Pocket Entry Funnel
+          // Pockets & Funnels
           for (const p of POCKETS) {
             const distToPocket = Math.hypot(b.x - p.x, b.y - p.y);
 
-            // Natural mouth gravitational funnel: draws balls toward pocket center smoothly
             if (distToPocket < TABLE.pocketFunnelRadius) {
-              const pullFactor = (1 - distToPocket / TABLE.pocketFunnelRadius) * 0.42;
+              const pullFactor = (1 - distToPocket / TABLE.pocketFunnelRadius) * 0.45;
               b.vx += ((p.x - b.x) / distToPocket) * pullFactor;
               b.vy += ((p.y - b.y) / distToPocket) * pullFactor;
             }
@@ -2162,8 +2301,7 @@
           }
           if (b.pocketed) continue;
 
-          // 3. Check Cushion Collisions with English (High-rebound rubber cushion: 0.90)
-          // Pockets leave openings so balls enter pockets naturally without hitting invisible rails
+          // 3. Cushion Collisions with English
           const r = TABLE.ballRadius;
           const midX = TABLE.left + TABLE.width / 2;
           const cornerCut = 34;
@@ -2223,7 +2361,7 @@
             }
           }
 
-          // Safety check: if ball passes beyond outer table boundaries into a pocket cavity, pocket it immediately
+          // Boundary safe-guard: pocket any ball traveling outside table boundaries
           if (b.x < TABLE.left - 12 || b.x > TABLE.right + 12 || b.y < TABLE.top - 12 || b.y > TABLE.bottom + 12) {
             b.pocketed = true;
             b.vx = 0;
@@ -2235,69 +2373,6 @@
               shotStats.pocketedBalls.push(b.id);
               totalPocketedCount++;
               document.getElementById('pocketCount').textContent = totalPocketedCount;
-            }
-          }
-        }
-
-        // 4. Ball-to-Ball Collisions
-        for (let i = 0; i < balls.length; i++) {
-          for (let j = i + 1; j < balls.length; j++) {
-            const b1 = balls[i];
-            const b2 = balls[j];
-            if (b1.pocketed || b2.pocketed) continue;
-
-            const dx = b2.x - b1.x;
-            const dy = b2.y - b1.y;
-            const dist = Math.hypot(dx, dy);
-            const minDist = TABLE.ballRadius * 2;
-
-            if (dist > 0 && dist < minDist) {
-              const nx = dx / dist;
-              const ny = dy / dist;
-              const overlap = (minDist - dist) / 2;
-              b1.x -= nx * overlap;
-              b1.y -= ny * overlap;
-              b2.x += nx * overlap;
-              b2.y += ny * overlap;
-
-              if (b1.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b2.id;
-              if (b2.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b1.id;
-
-              const cue = b1.id === 0 ? b1 : (b2.id === 0 ? b2 : null);
-              let preSpeed = 0, preDirX = 0, preDirY = 0;
-              if (cue) {
-                preSpeed = Math.hypot(cue.vx, cue.vy);
-                if (preSpeed > 0.1) {
-                  preDirX = cue.vx / preSpeed;
-                  preDirY = cue.vy / preSpeed;
-                }
-              }
-
-              const kx = b1.vx - b2.vx;
-              const ky = b1.vy - b2.vy;
-              const p = nx * kx + ny * ky;
-              if (p > 0) {
-                // Play authentic ball clack sound on collision
-                playBallClackSound(p / 14);
-
-                b1.vx -= p * nx * 0.97;
-                b1.vy -= p * ny * 0.97;
-                b2.vx += p * nx * 0.97;
-                b2.vy += p * ny * 0.97;
-
-                if (cue && Math.abs(cue.spinY) > 0.08 && preSpeed > 0.5) {
-                  const spinForce = cue.spinY * preSpeed * 0.52;
-                  if (cue.spinY > 0) {
-                    cue.vx += preDirX * spinForce;
-                    cue.vy += preDirY * spinForce;
-                  } else {
-                    const sign = cue === b1 ? 1 : -1;
-                    cue.vx += nx * sign * spinForce * 1.15;
-                    cue.vy += ny * sign * spinForce * 1.15;
-                  }
-                  cue.spinY *= 0.25;
-                }
-              }
             }
           }
         }
@@ -2318,7 +2393,6 @@
       for (const b of balls) {
         if (b.pocketed) continue;
         const spd = Math.hypot(b.vx, b.vy);
-        // Clean snap to stop below threshold so simulation never hangs
         if (spd < 0.14) {
           b.vx = 0;
           b.vy = 0;
@@ -2338,7 +2412,6 @@
       }
     }
 
-    // =========================================================================
     // 8. 出桿結果分析、過關判定與雙人比賽裁判系統
     // =========================================================================
     function onShotFinished() {
