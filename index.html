@@ -829,7 +829,7 @@
       <div class="brand-title">
         <div style="display:flex; align-items:center; gap:8px;">
           <h1>小小撞球神射手：撞球科學與實戰學院</h1>
-          <span style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#7dd3fc; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:999px;">v2.4 真實撞球碰撞原音錄製版</span>
+          <span style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#7dd3fc; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:999px;">v2.5 經典圓形六袋口與立體顆星真實版</span>
         </div>
         <p>專為國小四年級設計｜假想球瞄準 × 顆星反射 × 下塞物理 × 雙人比賽</p>
       </div>
@@ -1090,21 +1090,21 @@
       width: 800,
       height: 400,
       ballRadius: 13.5,
-      pocketRadius: 32, // Catch threshold for balls dropping in
-      pocketFunnelRadius: 44, // Smooth pocket entry guide
-      pocketHoleRadius: 26
+      pocketRadius: 31, // Catch threshold for balls dropping in
+      pocketFunnelRadius: 46, // Smooth pocket entry guide
+      pocketHoleRadius: 24,
+      sidePocketHoleRadius: 22
     };
 
-    // Pockets:
-    // Corner pockets (0, 2, 3, 5): 45-degree angle pocket mouth
-    // Side pockets (1, 4): Authentic straight-cut side pockets recessed into rail border
+    // 6 Authentic Circular Pockets matching classic pool tables:
+    // 4 Corner pockets with silver metallic corner castings + 2 circular side pockets
     const POCKETS = [
-      { x: TABLE.left - 5, y: TABLE.top - 5, name: '左上底袋', type: 'corner', side: 'top-left' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 6, name: '上中袋', type: 'side', side: 'top' },
-      { x: TABLE.right + 5, y: TABLE.top - 5, name: '右上底袋', type: 'corner', side: 'top-right' },
-      { x: TABLE.left - 5, y: TABLE.bottom + 5, name: '左下底袋', type: 'corner', side: 'bottom-left' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 6, name: '下中袋', type: 'side', side: 'bottom' },
-      { x: TABLE.right + 5, y: TABLE.bottom + 5, name: '右下底袋', type: 'corner', side: 'bottom-right' }
+      { x: TABLE.left - 2, y: TABLE.top - 2, name: '左上底袋', type: 'corner', side: 'top-left' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 4, name: '上中袋', type: 'side', side: 'top' },
+      { x: TABLE.right + 2, y: TABLE.top - 2, name: '右上底袋', type: 'corner', side: 'top-right' },
+      { x: TABLE.left - 2, y: TABLE.bottom + 2, name: '左下底袋', type: 'corner', side: 'bottom-left' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 4, name: '下中袋', type: 'side', side: 'bottom' },
+      { x: TABLE.right + 2, y: TABLE.bottom + 2, name: '右下底袋', type: 'corner', side: 'bottom-right' }
     ];
 
     // =========================================================================
@@ -2163,8 +2163,23 @@
           if (b.pocketed) continue;
 
           // 3. Check Cushion Collisions with English (High-rebound rubber cushion: 0.90)
+          // Pockets leave openings so balls enter pockets naturally without hitting invisible rails
           const r = TABLE.ballRadius;
-          if (b.y - r < TABLE.top) {
+          const midX = TABLE.left + TABLE.width / 2;
+          const cornerCut = 34;
+          const sideCut = 24;
+
+          const onTopRail = (b.x >= TABLE.left + cornerCut - 3 && b.x <= midX - sideCut + 3) ||
+                            (b.x >= midX + sideCut - 3 && b.x <= TABLE.right - cornerCut + 3);
+
+          const onBottomRail = (b.x >= TABLE.left + cornerCut - 3 && b.x <= midX - sideCut + 3) ||
+                               (b.x >= midX + sideCut - 3 && b.x <= TABLE.right - cornerCut + 3);
+
+          const onLeftRail = (b.y >= TABLE.top + cornerCut - 3 && b.y <= TABLE.bottom - cornerCut + 3);
+
+          const onRightRail = (b.y >= TABLE.top + cornerCut - 3 && b.y <= TABLE.bottom - cornerCut + 3);
+
+          if (onTopRail && b.y - r < TABLE.top) {
             b.y = TABLE.top + r;
             const impactSpd = Math.abs(b.vy);
             b.vy = -b.vy * 0.90;
@@ -2174,7 +2189,7 @@
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
-          } else if (b.y + r > TABLE.bottom) {
+          } else if (onBottomRail && b.y + r > TABLE.bottom) {
             b.y = TABLE.bottom - r;
             const impactSpd = Math.abs(b.vy);
             b.vy = -b.vy * 0.90;
@@ -2186,7 +2201,7 @@
             }
           }
 
-          if (b.x - r < TABLE.left) {
+          if (onLeftRail && b.x - r < TABLE.left) {
             b.x = TABLE.left + r;
             const impactSpd = Math.abs(b.vx);
             b.vx = -b.vx * 0.90;
@@ -2196,7 +2211,7 @@
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
-          } else if (b.x + r > TABLE.right) {
+          } else if (onRightRail && b.x + r > TABLE.right) {
             b.x = TABLE.right - r;
             const impactSpd = Math.abs(b.vx);
             b.vx = -b.vx * 0.90;
@@ -2205,6 +2220,21 @@
               b.vy += b.spinX * 4.6;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
+            }
+          }
+
+          // Safety check: if ball passes beyond outer table boundaries into a pocket cavity, pocket it immediately
+          if (b.x < TABLE.left - 12 || b.x > TABLE.right + 12 || b.y < TABLE.top - 12 || b.y > TABLE.bottom + 12) {
+            b.pocketed = true;
+            b.vx = 0;
+            b.vy = 0;
+            playPocketDropSound();
+            if (b.id === 0) {
+              shotStats.cueScratch = true;
+            } else {
+              shotStats.pocketedBalls.push(b.id);
+              totalPocketedCount++;
+              document.getElementById('pocketCount').textContent = totalPocketedCount;
             }
           }
         }
@@ -2558,30 +2588,79 @@
     // =========================================================================
     function renderTable() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const midX = TABLE.left + TABLE.width / 2;
 
-      // 1. Outer Wood Frame
+      // 1. Outer Wood Frame (經典胡桃木質邊框)
       const woodGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
       woodGrad.addColorStop(0, '#5c2408');
-      woodGrad.addColorStop(0.5, '#3b1504');
-      woodGrad.addColorStop(1, '#4a1c06');
+      woodGrad.addColorStop(0.3, '#3b1504');
+      woodGrad.addColorStop(0.7, '#4a1c06');
+      woodGrad.addColorStop(1, '#2c0e03');
       ctx.fillStyle = woodGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Cushion Rubber Border (Extended outwards around recessed pockets)
-      ctx.fillStyle = '#0f766e';
-      ctx.fillRect(TABLE.left - 20, TABLE.top - 20, TABLE.width + 40, TABLE.height + 40);
+      // Wood rail inner bevel border
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
 
-      // Playing Cloth Surface
+      // 1.5 Metallic Corner & Side Castings (經典美式撞球桌金屬轉角包角與中袋修邊)
+      const cornerBrackets = [
+        { x: 10, y: 10, w: 76, h: 66, r: [16, 4, 4, 4] },
+        { x: canvas.width - 86, y: 10, w: 76, h: 66, r: [4, 16, 4, 4] },
+        { x: 10, y: canvas.height - 76, w: 76, h: 66, r: [4, 4, 4, 16] },
+        { x: canvas.width - 86, y: canvas.height - 76, w: 76, h: 66, r: [4, 4, 16, 4] }
+      ];
+
+      cornerBrackets.forEach(cb => {
+        ctx.save();
+        const metalGrad = ctx.createLinearGradient(cb.x, cb.y, cb.x + cb.w, cb.y + cb.h);
+        metalGrad.addColorStop(0, '#94a3b8');
+        metalGrad.addColorStop(0.3, '#f1f5f9');
+        metalGrad.addColorStop(0.65, '#475569');
+        metalGrad.addColorStop(1, '#1e293b');
+        ctx.fillStyle = metalGrad;
+        ctx.beginPath();
+        ctx.roundRect(cb.x, cb.y, cb.w, cb.h, cb.r);
+        ctx.fill();
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // Side pocket outer brackets (中袋外側金屬/皮革座)
+      [
+        { x: midX - 32, y: 10, w: 64, h: 32, r: [6, 6, 0, 0] },
+        { x: midX - 32, y: TABLE.bottom + 8, w: 64, h: 32, r: [0, 0, 6, 6] }
+      ].forEach(sp => {
+        ctx.save();
+        const spGrad = ctx.createLinearGradient(sp.x, sp.y, sp.x, sp.y + sp.h);
+        spGrad.addColorStop(0, '#334155');
+        spGrad.addColorStop(0.5, '#64748b');
+        spGrad.addColorStop(1, '#1e293b');
+        ctx.fillStyle = spGrad;
+        ctx.beginPath();
+        ctx.roundRect(sp.x, sp.y, sp.w, sp.h, sp.r);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // 2. Central Playing Cloth Surface (綠色細緻球桌呢布)
       const clothGrad = ctx.createRadialGradient(
-        canvas.width / 2, canvas.height / 2, 50,
+        canvas.width / 2, canvas.height / 2, 60,
         canvas.width / 2, canvas.height / 2, 520
       );
       clothGrad.addColorStop(0, '#0d9488');
-      clothGrad.addColorStop(1, '#0f766e');
+      clothGrad.addColorStop(0.7, '#0f766e');
+      clothGrad.addColorStop(1, '#115e59');
       ctx.fillStyle = clothGrad;
       ctx.fillRect(TABLE.left, TABLE.top, TABLE.width, TABLE.height);
 
-      // Head string line & Foot spot
+      // Head string line & Foot spot (開球發球線與排球置球點)
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -2589,13 +2668,134 @@
       ctx.lineTo(TABLE.left + TABLE.width * 0.25, TABLE.bottom);
       ctx.stroke();
 
-      // Foot spot circle
       ctx.beginPath();
       ctx.arc(TABLE.left + TABLE.width * 0.75, TABLE.top + TABLE.height * 0.5, 3.5, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
       ctx.fill();
 
-      // 2. Diamond Sights
+      // 3. The 6 Realistic Cushion Rails (立體顆星橡膠條，兩端精緻 45 度袋口斜切)
+      const cushionSegments = [
+        // Top-Left: [(76, 30), (446, 30), (436, 50), (94, 50)]
+        {
+          poly: [[76, 30], [446, 30], [436, 50], [94, 50]],
+          nose: [[94, 50], [436, 50]],
+          grad: [0, 30, 0, 50]
+        },
+        // Top-Right: [(474, 30), (844, 30), (826, 50), (484, 50)]
+        {
+          poly: [[474, 30], [844, 30], [826, 50], [484, 50]],
+          nose: [[484, 50], [826, 50]],
+          grad: [0, 30, 0, 50]
+        },
+        // Bottom-Left: [(94, 450), (436, 450), (446, 470), (76, 470)]
+        {
+          poly: [[94, 450], [436, 450], [446, 470], [76, 470]],
+          nose: [[94, 450], [436, 450]],
+          grad: [0, 470, 0, 450]
+        },
+        // Bottom-Right: [(484, 450), (826, 450), (844, 470), (474, 470)]
+        {
+          poly: [[484, 450], [826, 450], [844, 470], [474, 470]],
+          nose: [[484, 450], [826, 450]],
+          grad: [0, 470, 0, 450]
+        },
+        // Left: [(40, 66), (60, 84), (60, 416), (40, 434)]
+        {
+          poly: [[40, 66], [60, 84], [60, 416], [40, 434]],
+          nose: [[60, 84], [60, 416]],
+          grad: [40, 0, 60, 0]
+        },
+        // Right: [(860, 84), (880, 66), (880, 434), (860, 416)]
+        {
+          poly: [[860, 84], [880, 66], [880, 434], [860, 416]],
+          nose: [[860, 84], [860, 416]],
+          grad: [880, 0, 860, 0]
+        }
+      ];
+
+      cushionSegments.forEach(seg => {
+        ctx.save();
+        const cg = ctx.createLinearGradient(...seg.grad);
+        cg.addColorStop(0, '#0c524b');
+        cg.addColorStop(0.7, '#0f766e');
+        cg.addColorStop(1, '#134e4a');
+        ctx.fillStyle = cg;
+        ctx.beginPath();
+        ctx.moveTo(seg.poly[0][0], seg.poly[0][1]);
+        for (let i = 1; i < seg.poly.length; i++) {
+          ctx.lineTo(seg.poly[i][0], seg.poly[i][1]);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#042f2e';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Cushion nose highlight line (母球碰撞接觸稜線)
+        ctx.beginPath();
+        ctx.moveTo(seg.nose[0][0], seg.nose[0][1]);
+        ctx.lineTo(seg.nose[1][0], seg.nose[1][1]);
+        ctx.strokeStyle = 'rgba(45, 212, 191, 0.6)';
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // 4. The 6 Realistic Circular Pockets (全為經典圓形球袋，立體深邃光影)
+      POCKETS.forEach((p, idx) => {
+        ctx.save();
+        const isSide = p.type === 'side';
+        const outerR = isSide ? 27 : 31;
+        const innerR = isSide ? TABLE.sidePocketHoleRadius : TABLE.pocketHoleRadius;
+
+        // Outer dark leather pocket rim (袋口皮革襯墊圓弧)
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, outerR, 0, Math.PI * 2);
+        ctx.fillStyle = '#18181b';
+        ctx.fill();
+        ctx.strokeStyle = '#27272a';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Inner drop hole with 3D depth gradient (純黑深邃球袋底)
+        const holeGrad = ctx.createRadialGradient(
+          p.x, p.y, 2,
+          p.x, p.y, innerR
+        );
+        holeGrad.addColorStop(0, '#000000');
+        holeGrad.addColorStop(0.7, '#050505');
+        holeGrad.addColorStop(1, '#0f172a');
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, innerR, 0, Math.PI * 2);
+        ctx.fillStyle = holeGrad;
+        ctx.fill();
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#020617';
+        ctx.stroke();
+
+        // Soft 3D drop shadow ring inside pocket mouth
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, innerR - 1.5, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Target pocket highlight glow (目標袋口提示金色光圈)
+        if (idx === targetPocketIndex) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, innerR + 7, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)';
+          ctx.lineWidth = 2.5;
+          ctx.setLineDash([5, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+        ctx.restore();
+      });
+
+      // 5. Diamond Sights (木框上的鑽石刻度點)
       if (aids.diamonds) {
         ctx.fillStyle = '#fde047';
         ctx.font = 'bold 11px sans-serif';
@@ -2618,75 +2818,6 @@
           ctx.fillText(j.toString(), TABLE.right + 44, dy + 4);
         }
       }
-
-      // 3. Draw 6 Realistic Pockets (Corner angled pockets + Straight-cut horizontal side pockets)
-      POCKETS.forEach((p, idx) => {
-        ctx.save();
-        if (p.type === 'side') {
-          // Authentic Side Pocket: Cuts cleanly into cushion border, cloth runs straight horizontally
-          const isTop = p.side === 'top';
-          const pocketWidth = 42;
-          const pocketDepth = 24;
-          const py = isTop ? TABLE.top - pocketDepth : TABLE.bottom;
-
-          // Metal casting bracket
-          ctx.fillStyle = '#1e293b';
-          ctx.beginPath();
-          if (isTop) {
-            ctx.roundRect(p.x - pocketWidth / 2 - 3, py - 4, pocketWidth + 6, pocketDepth + 4, [10, 10, 0, 0]);
-          } else {
-            ctx.roundRect(p.x - pocketWidth / 2 - 3, py, pocketWidth + 6, pocketDepth + 4, [0, 0, 10, 10]);
-          }
-          ctx.fill();
-
-          // Pocket drop hole (cut straight at the cloth cushion edge)
-          ctx.fillStyle = '#020617';
-          ctx.beginPath();
-          if (isTop) {
-            ctx.roundRect(p.x - pocketWidth / 2, py, pocketWidth, pocketDepth, [8, 8, 0, 0]);
-          } else {
-            ctx.roundRect(p.x - pocketWidth / 2, py, pocketWidth, pocketDepth, [0, 0, 8, 8]);
-          }
-          ctx.fill();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#334155';
-          ctx.stroke();
-
-          // Green cloth boundary straight horizontal cut line
-          ctx.strokeStyle = '#0f766e';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(p.x - pocketWidth / 2, isTop ? TABLE.top : TABLE.bottom);
-          ctx.lineTo(p.x + pocketWidth / 2, isTop ? TABLE.top : TABLE.bottom);
-          ctx.stroke();
-        } else {
-          // Corner Angled Pocket
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 6, 0, Math.PI * 2);
-          ctx.fillStyle = '#1e293b';
-          ctx.fill();
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, TABLE.pocketHoleRadius, 0, Math.PI * 2);
-          ctx.fillStyle = '#020617';
-          ctx.fill();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#334155';
-          ctx.stroke();
-        }
-
-        // Target pocket highlight glow
-        if (idx === targetPocketIndex) {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, TABLE.pocketHoleRadius + 8, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(250, 204, 21, 0.75)';
-          ctx.lineWidth = 2.5;
-          ctx.setLineDash([5, 4]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-        }
-        ctx.restore();
-      });
 
       // 4. Actual Recorded Trails
       if (aids.trail && trails.length > 0) {
