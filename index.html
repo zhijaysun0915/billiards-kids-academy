@@ -1096,6 +1096,49 @@
       box-shadow: 0 0 10px #fde047;
       transform: scale(1.15);
     }
+
+    /* =========================================================================
+       8號 / 9號 比賽模式專用：放大撞球桌布，僅保留必要控制（選桿、力道、角度微調、出桿）
+       ========================================================================= */
+    body.match-mode-expanded .coach-banner,
+    body.match-mode-expanded .control-sidebar,
+    body.match-mode-expanded #levelSelectorBar,
+    body.match-mode-expanded #sandboxBar,
+    body.match-mode-expanded .helpers-bar {
+      display: none !important;
+    }
+
+    body.match-mode-expanded .main-container {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      max-width: 1280px !important;
+      width: 100% !important;
+      padding: 12px 18px 24px 18px !important;
+    }
+
+    body.match-mode-expanded .stage-area {
+      width: 100% !important;
+      max-width: 1220px !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+
+    body.match-mode-expanded .table-wrapper {
+      max-width: 1180px !important;
+      width: 100% !important;
+      border-radius: 26px !important;
+      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.75), 0 0 0 4px #0f172a !important;
+    }
+
+    body.match-mode-expanded .table-direct-controls {
+      max-width: 1180px !important;
+      width: 100% !important;
+      background: rgba(15, 23, 42, 0.94) !important;
+      border: 1.5px solid #334155 !important;
+      border-radius: 16px !important;
+      padding: 14px 18px !important;
+    }
   </style>
 </head>
 <body>
@@ -1484,10 +1527,10 @@
     // 4 Corner pockets with silver metallic corner castings + 2 circular side pockets
     const POCKETS = [
       { x: TABLE.left - 2, y: TABLE.top - 2, name: '左上底袋', type: 'corner', side: 'top-left' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 4, name: '上中袋', type: 'side', side: 'top' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.top - 8, name: '上中袋', type: 'side', side: 'top' },
       { x: TABLE.right + 2, y: TABLE.top - 2, name: '右上底袋', type: 'corner', side: 'top-right' },
       { x: TABLE.left - 2, y: TABLE.bottom + 2, name: '左下底袋', type: 'corner', side: 'bottom-left' },
-      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 4, name: '下中袋', type: 'side', side: 'bottom' },
+      { x: TABLE.left + TABLE.width / 2, y: TABLE.bottom + 8, name: '下中袋', type: 'side', side: 'bottom' },
       { x: TABLE.right + 2, y: TABLE.bottom + 2, name: '右下底袋', type: 'corner', side: 'bottom-right' }
     ];
 
@@ -1966,13 +2009,13 @@
             createBall(1, 580, 320)
           ];
           setSpinPreset(0, 0);
-          shotPower = 40;
+          shotPower = 62;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
         },
         demo: () => {
           setSpinPreset(0, 0);
-          shotPower = 42;
+          shotPower = 62;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
         },
@@ -1989,13 +2032,13 @@
             createBall(2, 620, 220)
           ];
           setSpinPreset(0, 0);
-          shotPower = 45;
+          shotPower = 65;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[2]);
         },
         demo: () => {
           setSpinPreset(0, 0);
-          shotPower = 45;
+          shotPower = 65;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[2]);
         },
@@ -2012,13 +2055,13 @@
             createBall(3, 660, 375)
           ];
           setSpinPreset(0, -0.82);
-          shotPower = 52;
+          shotPower = 55;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
         },
         demo: () => {
           setSpinPreset(0, -0.82);
-          shotPower = 52;
+          shotPower = 55;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[5]);
         },
@@ -2027,7 +2070,7 @@
       {
         title: '第 4 關：認識「一顆星」鏡面反射解球',
         desc: '糟糕！8 號黑球擋在中間，沒辦法直接打到 4 號紫球！請利用上方邊框（長顆星）像鏡子一樣反射（入射角＝反射角），先撞一顆星再去把 4 號紫球打進右下底袋！',
-        coachTip: '看畫面上的「藍色顆星反射預測線」，利用球桌邊緣的鑽石刻度 4 號點反射過去！',
+        coachTip: '看畫面上的「藍色顆星反射預測線」，利用球桌邊緣的鑽石刻度反射過去！',
         targetPocket: 5,
         setup: () => {
           balls = [
@@ -2036,24 +2079,15 @@
             createBall(8, 460, 330)
           ];
           setSpinPreset(0, 0);
-          shotPower = 58;
+          shotPower = 90;
           updatePowerSlider();
-          aimAngle = -0.785;
+          aimAngle = -0.92;
         },
         demo: () => {
           setSpinPreset(0, 0);
-          shotPower = 60;
+          shotPower = 90;
           updatePowerSlider();
-          const pocket = POCKETS[5];
-          const b4 = balls.find(b => b.id === 4);
-          const dirX = pocket.x - b4.x;
-          const dirY = pocket.y - b4.y;
-          const len = Math.hypot(dirX, dirY);
-          const ghostX = b4.x - (dirX / len) * (TABLE.ballRadius * 2);
-          const ghostY = b4.y - (dirY / len) * (TABLE.ballRadius * 2);
-          const topRailY = TABLE.top + TABLE.ballRadius;
-          const mirrorGhostY = topRailY - (ghostY - topRailY);
-          aimAngle = Math.atan2(mirrorGhostY - balls[0].y, ghostX - balls[0].x);
+          aimAngle = -0.92;
         },
         checkWin: (stats) => stats.pocketedBalls.includes(4) && stats.cushionHits >= 1 && !stats.cueScratch
       },
@@ -2067,16 +2101,16 @@
             createBall(0, 420, 360),
             createBall(5, 760, 145)
           ];
-          setSpinPreset(0.82, 0.2);
-          shotPower = 56;
+          setSpinPreset(0.85, 0.25);
+          shotPower = 84;
           updatePowerSlider();
-          aimAngle = -1.33;
+          aimAngle = -0.885;
         },
         demo: () => {
           setSpinPreset(0.85, 0.25);
-          shotPower = 58;
+          shotPower = 84;
           updatePowerSlider();
-          aimAngle = -1.31;
+          aimAngle = -0.885;
         },
         checkWin: (stats) => stats.pocketedBalls.includes(5) && !stats.cueScratch
       },
@@ -2088,11 +2122,11 @@
         setup: () => {
           balls = [
             createBall(0, 220, 260),
-            createBall(1, 450, 140),
-            createBall(9, 680, 330)
+            createBall(1, 455, 115),
+            createBall(9, 730, 360)
           ];
-          setSpinPreset(0, -0.35);
-          shotPower = 44;
+          setSpinPreset(0, -0.85);
+          shotPower = 46;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[1]);
         },
@@ -2100,13 +2134,13 @@
           const b1 = balls.find(b => b.id === 1 && !b.pocketed);
           const b9 = balls.find(b => b.id === 9 && !b.pocketed);
           if (b1) {
-            setSpinPreset(0, -0.35);
-            shotPower = 44;
+            setSpinPreset(0, -0.85);
+            shotPower = 46;
             updatePowerSlider();
             aimAtGhostBall(balls[0], b1, POCKETS[1]);
           } else if (b9) {
             setSpinPreset(0, 0);
-            shotPower = 48;
+            shotPower = 64;
             updatePowerSlider();
             aimAtGhostBall(balls[0], b9, POCKETS[5]);
           }
@@ -2119,25 +2153,25 @@
       },
       {
         title: '第 7 關：🦘 神奇跳球 (Jump Shot) 飛越障礙球！',
-        desc: '天啊！8 號黑球擋在 7 號球正前方，所有直線與顆星路線全被封死！請切換為【🦘 專業短跳桿】，出桿俯角設為 45 度，將白球用力向下打向石板反彈，讓白球帥氣凌空飛越黑球，把 7 號球推進右上底袋！',
+        desc: '天啊！8 號黑球擋在 7 號球正前方，所有直線與顆星路線全被封死！請切換為【🦘 專業短跳桿】，出桿俯角設為 45 度，將白球向下打向石板反彈，讓白球帥氣凌空飛越黑球，把 7 號球推進右上底袋！',
         coachTip: '注意：比賽中用桿頭從球底往上挑球（Scoop）是嚴重犯規！真正的跳球是用短跳桿以 45 度由上往下重重打向石板，利用石板彈力騰空！',
         targetPocket: 2,
         setup: () => {
           balls = [
             createBall(0, 240, 250),
-            createBall(8, 450, 250),
-            createBall(7, 650, 250)
+            createBall(8, 460, 215),
+            createBall(7, 735, 145)
           ];
           selectCueType('jump');
           setElevationAngle(45);
-          shotPower = 75;
+          shotPower = 82;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[2], POCKETS[2]);
         },
         demo: () => {
           selectCueType('jump');
           setElevationAngle(45);
-          shotPower = 75;
+          shotPower = 82;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls.find(b => b.id === 7), POCKETS[2]);
         },
@@ -2156,16 +2190,16 @@
           ];
           selectCueType('masse');
           setSpinPreset(0.85, -0.2);
-          shotPower = 64;
+          shotPower = 70;
           updatePowerSlider();
-          aimAngle = 0.08;
+          aimAngle = -0.15;
         },
         demo: () => {
           selectCueType('masse');
           setSpinPreset(0.85, -0.2);
-          shotPower = 64;
+          shotPower = 70;
           updatePowerSlider();
-          aimAngle = 0.08;
+          aimAngle = -0.15;
         },
         checkWin: (stats) => stats.pocketedBalls.includes(6) && !stats.cueScratch
       },
@@ -2182,7 +2216,7 @@
             createBall(9, 760, 390)
           ];
           setSpinPreset(0, 0);
-          shotPower = 54;
+          shotPower = 68;
           updatePowerSlider();
           // Calculate ghost ball of 9-ball for Pocket 5, then aim cue ball at ghost ball of 1-ball toward that point
           const p5 = POCKETS[5];
@@ -2200,7 +2234,7 @@
         demo: () => {
           selectCueType('standard');
           setSpinPreset(0, 0);
-          shotPower = 54;
+          shotPower = 68;
           updatePowerSlider();
           const p5 = POCKETS[5];
           const b9 = balls.find(b => b.id === 9 && !b.pocketed);
@@ -2228,12 +2262,12 @@
         setup: () => {
           balls = [
             createBall(0, 240, 260),
-            createBall(3, 455, 135),
-            createBall(6, 680, 165),
-            createBall(9, 700, 350)
+            createBall(3, 455, 115),
+            createBall(6, 710, 145),
+            createBall(9, 730, 360)
           ];
-          setSpinPreset(0, 0.25);
-          shotPower = 44;
+          setSpinPreset(0, -0.85);
+          shotPower = 46;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[1]);
         },
@@ -2243,18 +2277,18 @@
           const b6 = balls.find(b => b.id === 6 && !b.pocketed);
           const b9 = balls.find(b => b.id === 9 && !b.pocketed);
           if (b3) {
-            setSpinPreset(0, 0.25);
-            shotPower = 44;
+            setSpinPreset(0, -0.85);
+            shotPower = 46;
             updatePowerSlider();
             aimAtGhostBall(balls[0], b3, POCKETS[1]);
           } else if (b6) {
-            setSpinPreset(0, -0.35);
-            shotPower = 48;
+            setSpinPreset(0, -0.5);
+            shotPower = 58;
             updatePowerSlider();
             aimAtGhostBall(balls[0], b6, POCKETS[2]);
           } else if (b9) {
             setSpinPreset(0, 0);
-            shotPower = 50;
+            shotPower = 64;
             updatePowerSlider();
             aimAtGhostBall(balls[0], b9, POCKETS[5]);
           }
@@ -2433,6 +2467,7 @@
       setBallInHandMode(false);
 
       if (mode.startsWith('match_')) {
+        document.body.classList.add('match-mode-expanded');
         levelBar.style.display = 'none';
         if (sandboxBar) sandboxBar.style.display = 'none';
         academyBadge.style.display = 'none';
@@ -2440,6 +2475,7 @@
         tableTurnBanner.style.display = 'flex';
         demoBtn.style.display = 'none';
       } else {
+        document.body.classList.remove('match-mode-expanded');
         levelBar.style.display = mode === 'academy' ? 'flex' : 'none';
         if (sandboxBar) sandboxBar.style.display = mode === 'sandbox' ? 'flex' : 'none';
         academyBadge.style.display = 'flex';
@@ -3001,8 +3037,8 @@
 
           if (cueToGhostClear && targetToPocketClear) {
             const baseAngle = Math.atan2(dyCG, dxCG);
-            const rawPower = 38 + (distCG + distTP) * 0.042 + (1 - cosCut) * 18;
-            const power = Math.min(82, Math.max(36, Math.round(rawPower)));
+            const rawPower = 48 + (distCG + distTP) * 0.055 + (1 - cosCut) * 22;
+            const power = Math.min(92, Math.max(48, Math.round(rawPower)));
             const score = cosCut * 120 - distCG * 0.07 - distTP * 0.11 + (tBall.id === 9 ? 25 : 0);
 
             // Smart spin to avoid following straight into pocket on straight shots
@@ -3040,7 +3076,7 @@
                 candidates.push({
                   type: 'jump',
                   angle: Math.atan2(dyCG, dxCG),
-                  power: 74,
+                  power: 82,
                   spinX: 0,
                   spinY: 0,
                   cueType: 'jump',
@@ -3086,7 +3122,7 @@
               candidates.push({
                 type: 'kick',
                 angle: Math.atan2(dy, dx),
-                power: 64,
+                power: 76,
                 spinX: 0,
                 spinY: 0,
                 cueType: 'standard',
@@ -3593,9 +3629,9 @@
       if (cueType === 'jump') {
         // Jump Shot: Downward compression against slate bed creates airborne launch
         const thetaZ = (elevationAngle * Math.PI) / 180;
-        const totalSpd = (shotPower / 100) * 32.5;
-        const vXY = totalSpd * Math.cos(thetaZ) * 0.92;
-        const vZ = totalSpd * Math.sin(thetaZ) * 0.68;
+        const totalSpd = (shotPower / 100) * 28.0;
+        const vXY = totalSpd * Math.cos(thetaZ) * 0.90;
+        const vZ = totalSpd * Math.sin(thetaZ) * 0.65;
         cueBall.vx = Math.cos(launchAngle) * vXY;
         cueBall.vy = Math.sin(launchAngle) * vXY;
         cueBall.vz = vZ;
@@ -3603,15 +3639,15 @@
         cueBall.curveRate = 0;
       } else if (cueType === 'masse') {
         // Masse Shot: Steep vertical stick with heavy side english curves across the felt
-        const totalSpd = (shotPower / 100) * 26.0;
+        const totalSpd = (shotPower / 100) * 23.0;
         cueBall.vx = Math.cos(launchAngle) * totalSpd;
         cueBall.vy = Math.sin(launchAngle) * totalSpd;
         cueBall.vz = 0;
         cueBall.z = 0;
         cueBall.curveRate = (spinX || 0.8) * 0.35;
       } else {
-        // Standard Shot
-        const speed = (shotPower / 100) * 29.5;
+        // Standard Shot: Natural rolling speed
+        const speed = (shotPower / 100) * 24.5;
         cueBall.vx = Math.cos(launchAngle) * speed;
         cueBall.vy = Math.sin(launchAngle) * speed;
         cueBall.vz = 0;
@@ -3743,10 +3779,10 @@
               if (p > 0) {
                 playBallClackSound(p / 14);
 
-                b1.vx -= p * nx * 0.98;
-                b1.vy -= p * ny * 0.98;
-                b2.vx += p * nx * 0.98;
-                b2.vy += p * ny * 0.98;
+                b1.vx -= p * nx * 0.92;
+                b1.vy -= p * ny * 0.92;
+                b2.vx += p * nx * 0.92;
+                b2.vy += p * ny * 0.92;
 
                 if (cue && Math.abs(cue.spinY) > 0.08 && preSpeed > 0.5) {
                   const spinForce = cue.spinY * preSpeed * 0.52;
@@ -3771,10 +3807,19 @@
           b.x += b.vx / subSteps;
           b.y += b.vy / subSteps;
 
-          b.vx *= Math.pow(0.993, 1 / subSteps);
-          b.vy *= Math.pow(0.993, 1 / subSteps);
-          b.spinX *= Math.pow(0.995, 1 / subSteps);
-          b.spinY *= Math.pow(0.993, 1 / subSteps);
+          // Realistic cloth rolling friction (prevents endless rolling and bouncing)
+          b.vx *= Math.pow(0.983, 1 / subSteps);
+          b.vy *= Math.pow(0.983, 1 / subSteps);
+          const curSpd = Math.hypot(b.vx, b.vy);
+          if (curSpd > 0.001) {
+            const decel = 0.022 / subSteps;
+            const newSpd = Math.max(0, curSpd - decel);
+            const factor = newSpd / curSpd;
+            b.vx *= factor;
+            b.vy *= factor;
+          }
+          b.spinX *= Math.pow(0.985, 1 / subSteps);
+          b.spinY *= Math.pow(0.983, 1 / subSteps);
 
           // Pockets
           for (const p of POCKETS) {
@@ -3825,20 +3870,20 @@
           if (onTopRail && b.y - r < TABLE.top) {
             b.y = TABLE.top + r;
             const impactSpd = Math.abs(b.vy);
-            b.vy = -b.vy * 0.90;
+            b.vy = -b.vy * 0.68;
             if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
-              b.vx += b.spinX * 4.6;
+              b.vx += b.spinX * 3.8;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           } else if (onBottomRail && b.y + r > TABLE.bottom) {
             b.y = TABLE.bottom - r;
             const impactSpd = Math.abs(b.vy);
-            b.vy = -b.vy * 0.90;
+            b.vy = -b.vy * 0.68;
             if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
-              b.vx -= b.spinX * 4.6;
+              b.vx -= b.spinX * 3.8;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
@@ -3847,20 +3892,20 @@
           if (onLeftRail && b.x - r < TABLE.left) {
             b.x = TABLE.left + r;
             const impactSpd = Math.abs(b.vx);
-            b.vx = -b.vx * 0.90;
+            b.vx = -b.vx * 0.68;
             if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
-              b.vy -= b.spinX * 4.6;
+              b.vy -= b.spinX * 3.8;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           } else if (onRightRail && b.x + r > TABLE.right) {
             b.x = TABLE.right - r;
             const impactSpd = Math.abs(b.vx);
-            b.vx = -b.vx * 0.90;
+            b.vx = -b.vx * 0.68;
             if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
-              b.vy += b.spinX * 4.6;
+              b.vy += b.spinX * 3.8;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
@@ -3898,7 +3943,7 @@
       for (const b of balls) {
         if (b.pocketed) continue;
         const spd = Math.hypot(b.vx, b.vy);
-        if (spd < 0.14 && b.z === 0) {
+        if (spd < 0.22 && b.z === 0) {
           b.vx = 0;
           b.vy = 0;
         } else {
@@ -4240,10 +4285,10 @@
         ctx.restore();
       });
 
-      // Side pocket outer brackets (中袋外側金屬/皮革座)
+      // Side pocket outer brackets (中袋外側金屬/皮革座，貼齊邊框不凸出呢布)
       [
-        { x: midX - 32, y: 10, w: 64, h: 32, r: [6, 6, 0, 0] },
-        { x: midX - 32, y: TABLE.bottom + 8, w: 64, h: 32, r: [0, 0, 6, 6] }
+        { x: midX - 32, y: 10, w: 64, h: 40, r: [6, 6, 0, 0] },
+        { x: midX - 32, y: TABLE.bottom, w: 64, h: 40, r: [0, 0, 6, 6] }
       ].forEach(sp => {
         ctx.save();
         const spGrad = ctx.createLinearGradient(sp.x, sp.y, sp.x, sp.y + sp.h);
@@ -4352,58 +4397,129 @@
         ctx.restore();
       });
 
-      // 4. The 6 Realistic Circular Pockets (全為經典圓形球袋，立體深邃光影)
+      // 4. The 6 Realistic Pockets (中袋切齊桌布邊不凸出，角袋經典圓形)
       POCKETS.forEach((p, idx) => {
         ctx.save();
         const isSide = p.type === 'side';
-        const outerR = isSide ? 27 : 31;
-        const innerR = isSide ? TABLE.sidePocketHoleRadius : TABLE.pocketHoleRadius;
 
-        // Outer dark leather pocket rim (袋口皮革襯墊圓弧)
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, outerR, 0, Math.PI * 2);
-        ctx.fillStyle = '#18181b';
-        ctx.fill();
-        ctx.strokeStyle = '#27272a';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+        if (isSide) {
+          // Side pockets: Recessed into rail, cutting flush with cloth edge (切桌布邊，絕不向呢布凸出)
+          const isTop = (p.side === 'top');
+          const holeCenterY = isTop ? 31 : 469;
+          const holeR = 21;
 
-        // Inner drop hole with 3D depth gradient (純黑深邃球袋底)
-        const holeGrad = ctx.createRadialGradient(
-          p.x, p.y, 2,
-          p.x, p.y, innerR
-        );
-        holeGrad.addColorStop(0, '#000000');
-        holeGrad.addColorStop(0.7, '#050505');
-        holeGrad.addColorStop(1, '#0f172a');
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, innerR, 0, Math.PI * 2);
-        ctx.fillStyle = holeGrad;
-        ctx.fill();
-
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#020617';
-        ctx.stroke();
-
-        // Soft 3D drop shadow ring inside pocket mouth
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, innerR - 1.5, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Target pocket highlight glow (目標袋口提示金色光圈)
-        if (idx === targetPocketIndex) {
+          // Clip to rail region only so pocket never bulges past cloth edge
           ctx.beginPath();
-          ctx.arc(p.x, p.y, innerR + 7, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)';
-          ctx.lineWidth = 2.5;
-          ctx.setLineDash([5, 4]);
+          if (isTop) {
+            ctx.rect(midX - 36, 0, 72, TABLE.top);
+          } else {
+            ctx.rect(midX - 36, TABLE.bottom, 72, canvas.height - TABLE.bottom);
+          }
+          ctx.clip();
+
+          // Outer dark leather rim in rail
+          ctx.beginPath();
+          ctx.arc(p.x, holeCenterY, 26, 0, Math.PI * 2);
+          ctx.fillStyle = '#18181b';
+          ctx.fill();
+          ctx.strokeStyle = '#27272a';
+          ctx.lineWidth = 1.5;
           ctx.stroke();
-          ctx.setLineDash([]);
+
+          // Inner drop hole with 3D depth gradient
+          const holeGrad = ctx.createRadialGradient(
+            p.x, holeCenterY, 2,
+            p.x, holeCenterY, holeR
+          );
+          holeGrad.addColorStop(0, '#000000');
+          holeGrad.addColorStop(0.7, '#050505');
+          holeGrad.addColorStop(1, '#0f172a');
+
+          ctx.beginPath();
+          ctx.arc(p.x, holeCenterY, holeR, 0, Math.PI * 2);
+          ctx.fillStyle = holeGrad;
+          ctx.fill();
+
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#020617';
+          ctx.stroke();
+
+          // Soft 3D drop shadow inside pocket mouth
+          ctx.beginPath();
+          ctx.arc(p.x, holeCenterY, holeR - 1.5, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.restore();
+
+          // Target pocket highlight glow (目標袋口提示金色光圈)
+          if (idx === targetPocketIndex) {
+            ctx.save();
+            ctx.beginPath();
+            if (isTop) {
+              ctx.arc(p.x, TABLE.top, 24, 0, Math.PI);
+            } else {
+              ctx.arc(p.x, TABLE.bottom, 24, Math.PI, Math.PI * 2);
+            }
+            ctx.strokeStyle = 'rgba(250, 204, 21, 0.9)';
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([5, 4]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+          }
+        } else {
+          // Corner pockets: Classic circular deep black pockets
+          const outerR = 31;
+          const innerR = TABLE.pocketHoleRadius;
+
+          // Outer dark leather pocket rim
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, outerR, 0, Math.PI * 2);
+          ctx.fillStyle = '#18181b';
+          ctx.fill();
+          ctx.strokeStyle = '#27272a';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // Inner drop hole with 3D depth gradient
+          const holeGrad = ctx.createRadialGradient(
+            p.x, p.y, 2,
+            p.x, p.y, innerR
+          );
+          holeGrad.addColorStop(0, '#000000');
+          holeGrad.addColorStop(0.7, '#050505');
+          holeGrad.addColorStop(1, '#0f172a');
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, innerR, 0, Math.PI * 2);
+          ctx.fillStyle = holeGrad;
+          ctx.fill();
+
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = idx === targetPocketIndex ? '#fde047' : '#020617';
+          ctx.stroke();
+
+          // Soft 3D drop shadow ring inside pocket mouth
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, innerR - 1.5, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Target pocket highlight glow
+          if (idx === targetPocketIndex) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, innerR + 7, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)';
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([5, 4]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+          ctx.restore();
         }
-        ctx.restore();
       });
 
       // 5. Diamond Sights (木框上的鑽石刻度點)
@@ -4646,9 +4762,9 @@
       // --- 1. Jump Shot Trajectory Preview ---
       if (cueType === 'jump') {
         const thetaZ = (elevationAngle * Math.PI) / 180;
-        const totalSpd = (shotPower / 100) * 32.5;
-        const vXY = totalSpd * Math.cos(thetaZ) * 0.92;
-        const vZ = totalSpd * Math.sin(thetaZ) * 0.68;
+        const totalSpd = (shotPower / 100) * 28.0;
+        const vXY = totalSpd * Math.cos(thetaZ) * 0.90;
+        const vZ = totalSpd * Math.sin(thetaZ) * 0.65;
         const g = 0.60;
         // Total flight duration (in frames, 60fps) until z returns to 0
         const tLand = (2 * vZ) / g;
@@ -4763,7 +4879,7 @@
         ctx.beginPath();
         let simX = cueBall.x;
         let simY = cueBall.y;
-        const totalSpd = (shotPower / 100) * 26.0;
+        const totalSpd = (shotPower / 100) * 23.0;
         let simVx = dirX * totalSpd;
         let simVy = dirY * totalSpd;
         let simCurve = (spinX || 0.8) * 0.35;
