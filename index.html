@@ -623,64 +623,35 @@
       justify-content: space-between;
     }
 
-    /* Cue Ball Spin & Contact Point Control */
-    .direct-spin-panel {
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 10px 14px;
-      margin-top: 6px;
-      margin-bottom: 8px;
-    }
-
-    .spin-panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.6);
-    }
-
-    .direct-spin-content {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .direct-spin-presets {
+    /* Cue Ball Spin & Contact Point Control (Sidebar & Direct Shortcuts) */
+    .spin-control-layout {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      flex: 1;
-      min-width: 280px;
-    }
-
-    @media (max-width: 768px) {
-      .direct-spin-presets {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      grid-template-columns: 130px 1fr;
+      gap: 12px;
+      align-items: center;
     }
 
     .cue-ball-pad-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
-      flex-shrink: 0;
+      gap: 6px;
     }
 
     canvas#spinPadCanvas {
-      width: 105px;
-      height: 105px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.55);
       border: 2px solid #38bdf8;
       touch-action: none;
+    }
+
+    .spin-presets {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
     }
 
     .preset-btn {
@@ -708,16 +679,59 @@
       font-weight: 800 !important;
     }
 
-    .direct-spin-content .spin-readout {
-      flex: 1 1 100%;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 0.82rem;
-      border-left: 3px solid #facc15;
-      color: #cbd5e1;
+    .spin-readout {
+      grid-column: 1 / -1;
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 0.86rem;
+      border-left: 4px solid #facc15;
       line-height: 1.45;
-      margin-top: 4px;
+    }
+
+    /* Quick Spin Shortcuts in Table Direct Controls */
+    .quick-spin-shortcuts {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 4px 0 6px 0;
+      padding: 6px 10px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid #334155;
+      border-radius: 10px;
+    }
+
+    .spin-pill-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    .spin-pill {
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #cbd5e1;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .spin-pill:hover {
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    .spin-pill.active {
+      background: #f59e0b !important;
+      color: #0f172a !important;
+      border-color: #fde047 !important;
+      font-weight: 800 !important;
     }
 
     /* Power & Shoot Controls */
@@ -1138,10 +1152,9 @@
     }
 
     /* =========================================================================
-       8號 / 9號 比賽模式專用：放大撞球桌布，僅保留必要控制（選桿、力道、角度微調、出桿）
+       8號 / 9號 比賽模式專用：精緻雙欄對戰佈局（球桌 + 即時打點下塞側邊欄）
        ========================================================================= */
     body.match-mode-expanded .coach-banner,
-    body.match-mode-expanded .control-sidebar,
     body.match-mode-expanded #levelSelectorBar,
     body.match-mode-expanded #sandboxBar,
     body.match-mode-expanded .helpers-bar {
@@ -1149,35 +1162,43 @@
     }
 
     body.match-mode-expanded .main-container {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      max-width: 1280px !important;
+      display: grid !important;
+      grid-template-columns: 1fr 340px !important;
+      gap: 16px !important;
+      max-width: 1320px !important;
       width: 100% !important;
-      padding: 12px 18px 24px 18px !important;
+      margin: 0 auto !important;
+      padding: 10px 16px 24px !important;
     }
 
     body.match-mode-expanded .stage-area {
       width: 100% !important;
-      max-width: 1220px !important;
+      max-width: 940px !important;
       align-items: center !important;
-      gap: 12px !important;
+      gap: 10px !important;
     }
 
     body.match-mode-expanded .table-wrapper {
-      max-width: 1180px !important;
+      max-width: 920px !important;
       width: 100% !important;
-      border-radius: 26px !important;
-      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.75), 0 0 0 4px #0f172a !important;
+      border-radius: 22px !important;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 0 3px #0f172a !important;
     }
 
     body.match-mode-expanded .table-direct-controls {
-      max-width: 1180px !important;
+      max-width: 920px !important;
       width: 100% !important;
       background: rgba(15, 23, 42, 0.94) !important;
       border: 1.5px solid #334155 !important;
       border-radius: 16px !important;
-      padding: 14px 18px !important;
+      padding: 10px 14px !important;
+    }
+
+    @media (max-width: 960px) {
+      body.match-mode-expanded .main-container {
+        display: flex !important;
+        flex-direction: column !important;
+      }
     }
   </style>
 </head>
@@ -1351,37 +1372,18 @@
             <span style="font-size:0.84rem; color:#fde047; font-weight:800;" id="elevationText">飛躍高度: ~98px (跨越障礙球)</span>
           </div>
 
-          <!-- Direct Cue Ball Hit Point & Spin Control (母球打點與下塞控制) -->
-          <div class="direct-spin-panel" id="directSpinPanel">
-            <div class="spin-panel-header">
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <span style="font-size:0.92rem; font-weight:800; color:#38bdf8;">🎯 母球打點與下塞控制 (Spin & English)：</span>
-                <span id="spinCoordLabel" style="font-size:0.82rem; color:#fde047; font-weight:800; background:rgba(250,204,21,0.15); padding:2px 8px; border-radius:6px; border:1px solid rgba(250,204,21,0.3);">正中桿 (0, 0)</span>
-              </div>
-              <span style="font-size:0.78rem; color:#94a3b8;">💡 點擊或滑動白球自訂打點，或點選下方桿法快捷鍵</span>
+          <!-- Quick Spin Shortcuts in Direct Controls (直接控制列下塞快捷) -->
+          <div class="quick-spin-shortcuts">
+            <span style="font-size:0.84rem; font-weight:800; color:#38bdf8;">🎯 下塞打點快捷：</span>
+            <div class="spin-pill-group">
+              <button class="spin-pill active" id="quickSpinCenter" onclick="setSpinPreset(0, 0)">🎯 中桿 (定桿)</button>
+              <button class="spin-pill" id="quickSpinFollow" onclick="setSpinPreset(0, 0.72)">⬆️ 推桿 (往前)</button>
+              <button class="spin-pill" id="quickSpinDraw" onclick="setSpinPreset(0, -0.78)">⬇️ 拉桿 (倒退)</button>
+              <button class="spin-pill" id="quickSpinLeft" onclick="setSpinPreset(-0.72, 0)">⬅️ 左塞</button>
+              <button class="spin-pill" id="quickSpinRight" onclick="setSpinPreset(0.72, 0)">➡️ 右塞</button>
+              <button class="spin-pill" id="quickSpinTopRight" onclick="setSpinPreset(0.6, 0.6)">↗️ 右上塞</button>
             </div>
-
-            <div class="direct-spin-content">
-              <div class="cue-ball-pad-wrap">
-                <canvas id="spinPadCanvas" width="110" height="110"></canvas>
-              </div>
-
-              <div class="direct-spin-presets">
-                <button class="preset-btn active" id="presetCenter" onclick="setSpinPreset(0, 0)">🎯 中桿 (定桿)</button>
-                <button class="preset-btn" id="presetFollow" onclick="setSpinPreset(0, 0.72)">⬆️ 推桿 (往前追)</button>
-                <button class="preset-btn" id="presetDraw" onclick="setSpinPreset(0, -0.78)">⬇️ 拉桿 (倒退嚕)</button>
-                <button class="preset-btn" id="presetLeftSpin" onclick="setSpinPreset(-0.72, 0)">⬅️ 左塞 (左旋轉)</button>
-                <button class="preset-btn" id="presetRightSpin" onclick="setSpinPreset(0.72, 0)">➡️ 右塞 (右旋轉)</button>
-                <button class="preset-btn" id="presetTopRight" onclick="setSpinPreset(0.6, 0.6)">↗️ 右上順塞</button>
-                <button class="preset-btn" id="presetTopLeft" onclick="setSpinPreset(-0.6, 0.6)">↖️ 左上順塞</button>
-                <button class="preset-btn" onclick="setSpinPreset(0, 0)" style="border-color:#38bdf8; color:#38bdf8;">🔄 重設中桿</button>
-              </div>
-
-              <div class="spin-readout" id="spinReadout">
-                <strong>🎯 目前桿法：正中桿（定桿）</strong><br/>
-                打在白球正中間，白球撞到子球或顆星時不會額外往前衝或倒退，最穩定！
-              </div>
-            </div>
+            <span id="quickSpinLabel" style="font-size:0.8rem; color:#fde047; font-weight:800;">中桿 / 無側塞</span>
           </div>
 
           <div class="slider-label">
@@ -1456,24 +1458,31 @@
 
     <!-- Right Column: Spin Pad + Power + Real-time Physics Guide -->
     <div class="control-sidebar">
-      <!-- Educational English & Spin Strategy Card in Sidebar -->
+      <!-- Spin / English Control Card (母球打點與下塞控制) -->
       <div class="panel-card">
         <div class="panel-title">
-          <span>💡 撞球桿法與下塞速查寶典</span>
-          <span style="font-size:0.78rem; color:#fde047; font-weight:700;">四年級科學筆記</span>
+          <span>🎯 母球打點與下塞控制</span>
+          <span style="font-size:0.78rem; color:#94a3b8; font-weight:600;">點擊或拖曳白球改變打點</span>
         </div>
-        <div style="font-size:0.84rem; line-height:1.5; color:#cbd5e1; display:flex; flex-direction:column; gap:8px;">
-          <div style="background:#0f172a; padding:8px 10px; border-radius:8px; border-left:3px solid #38bdf8;">
-            <b style="color:#38bdf8;">🎯 正中桿 (Center Ball)：</b>打在白球幾何中心。擊球時無上下逆旋，碰撞後白球嚴格沿著 90° 切線方向滾動，路徑最好預測！
+
+        <div class="spin-control-layout">
+          <div class="cue-ball-pad-wrap">
+            <canvas id="spinPadCanvas" width="120" height="120"></canvas>
+            <span style="font-size:0.78rem; color:#fde047; font-weight:800;" id="spinCoordLabel">正中桿 (0, 0)</span>
           </div>
-          <div style="background:#0f172a; padding:8px 10px; border-radius:8px; border-left:3px solid #22c55e;">
-            <b style="color:#22c55e;">⬆️ 推桿 (Follow / Top Spin)：</b>打在白球上半部。撞擊目標球後母球像小火車一樣<b>向前追趕</b>，適合連續進攻！
+
+          <div class="spin-presets">
+            <button class="preset-btn active" id="presetCenter" onclick="setSpinPreset(0, 0)">🎯 中桿 (定桿)</button>
+            <button class="preset-btn" id="presetFollow" onclick="setSpinPreset(0, 0.72)">⬆️ 推桿 (往前追)</button>
+            <button class="preset-btn" id="presetDraw" onclick="setSpinPreset(0, -0.78)">⬇️ 拉桿 (倒退嚕)</button>
+            <button class="preset-btn" id="presetLeftSpin" onclick="setSpinPreset(-0.72, 0)">⬅️ 左塞 (左旋轉)</button>
+            <button class="preset-btn" id="presetRightSpin" onclick="setSpinPreset(0.72, 0)">➡️ 右塞 (右旋轉)</button>
+            <button class="preset-btn" id="presetTopRight" onclick="setSpinPreset(0.6, 0.6)">↗️ 右上順塞</button>
           </div>
-          <div style="background:#0f172a; padding:8px 10px; border-radius:8px; border-left:3px solid #f97316;">
-            <b style="color:#f97316;">⬇️ 拉桿 (Draw / Back Spin)：</b>打在白球下半部。強烈的逆時針後旋與呢布摩擦，撞球後像倒車一樣<b>向後縮回</b>！
-          </div>
-          <div style="background:#0f172a; padding:8px 10px; border-radius:8px; border-left:3px solid #eab308;">
-            <b style="color:#eab308;">⬅️ 左塞／➡️ 右塞 (English)：</b>打在白球側翼。撞上顆星時橫向自轉摩擦橡膠條產生強烈側向抓地力，使反彈角度大幅偏轉！
+
+          <div class="spin-readout" id="spinReadout">
+            <strong>🎯 目前桿法：正中桿（定桿）</strong><br/>
+            打在白球正中間，白球撞到子球或顆星時不會額外往前衝或倒退，最穩定！
           </div>
         </div>
       </div>
@@ -3362,31 +3371,28 @@
     }
 
     function updatePresetButtonsState(sx, sy) {
-      document.querySelectorAll('.direct-spin-presets .preset-btn').forEach(btn => {
+      document.querySelectorAll('.preset-btn, .spin-pill').forEach(btn => {
         btn.classList.remove('active');
       });
       const eps = 0.06;
+      const activate = (ids) => {
+        ids.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('active');
+        });
+      };
       if (Math.abs(sx - 0) < eps && Math.abs(sy - 0) < eps) {
-        const b = document.getElementById('presetCenter');
-        if (b) b.classList.add('active');
+        activate(['presetCenter', 'quickSpinCenter']);
       } else if (Math.abs(sx - 0) < eps && Math.abs(sy - 0.72) < eps) {
-        const b = document.getElementById('presetFollow');
-        if (b) b.classList.add('active');
+        activate(['presetFollow', 'quickSpinFollow']);
       } else if (Math.abs(sx - 0) < eps && Math.abs(sy - (-0.78)) < eps) {
-        const b = document.getElementById('presetDraw');
-        if (b) b.classList.add('active');
+        activate(['presetDraw', 'quickSpinDraw']);
       } else if (Math.abs(sx - (-0.72)) < eps && Math.abs(sy - 0) < eps) {
-        const b = document.getElementById('presetLeftSpin');
-        if (b) b.classList.add('active');
+        activate(['presetLeftSpin', 'quickSpinLeft']);
       } else if (Math.abs(sx - 0.72) < eps && Math.abs(sy - 0) < eps) {
-        const b = document.getElementById('presetRightSpin');
-        if (b) b.classList.add('active');
+        activate(['presetRightSpin', 'quickSpinRight']);
       } else if (Math.abs(sx - 0.6) < eps && Math.abs(sy - 0.6) < eps) {
-        const b = document.getElementById('presetTopRight');
-        if (b) b.classList.add('active');
-      } else if (Math.abs(sx - (-0.6)) < eps && Math.abs(sy - 0.6) < eps) {
-        const b = document.getElementById('presetTopLeft');
-        if (b) b.classList.add('active');
+        activate(['presetTopRight', 'quickSpinTopRight']);
       }
     }
 
@@ -3427,6 +3433,7 @@
 
     function updateSpinExplanation() {
       const coordLabel = document.getElementById('spinCoordLabel');
+      const quickLabel = document.getElementById('quickSpinLabel');
       const readout = document.getElementById('spinReadout');
       const detail = document.getElementById('physicsDetailText');
 
@@ -3438,7 +3445,9 @@
       if (spinX < -0.22) sideName = '左塞 (逆時針側旋)';
       else if (spinX > 0.22) sideName = '右塞 (順時針側旋)';
 
-      if (coordLabel) coordLabel.textContent = `${vertName} / ${sideName}`;
+      const fullTitle = `${vertName} / ${sideName}`;
+      if (coordLabel) coordLabel.textContent = fullTitle;
+      if (quickLabel) quickLabel.textContent = fullTitle;
 
       let desc = '';
       if (Math.abs(spinX) <= 0.22 && Math.abs(spinY) <= 0.28) {
