@@ -623,33 +623,64 @@
       justify-content: space-between;
     }
 
-    /* Cue Ball Spin Selector */
-    .spin-control-layout {
-      display: grid;
-      grid-template-columns: 130px 1fr;
-      gap: 14px;
+    /* Cue Ball Spin & Contact Point Control */
+    .direct-spin-panel {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+
+    .spin-panel-header {
+      display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+    }
+
+    .direct-spin-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .direct-spin-presets {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      flex: 1;
+      min-width: 280px;
+    }
+
+    @media (max-width: 768px) {
+      .direct-spin-presets {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     .cue-ball-pad-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      flex-shrink: 0;
     }
 
     canvas#spinPadCanvas {
-      width: 120px;
-      height: 120px;
+      width: 105px;
+      height: 105px;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
-    }
-
-    .spin-presets {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+      border: 2px solid #38bdf8;
+      touch-action: none;
     }
 
     .preset-btn {
@@ -670,14 +701,23 @@
       color: #38bdf8;
     }
 
-    .spin-readout {
-      grid-column: 1 / -1;
-      background: #0f172a;
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 0.86rem;
-      border-left: 4px solid #facc15;
+    .preset-btn.active {
+      background: #f59e0b !important;
+      color: #0f172a !important;
+      border-color: #fde047 !important;
+      font-weight: 800 !important;
+    }
+
+    .direct-spin-content .spin-readout {
+      flex: 1 1 100%;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      border-left: 3px solid #facc15;
+      color: #cbd5e1;
       line-height: 1.45;
+      margin-top: 4px;
     }
 
     /* Power & Shoot Controls */
@@ -1311,6 +1351,39 @@
             <span style="font-size:0.84rem; color:#fde047; font-weight:800;" id="elevationText">飛躍高度: ~98px (跨越障礙球)</span>
           </div>
 
+          <!-- Direct Cue Ball Hit Point & Spin Control (母球打點與下塞控制) -->
+          <div class="direct-spin-panel" id="directSpinPanel">
+            <div class="spin-panel-header">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:0.92rem; font-weight:800; color:#38bdf8;">🎯 母球打點與下塞控制 (Spin & English)：</span>
+                <span id="spinCoordLabel" style="font-size:0.82rem; color:#fde047; font-weight:800; background:rgba(250,204,21,0.15); padding:2px 8px; border-radius:6px; border:1px solid rgba(250,204,21,0.3);">正中桿 (0, 0)</span>
+              </div>
+              <span style="font-size:0.78rem; color:#94a3b8;">💡 點擊或滑動白球自訂打點，或點選下方桿法快捷鍵</span>
+            </div>
+
+            <div class="direct-spin-content">
+              <div class="cue-ball-pad-wrap">
+                <canvas id="spinPadCanvas" width="110" height="110"></canvas>
+              </div>
+
+              <div class="direct-spin-presets">
+                <button class="preset-btn active" id="presetCenter" onclick="setSpinPreset(0, 0)">🎯 中桿 (定桿)</button>
+                <button class="preset-btn" id="presetFollow" onclick="setSpinPreset(0, 0.72)">⬆️ 推桿 (往前追)</button>
+                <button class="preset-btn" id="presetDraw" onclick="setSpinPreset(0, -0.78)">⬇️ 拉桿 (倒退嚕)</button>
+                <button class="preset-btn" id="presetLeftSpin" onclick="setSpinPreset(-0.72, 0)">⬅️ 左塞 (左旋轉)</button>
+                <button class="preset-btn" id="presetRightSpin" onclick="setSpinPreset(0.72, 0)">➡️ 右塞 (右旋轉)</button>
+                <button class="preset-btn" id="presetTopRight" onclick="setSpinPreset(0.6, 0.6)">↗️ 右上順塞</button>
+                <button class="preset-btn" id="presetTopLeft" onclick="setSpinPreset(-0.6, 0.6)">↖️ 左上順塞</button>
+                <button class="preset-btn" onclick="setSpinPreset(0, 0)" style="border-color:#38bdf8; color:#38bdf8;">🔄 重設中桿</button>
+              </div>
+
+              <div class="spin-readout" id="spinReadout">
+                <strong>🎯 目前桿法：正中桿（定桿）</strong><br/>
+                打在白球正中間，白球撞到子球或顆星時不會額外往前衝或倒退，最穩定！
+              </div>
+            </div>
+          </div>
+
           <div class="slider-label">
             <span style="display:flex; align-items:center; gap:6px;">
               <span>💪 出桿力道 (Power)：</span>
@@ -1383,31 +1456,24 @@
 
     <!-- Right Column: Spin Pad + Power + Real-time Physics Guide -->
     <div class="control-sidebar">
-      <!-- Spin / English Control Card -->
+      <!-- Educational English & Spin Strategy Card in Sidebar -->
       <div class="panel-card">
         <div class="panel-title">
-          <span>🎯 母球打點與下塞控制</span>
-          <span style="font-size:0.78rem; color:#94a3b8; font-weight:600;">點擊白球改變打點</span>
+          <span>💡 撞球桿法與下塞速查寶典</span>
+          <span style="font-size:0.78rem; color:#fde047; font-weight:700;">四年級科學筆記</span>
         </div>
-
-        <div class="spin-control-layout">
-          <div class="cue-ball-pad-wrap">
-            <canvas id="spinPadCanvas" width="120" height="120"></canvas>
-            <span style="font-size:0.76rem; color:#cbd5e1;" id="spinCoordLabel">正中桿 (0, 0)</span>
+        <div style="font-size:0.84rem; line-height:1.5; color:#cbd5e1; display:flex; flex-direction:column; gap:8px;">
+          <div style="background:#0f172a; padding:8px 10px; border-radius:8px; border-left:3px solid #38bdf8;">
+            <b style="color:#38bdf8;">🎯 正中桿 (Center Ball)：</b>打在白球幾何中心。擊球時無上下逆旋，碰撞後白球嚴格沿著 90° 切線方向滾動，路徑最好預測！
           </div>
-
-          <div class="spin-presets">
-            <button class="preset-btn" onclick="setSpinPreset(0, 0)">🎯 中桿 (定桿)</button>
-            <button class="preset-btn" onclick="setSpinPreset(0, 0.72)">⬆️ 推桿 (往前追)</button>
-            <button class="preset-btn" onclick="setSpinPreset(0, -0.78)">⬇️ 拉桿 (倒退嚕)</button>
-            <button class="preset-btn" onclick="setSpinPreset(-0.72, 0)">⬅️ 左塞 (左旋轉)</button>
-            <button class="preset-btn" onclick="setSpinPreset(0.72, 0)">➡️ 右塞 (右旋轉)</button>
-            <button class="preset-btn" onclick="setSpinPreset(0.6, 0.6)">↗️ 右上順塞</button>
+          <div style="background:#0f172a; padding:8px 10px; border-radius:8px; border-left:3px solid #22c55e;">
+            <b style="color:#22c55e;">⬆️ 推桿 (Follow / Top Spin)：</b>打在白球上半部。撞擊目標球後母球像小火車一樣<b>向前追趕</b>，適合連續進攻！
           </div>
-
-          <div class="spin-readout" id="spinReadout">
-            <strong>🎯 目前桿法：正中桿（定桿）</strong><br/>
-            打在白球正中間，白球撞到子球或顆星時不會額外往前衝或倒退，最穩定！
+          <div style="background:#0f172a; padding:8px 10px; border-radius:8px; border-left:3px solid #f97316;">
+            <b style="color:#f97316;">⬇️ 拉桿 (Draw / Back Spin)：</b>打在白球下半部。強烈的逆時針後旋與呢布摩擦，撞球後像倒車一樣<b>向後縮回</b>！
+          </div>
+          <div style="background:#0f172a; padding:8px 10px; border-radius:8px; border-left:3px solid #eab308;">
+            <b style="color:#eab308;">⬅️ 左塞／➡️ 右塞 (English)：</b>打在白球側翼。撞上顆星時橫向自轉摩擦橡膠條產生強烈側向抓地力，使反彈角度大幅偏轉！
           </div>
         </div>
       </div>
@@ -2079,15 +2145,15 @@
             createBall(8, 460, 330)
           ];
           setSpinPreset(0, 0);
-          shotPower = 90;
+          shotPower = 65;
           updatePowerSlider();
-          aimAngle = -0.92;
+          aimAngle = -0.875;
         },
         demo: () => {
           setSpinPreset(0, 0);
-          shotPower = 90;
+          shotPower = 65;
           updatePowerSlider();
-          aimAngle = -0.92;
+          aimAngle = -0.875;
         },
         checkWin: (stats) => stats.pocketedBalls.includes(4) && stats.cushionHits >= 1 && !stats.cueScratch
       },
@@ -2102,15 +2168,15 @@
             createBall(5, 760, 145)
           ];
           setSpinPreset(0.85, 0.25);
-          shotPower = 84;
+          shotPower = 65;
           updatePowerSlider();
-          aimAngle = -0.885;
+          aimAngle = -0.905;
         },
         demo: () => {
           setSpinPreset(0.85, 0.25);
-          shotPower = 84;
+          shotPower = 65;
           updatePowerSlider();
-          aimAngle = -0.885;
+          aimAngle = -0.905;
         },
         checkWin: (stats) => stats.pocketedBalls.includes(5) && !stats.cueScratch
       },
@@ -2126,7 +2192,7 @@
             createBall(9, 730, 360)
           ];
           setSpinPreset(0, -0.85);
-          shotPower = 46;
+          shotPower = 42;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[1], POCKETS[1]);
         },
@@ -2135,14 +2201,14 @@
           const b9 = balls.find(b => b.id === 9 && !b.pocketed);
           if (b1) {
             setSpinPreset(0, -0.85);
-            shotPower = 46;
+            shotPower = 42;
             updatePowerSlider();
             aimAtGhostBall(balls[0], b1, POCKETS[1]);
           } else if (b9) {
             setSpinPreset(0, 0);
-            shotPower = 64;
+            shotPower = 55;
             updatePowerSlider();
-            aimAtGhostBall(balls[0], b9, POCKETS[5]);
+            aimAtGhostBall(balls[0], b9, POCKETS[2]);
           }
         },
         checkWin: () => {
@@ -2164,14 +2230,14 @@
           ];
           selectCueType('jump');
           setElevationAngle(45);
-          shotPower = 82;
+          shotPower = 72;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls[2], POCKETS[2]);
         },
         demo: () => {
           selectCueType('jump');
           setElevationAngle(45);
-          shotPower = 82;
+          shotPower = 72;
           updatePowerSlider();
           aimAtGhostBall(balls[0], balls.find(b => b.id === 7), POCKETS[2]);
         },
@@ -3295,11 +3361,41 @@
       spinCtx.stroke();
     }
 
+    function updatePresetButtonsState(sx, sy) {
+      document.querySelectorAll('.direct-spin-presets .preset-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      const eps = 0.06;
+      if (Math.abs(sx - 0) < eps && Math.abs(sy - 0) < eps) {
+        const b = document.getElementById('presetCenter');
+        if (b) b.classList.add('active');
+      } else if (Math.abs(sx - 0) < eps && Math.abs(sy - 0.72) < eps) {
+        const b = document.getElementById('presetFollow');
+        if (b) b.classList.add('active');
+      } else if (Math.abs(sx - 0) < eps && Math.abs(sy - (-0.78)) < eps) {
+        const b = document.getElementById('presetDraw');
+        if (b) b.classList.add('active');
+      } else if (Math.abs(sx - (-0.72)) < eps && Math.abs(sy - 0) < eps) {
+        const b = document.getElementById('presetLeftSpin');
+        if (b) b.classList.add('active');
+      } else if (Math.abs(sx - 0.72) < eps && Math.abs(sy - 0) < eps) {
+        const b = document.getElementById('presetRightSpin');
+        if (b) b.classList.add('active');
+      } else if (Math.abs(sx - 0.6) < eps && Math.abs(sy - 0.6) < eps) {
+        const b = document.getElementById('presetTopRight');
+        if (b) b.classList.add('active');
+      } else if (Math.abs(sx - (-0.6)) < eps && Math.abs(sy - 0.6) < eps) {
+        const b = document.getElementById('presetTopLeft');
+        if (b) b.classList.add('active');
+      }
+    }
+
     function setSpinPreset(sx, sy) {
       spinX = sx;
       spinY = sy;
       drawSpinPad();
       updateSpinExplanation();
+      updatePresetButtonsState(sx, sy);
     }
 
     spinCanvas.addEventListener('pointerdown', handleSpinPadPointer);
@@ -3326,6 +3422,7 @@
       spinY = Number(dy.toFixed(2));
       drawSpinPad();
       updateSpinExplanation();
+      updatePresetButtonsState(spinX, spinY);
     }
 
     function updateSpinExplanation() {
@@ -3341,7 +3438,7 @@
       if (spinX < -0.22) sideName = '左塞 (逆時針側旋)';
       else if (spinX > 0.22) sideName = '右塞 (順時針側旋)';
 
-      coordLabel.textContent = `${vertName} / ${sideName}`;
+      if (coordLabel) coordLabel.textContent = `${vertName} / ${sideName}`;
 
       let desc = '';
       if (Math.abs(spinX) <= 0.22 && Math.abs(spinY) <= 0.28) {
@@ -3354,8 +3451,8 @@
         if (spinX > 0.22) parts.push(`<b>➡️ 右塞效果：</b>白球撞上顆星時，會因為旋轉抓地力<b>往右邊方向偏轉彈出</b>！`);
         desc = parts.join('<br/>');
       }
-      readout.innerHTML = desc;
-      detail.innerHTML = desc;
+      if (readout) readout.innerHTML = desc;
+      if (detail) detail.innerHTML = desc;
     }
 
     // =========================================================================
@@ -3626,10 +3723,16 @@
       const launchAngle = aimAngle;
       playCueStrikeSound(shotPower / 100);
 
+      const normP = shotPower / 100;
+      // Smooth power curve: 0~70% gives fine control, 70~100% unleashes full break/multi-rail power
+      const powerScale = normP <= 0.70
+        ? (normP * 0.85)
+        : (0.595 + ((normP - 0.70) / 0.30) * 0.405);
+
       if (cueType === 'jump') {
         // Jump Shot: Downward compression against slate bed creates airborne launch
         const thetaZ = (elevationAngle * Math.PI) / 180;
-        const totalSpd = (shotPower / 100) * 28.0;
+        const totalSpd = powerScale * 35.0;
         const vXY = totalSpd * Math.cos(thetaZ) * 0.90;
         const vZ = totalSpd * Math.sin(thetaZ) * 0.65;
         cueBall.vx = Math.cos(launchAngle) * vXY;
@@ -3639,15 +3742,15 @@
         cueBall.curveRate = 0;
       } else if (cueType === 'masse') {
         // Masse Shot: Steep vertical stick with heavy side english curves across the felt
-        const totalSpd = (shotPower / 100) * 23.0;
+        const totalSpd = powerScale * 29.0;
         cueBall.vx = Math.cos(launchAngle) * totalSpd;
         cueBall.vy = Math.sin(launchAngle) * totalSpd;
         cueBall.vz = 0;
         cueBall.z = 0;
-        cueBall.curveRate = (spinX || 0.8) * 0.35;
+        cueBall.curveRate = (spinX || 0.8) * 0.38;
       } else {
-        // Standard Shot: Natural rolling speed
-        const speed = (shotPower / 100) * 24.5;
+        // Standard Shot: Up to 38.5 px/frame at 100% power for explosive break & multi-rail shots
+        const speed = powerScale * 38.5;
         cueBall.vx = Math.cos(launchAngle) * speed;
         cueBall.vy = Math.sin(launchAngle) * speed;
         cueBall.vz = 0;
@@ -3668,6 +3771,9 @@
       const g = 0.60;
 
       for (let s = 0; s < subSteps; s++) {
+        // Track remaining fraction of substep per ball when CCD advances to Time-Of-Impact
+        const remStep = new Array(balls.length).fill(1.0);
+
         // 0. Update Vertical Z Physics & Curve Rates
         for (const b of balls) {
           if (b.pocketed) continue;
@@ -3703,10 +3809,10 @@
               continue;
             }
 
-            const dp1x = b1.vx / subSteps;
-            const dp1y = b1.vy / subSteps;
-            const dp2x = b2.vx / subSteps;
-            const dp2y = b2.vy / subSteps;
+            const dp1x = (b1.vx / subSteps) * remStep[i];
+            const dp1y = (b1.vy / subSteps) * remStep[i];
+            const dp2x = (b2.vx / subSteps) * remStep[j];
+            const dp2y = (b2.vy / subSteps) * remStep[j];
 
             const d0x = b2.x - b1.x;
             const d0y = b2.y - b1.y;
@@ -3722,7 +3828,7 @@
               if (d > 0.0001) {
                 nx = d0x / d;
                 ny = d0y / d;
-                const overlap = (minDist - d) * 0.5;
+                const overlap = (minDist - d) * 0.5 + 0.01;
                 b1.x -= nx * overlap;
                 b1.y -= ny * overlap;
                 b2.x += nx * overlap;
@@ -3745,11 +3851,18 @@
                     b1.y += dp1y * tau;
                     b2.x += dp2x * tau;
                     b2.y += dp2y * tau;
+                    remStep[i] *= Math.max(0, 1 - tau);
+                    remStep[j] *= Math.max(0, 1 - tau);
 
                     const curDist = Math.hypot(b2.x - b1.x, b2.y - b1.y);
                     if (curDist > 0.0001) {
                       nx = (b2.x - b1.x) / curDist;
                       ny = (b2.y - b1.y) / curDist;
+                      // Tiny separation epsilon to prevent re-triggering overlap in next substep
+                      b1.x -= nx * 0.01;
+                      b1.y -= ny * 0.01;
+                      b2.x += nx * 0.01;
+                      b2.y += ny * 0.01;
                     } else {
                       nx = 1; ny = 0;
                     }
@@ -3779,20 +3892,21 @@
               if (p > 0) {
                 playBallClackSound(p / 14);
 
-                b1.vx -= p * nx * 0.92;
-                b1.vy -= p * ny * 0.92;
-                b2.vx += p * nx * 0.92;
-                b2.vy += p * ny * 0.92;
+                // Authentic phenolic resin ball collision impulse (restitution e ≈ 0.97 -> impulse factor 0.985)
+                b1.vx -= p * nx * 0.985;
+                b1.vy -= p * ny * 0.985;
+                b2.vx += p * nx * 0.985;
+                b2.vy += p * ny * 0.985;
 
                 if (cue && Math.abs(cue.spinY) > 0.08 && preSpeed > 0.5) {
-                  const spinForce = cue.spinY * preSpeed * 0.52;
+                  const spinForce = cue.spinY * preSpeed * 0.55;
                   if (cue.spinY > 0) {
                     cue.vx += preDirX * spinForce;
                     cue.vy += preDirY * spinForce;
                   } else {
                     const sign = cue === b1 ? 1 : -1;
-                    cue.vx += nx * sign * spinForce * 1.15;
-                    cue.vy += ny * sign * spinForce * 1.15;
+                    cue.vx += nx * sign * spinForce * 1.18;
+                    cue.vy += ny * sign * spinForce * 1.18;
                   }
                   cue.spinY *= 0.25;
                 }
@@ -3801,32 +3915,33 @@
           }
         }
 
-        // 2. Advance horizontal positions
-        for (const b of balls) {
+        // 2. Advance remaining horizontal positions & apply realistic worsted cloth friction
+        for (let idx = 0; idx < balls.length; idx++) {
+          const b = balls[idx];
           if (b.pocketed) continue;
-          b.x += b.vx / subSteps;
-          b.y += b.vy / subSteps;
+          b.x += (b.vx / subSteps) * remStep[idx];
+          b.y += (b.vy / subSteps) * remStep[idx];
 
-          // Realistic cloth rolling friction (prevents endless rolling and bouncing)
-          b.vx *= Math.pow(0.983, 1 / subSteps);
-          b.vy *= Math.pow(0.983, 1 / subSteps);
+          // Balanced cloth friction: preserves high-speed punch while stopping cleanly at low speed
+          b.vx *= Math.pow(0.991, 1 / subSteps);
+          b.vy *= Math.pow(0.991, 1 / subSteps);
           const curSpd = Math.hypot(b.vx, b.vy);
           if (curSpd > 0.001) {
-            const decel = 0.022 / subSteps;
+            const decel = 0.026 / subSteps;
             const newSpd = Math.max(0, curSpd - decel);
             const factor = newSpd / curSpd;
             b.vx *= factor;
             b.vy *= factor;
           }
-          b.spinX *= Math.pow(0.985, 1 / subSteps);
-          b.spinY *= Math.pow(0.983, 1 / subSteps);
+          b.spinX *= Math.pow(0.990, 1 / subSteps);
+          b.spinY *= Math.pow(0.988, 1 / subSteps);
 
-          // Pockets
+          // Pockets (smooth gravity funnel + clean capture)
           for (const p of POCKETS) {
             const distToPocket = Math.hypot(b.x - p.x, b.y - p.y);
 
-            if (distToPocket < TABLE.pocketFunnelRadius) {
-              const pullFactor = (1 - distToPocket / TABLE.pocketFunnelRadius) * 0.45;
+            if (distToPocket < TABLE.pocketFunnelRadius && b.z < TABLE.ballRadius * 1.2) {
+              const pullFactor = (1 - distToPocket / TABLE.pocketFunnelRadius) * 0.52;
               b.vx += ((p.x - b.x) / distToPocket) * pullFactor;
               b.vy += ((p.y - b.y) / distToPocket) * pullFactor;
             }
@@ -3851,7 +3966,7 @@
           }
           if (b.pocketed) continue;
 
-          // Cushions
+          // Cushions (K-66 profile rubber rails: 0.78 normal restitution + 0.96 tangential grip + English gear effect)
           const r = TABLE.ballRadius;
           const midX = TABLE.left + TABLE.width / 2;
           const cornerCut = 34;
@@ -3870,20 +3985,24 @@
           if (onTopRail && b.y - r < TABLE.top) {
             b.y = TABLE.top + r;
             const impactSpd = Math.abs(b.vy);
-            b.vy = -b.vy * 0.68;
+            const preSpd = Math.hypot(b.vx, b.vy);
+            b.vy = -b.vy * 0.80;
+            b.vx = b.vx * 0.80;
             if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
-              b.vx += b.spinX * 3.8;
+              b.vx += b.spinX * preSpd * 0.42;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           } else if (onBottomRail && b.y + r > TABLE.bottom) {
             b.y = TABLE.bottom - r;
             const impactSpd = Math.abs(b.vy);
-            b.vy = -b.vy * 0.68;
+            const preSpd = Math.hypot(b.vx, b.vy);
+            b.vy = -b.vy * 0.80;
+            b.vx = b.vx * 0.80;
             if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
-              b.vx -= b.spinX * 3.8;
+              b.vx -= b.spinX * preSpd * 0.42;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
@@ -3892,27 +4011,31 @@
           if (onLeftRail && b.x - r < TABLE.left) {
             b.x = TABLE.left + r;
             const impactSpd = Math.abs(b.vx);
-            b.vx = -b.vx * 0.68;
+            const preSpd = Math.hypot(b.vx, b.vy);
+            b.vx = -b.vx * 0.80;
+            b.vy = b.vy * 0.80;
             if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
-              b.vy -= b.spinX * 3.8;
+              b.vy -= b.spinX * preSpd * 0.42;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           } else if (onRightRail && b.x + r > TABLE.right) {
             b.x = TABLE.right - r;
             const impactSpd = Math.abs(b.vx);
-            b.vx = -b.vx * 0.68;
+            const preSpd = Math.hypot(b.vx, b.vy);
+            b.vx = -b.vx * 0.80;
+            b.vy = b.vy * 0.80;
             if (impactSpd > 0.4) playCushionThudSound(impactSpd / 12);
             if (b.id === 0) {
-              b.vy += b.spinX * 3.8;
+              b.vy += b.spinX * preSpd * 0.42;
               b.spinX *= 0.65;
               shotStats.cushionHits++;
             }
           }
 
-          // Boundary safe-guard: pocket any ball traveling outside table boundaries
-          if (b.x < TABLE.left - 14 || b.x > TABLE.right + 14 || b.y < TABLE.top - 14 || b.y > TABLE.bottom + 14) {
+          // Pocket mouth capture & boundary safe-guard: any ball entering pocket mouth beyond cloth edge drops cleanly
+          if (b.x < TABLE.left - 4 || b.x > TABLE.right + 4 || b.y < TABLE.top - 4 || b.y > TABLE.bottom + 4) {
             b.pocketed = true;
             b.vx = 0; b.vy = 0; b.z = 0; b.vz = 0;
             playPocketDropSound();
@@ -3943,7 +4066,7 @@
       for (const b of balls) {
         if (b.pocketed) continue;
         const spd = Math.hypot(b.vx, b.vy);
-        if (spd < 0.22 && b.z === 0) {
+        if (spd < 0.20 && b.z === 0) {
           b.vx = 0;
           b.vy = 0;
         } else {
@@ -4758,11 +4881,15 @@
       const r = TABLE.ballRadius;
       const dirX = Math.cos(aimAngle);
       const dirY = Math.sin(aimAngle);
+      const normP = shotPower / 100;
+      const powerScale = normP <= 0.70
+        ? (normP * 0.85)
+        : (0.595 + ((normP - 0.70) / 0.30) * 0.405);
 
       // --- 1. Jump Shot Trajectory Preview ---
       if (cueType === 'jump') {
         const thetaZ = (elevationAngle * Math.PI) / 180;
-        const totalSpd = (shotPower / 100) * 28.0;
+        const totalSpd = powerScale * 35.0;
         const vXY = totalSpd * Math.cos(thetaZ) * 0.90;
         const vZ = totalSpd * Math.sin(thetaZ) * 0.65;
         const g = 0.60;
@@ -4879,10 +5006,10 @@
         ctx.beginPath();
         let simX = cueBall.x;
         let simY = cueBall.y;
-        const totalSpd = (shotPower / 100) * 23.0;
+        const totalSpd = powerScale * 29.0;
         let simVx = dirX * totalSpd;
         let simVy = dirY * totalSpd;
-        let simCurve = (spinX || 0.8) * 0.35;
+        let simCurve = (spinX || 0.8) * 0.38;
         ctx.moveTo(simX, simY);
         for (let st = 0; st < 36; st++) {
           simVx += -Math.sin(aimAngle) * simCurve;
@@ -5027,9 +5154,10 @@
           ctx.setLineDash([]);
         }
 
-        let spinRefX = refX * 0.84;
-        let spinRefY = refY * 0.84;
-        const englishShift = (spinX * 3.8) / ((shotPower / 100) * 16.5 + 0.1);
+        // Exact match with stepPhysics cushion rebound formula (0.80 mirror + 0.42 * spinX gear shift)
+        let spinRefX = refX * 0.80;
+        let spinRefY = refY * 0.80;
+        const englishShift = spinX * 0.42;
 
         if (hitRailSide === 'top') spinRefX += englishShift;
         else if (hitRailSide === 'bottom') spinRefX -= englishShift;
