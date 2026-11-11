@@ -2058,7 +2058,8 @@
       cushionHits: 0,
       pocketedBalls: [],
       cueScratch: false,
-      spinUsed: { x: 0, y: 0 }
+      spinUsed: { x: 0, y: 0 },
+      clusterBreakTriggered: false
     };
 
     // Visual Toggles
@@ -3720,7 +3721,8 @@
         pocketedBalls: [],
         cueScratch: false,
         cueTypeUsed: cueType,
-        spinUsed: { x: spinX, y: spinY }
+        spinUsed: { x: spinX, y: spinY },
+        clusterBreakTriggered: false
       };
 
       trails = balls.filter(b => !b.pocketed).map(b => ({
@@ -3901,11 +3903,79 @@
               if (p > 0) {
                 playBallClackSound(p / 14);
 
-                // Authentic phenolic resin ball collision impulse (restitution e ≈ 0.97 -> impulse factor 0.985)
-                b1.vx -= p * nx * 0.985;
-                b1.vy -= p * ny * 0.985;
-                b2.vx += p * nx * 0.985;
-                b2.vy += p * ny * 0.985;
+                let isClusterBreak = false;
+                // Cluster Elastic Shockwave Dispersion for Break Shots:
+                // When cue ball strikes a dense cluster of balls (>= 4 mutually touching balls),
+                // compressive elastic strain propagates through the cluster, dispersing all balls outward
+                // and eliminating the 1D Newton's cradle artifact where interior balls freeze.
+                if (cue && p > 3.0 && !shotStats.clusterBreakTriggered) {
+                  const targetBall = (b1.id === 0 ? b2 : b1);
+                  const cluster = [];
+                  const queue = [targetBall];
+                  const visited = new Set([targetBall.id]);
+                  const touchThresh = TABLE.ballRadius * 2 * 1.35;
+                  while (queue.length > 0) {
+                    const cur = queue.shift();
+                    cluster.push(cur);
+                    for (const b of balls) {
+                      if (b.id === 0 || b.pocketed || visited.has(b.id)) continue;
+                      if (Math.hypot(b.x - cur.x, b.y - cur.y) <= touchThresh) {
+                        visited.add(b.id);
+                        queue.push(b);
+                      }
+                    }
+                  }
+
+                  if (cluster.length >= 4) {
+                    isClusterBreak = true;
+                    shotStats.clusterBreakTriggered = true;
+                    const breakPower = p;
+                    const apexX = targetBall.x;
+                    const apexY = targetBall.y;
+                    const shotDirX = preDirX || 1;
+                    const shotDirY = preDirY || 0;
+                    const shotAngle = Math.atan2(shotDirY, shotDirX);
+
+                    for (const cb of cluster) {
+                      const dx = cb.x - apexX;
+                      const dy = cb.y - apexY;
+                      const distFromApex = Math.hypot(dx, dy);
+                      const baseSpeed = Math.min(22, breakPower * 0.44);
+
+                      if (cb.id === targetBall.id) {
+                        cb.vx = shotDirX * baseSpeed * 0.90;
+                        cb.vy = shotDirY * baseSpeed * 0.90;
+                      } else if (cb.id === 8) {
+                        // In 8-ball break, ball 8 is in the protected center; it scatters moderately without early scratch
+                        const relAngle = Math.atan2(dy, dx || 0.001);
+                        const speed = baseSpeed * 0.52;
+                        cb.vx = Math.cos(relAngle) * speed;
+                        cb.vy = Math.sin(relAngle) * speed;
+                      } else {
+                        const relAngle = Math.atan2(dy, dx || 0.001);
+                        const spreadAngle = shotAngle + (relAngle - shotAngle) * 1.32;
+                        const distFactor = Math.max(0.65, 1.15 - (distFromApex / (TABLE.ballRadius * 12)));
+                        const jitter = 0.88 + ((cb.id * 17) % 25) / 100;
+                        const speed = baseSpeed * distFactor * jitter;
+
+                        cb.vx = Math.cos(spreadAngle) * speed;
+                        cb.vy = Math.sin(spreadAngle) * speed;
+                      }
+                    }
+
+                    // Cue ball stops near the center of table with realistic slight rebound
+                    cue.vx = -shotDirX * (breakPower * 0.06);
+                    cue.vy = (Math.random() - 0.5) * 1.5;
+                  }
+                }
+
+                if (!isClusterBreak) {
+                  // Authentic phenolic resin ball collision impulse (restitution e ≈ 0.97 -> impulse factor 0.985)
+                  b1.vx -= p * nx * 0.985;
+                  b1.vy -= p * ny * 0.985;
+                  b2.vx += p * nx * 0.985;
+                  b2.vy += p * ny * 0.985;
+                }
 
                 if (cue && Math.abs(cue.spinY) > 0.08 && preSpeed > 0.5) {
                   const spinForce = cue.spinY * preSpeed * 0.55;
