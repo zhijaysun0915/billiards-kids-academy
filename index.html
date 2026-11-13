@@ -3812,186 +3812,155 @@
           }
         }
 
-        // 1. Continuous Collision Detection (CCD) for Ball-to-Ball Collisions
+        // 1. Continuous Collision Detection (CCD) + Symmetric Multi-Body Contact Solver
+        // Pass A: CCD for high-speed single/cut-shot precision (zero tunneling, exact contact normal)
         for (let i = 0; i < balls.length; i++) {
           for (let j = i + 1; j < balls.length; j++) {
             const b1 = balls[i];
             const b2 = balls[j];
             if (b1.pocketed || b2.pocketed) continue;
+            if (b1.z > TABLE.ballRadius * 1.25 || b2.z > TABLE.ballRadius * 1.25) continue;
 
-            // Airborne Clearance check: if either ball is flying higher than 1.25x radius, fly cleanly over!
-            if (b1.z > TABLE.ballRadius * 1.25 || b2.z > TABLE.ballRadius * 1.25) {
-              continue;
-            }
+            const d0x = b2.x - b1.x;
+            const d0y = b2.y - b1.y;
+            const d0Sq = d0x * d0x + d0y * d0y;
+            if (d0Sq <= minDistSq) continue; // Handled by Pass B iterative contact solver
 
             const dp1x = (b1.vx / subSteps) * remStep[i];
             const dp1y = (b1.vy / subSteps) * remStep[i];
             const dp2x = (b2.vx / subSteps) * remStep[j];
             const dp2y = (b2.vy / subSteps) * remStep[j];
-
-            const d0x = b2.x - b1.x;
-            const d0y = b2.y - b1.y;
-            const d0Sq = d0x * d0x + d0y * d0y;
-
             const ddx = dp2x - dp1x;
             const ddy = dp2y - dp1y;
 
-            let nx = 0, ny = 0, collided = false;
+            const A = ddx * ddx + ddy * ddy;
+            const B = 2 * (d0x * ddx + d0y * ddy);
+            const C = d0Sq - minDistSq;
 
-            if (d0Sq <= minDistSq) {
-              const d = Math.sqrt(d0Sq);
-              if (d > 0.0001) {
-                nx = d0x / d;
-                ny = d0y / d;
-                const overlap = (minDist - d) * 0.5 + 0.01;
-                b1.x -= nx * overlap;
-                b1.y -= ny * overlap;
-                b2.x += nx * overlap;
-                b2.y += ny * overlap;
-              } else {
-                nx = 1; ny = 0;
-              }
-              collided = true;
-            } else {
-              const A = ddx * ddx + ddy * ddy;
-              const B = 2 * (d0x * ddx + d0y * ddy);
-              const C = d0Sq - minDistSq;
+            if (A > 1e-9 && B < 0) {
+              const disc = B * B - 4 * A * C;
+              if (disc >= 0) {
+                const tau = (-B - Math.sqrt(disc)) / (2 * A);
+                if (tau >= 0 && tau <= 1.0001) {
+                  b1.x += dp1x * tau;
+                  b1.y += dp1y * tau;
+                  b2.x += dp2x * tau;
+                  b2.y += dp2y * tau;
+                  remStep[i] *= Math.max(0, 1 - tau);
+                  remStep[j] *= Math.max(0, 1 - tau);
 
-              if (A > 1e-9 && B < 0) {
-                const disc = B * B - 4 * A * C;
-                if (disc >= 0) {
-                  const tau = (-B - Math.sqrt(disc)) / (2 * A);
-                  if (tau >= 0 && tau <= 1.0001) {
-                    b1.x += dp1x * tau;
-                    b1.y += dp1y * tau;
-                    b2.x += dp2x * tau;
-                    b2.y += dp2y * tau;
-                    remStep[i] *= Math.max(0, 1 - tau);
-                    remStep[j] *= Math.max(0, 1 - tau);
-
-                    const curDist = Math.hypot(b2.x - b1.x, b2.y - b1.y);
-                    if (curDist > 0.0001) {
-                      nx = (b2.x - b1.x) / curDist;
-                      ny = (b2.y - b1.y) / curDist;
-                      // Tiny separation epsilon to prevent re-triggering overlap in next substep
-                      b1.x -= nx * 0.01;
-                      b1.y -= ny * 0.01;
-                      b2.x += nx * 0.01;
-                      b2.y += ny * 0.01;
-                    } else {
-                      nx = 1; ny = 0;
-                    }
-                    collided = true;
+                  const curDist = Math.hypot(b2.x - b1.x, b2.y - b1.y);
+                  let nx = 1, ny = 0;
+                  if (curDist > 0.0001) {
+                    nx = (b2.x - b1.x) / curDist;
+                    ny = (b2.y - b1.y) / curDist;
                   }
-                }
-              }
-            }
 
-            if (collided) {
-              if (b1.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b2.id;
-              if (b2.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b1.id;
+                  if (b1.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b2.id;
+                  if (b2.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b1.id;
 
-              const cue = b1.id === 0 ? b1 : (b2.id === 0 ? b2 : null);
-              let preSpeed = 0, preDirX = 0, preDirY = 0;
-              if (cue) {
-                preSpeed = Math.hypot(cue.vx, cue.vy);
-                if (preSpeed > 0.1) {
-                  preDirX = cue.vx / preSpeed;
-                  preDirY = cue.vy / preSpeed;
-                }
-              }
-
-              const kx = b1.vx - b2.vx;
-              const ky = b1.vy - b2.vy;
-              const p = nx * kx + ny * ky;
-              if (p > 0) {
-                playBallClackSound(p / 14);
-
-                let isClusterBreak = false;
-                // Cluster Elastic Shockwave Dispersion for Break Shots:
-                // When cue ball strikes a dense cluster of balls (>= 4 mutually touching balls),
-                // compressive elastic strain propagates through the cluster, dispersing all balls outward
-                // and eliminating the 1D Newton's cradle artifact where interior balls freeze.
-                if (cue && p > 6.5 && !shotStats.clusterBreakTriggered) {
-                  const targetBall = (b1.id === 0 ? b2 : b1);
-                  const cluster = [];
-                  const queue = [targetBall];
-                  const visited = new Set([targetBall.id]);
-                  const touchThresh = TABLE.ballRadius * 2 * 1.35;
-                  while (queue.length > 0) {
-                    const cur = queue.shift();
-                    cluster.push(cur);
-                    for (const b of balls) {
-                      if (b.id === 0 || b.pocketed || visited.has(b.id)) continue;
-                      if (Math.hypot(b.x - cur.x, b.y - cur.y) <= touchThresh) {
-                        visited.add(b.id);
-                        queue.push(b);
-                      }
+                  const cue = b1.id === 0 ? b1 : (b2.id === 0 ? b2 : null);
+                  let preSpeed = 0, preDirX = 0, preDirY = 0;
+                  if (cue) {
+                    preSpeed = Math.hypot(cue.vx, cue.vy);
+                    if (preSpeed > 0.1) {
+                      preDirX = cue.vx / preSpeed;
+                      preDirY = cue.vy / preSpeed;
                     }
                   }
 
-                  if (cluster.length >= 4) {
-                    isClusterBreak = true;
-                    shotStats.clusterBreakTriggered = true;
-                    const breakPower = p;
-                    const apexX = targetBall.x;
-                    const apexY = targetBall.y;
-                    const shotDirX = preDirX || 1;
-                    const shotDirY = preDirY || 0;
-                    const shotAngle = Math.atan2(shotDirY, shotDirX);
+                  const kx = b1.vx - b2.vx;
+                  const ky = b1.vy - b2.vy;
+                  const p = nx * kx + ny * ky;
+                  if (p > 0) {
+                    playBallClackSound(p / 14);
+                    // Authentic phenolic resin ball collision impulse (restitution e ≈ 0.97 -> impulse factor 0.985)
+                    b1.vx -= p * nx * 0.985;
+                    b1.vy -= p * ny * 0.985;
+                    b2.vx += p * nx * 0.985;
+                    b2.vy += p * ny * 0.985;
 
-                    for (const cb of cluster) {
-                      const dx = cb.x - apexX;
-                      const dy = cb.y - apexY;
-                      const distFromApex = Math.hypot(dx, dy);
-                      const baseSpeed = Math.min(18.5, breakPower * 0.42);
-
-                      if (cb.id === targetBall.id) {
-                        cb.vx = shotDirX * baseSpeed * 0.90;
-                        cb.vy = shotDirY * baseSpeed * 0.90;
-                      } else if (cb.id === 8) {
-                        // In 8-ball break, ball 8 is in the protected center; it scatters moderately without early scratch
-                        const relAngle = Math.atan2(dy, dx || 0.001);
-                        const speed = baseSpeed * 0.52;
-                        cb.vx = Math.cos(relAngle) * speed;
-                        cb.vy = Math.sin(relAngle) * speed;
-                      } else {
-                        const relAngle = Math.atan2(dy, dx || 0.001);
-                        const spreadAngle = shotAngle + (relAngle - shotAngle) * 1.18;
-                        const distFactor = Math.max(0.65, 1.15 - (distFromApex / (TABLE.ballRadius * 12)));
-                        const jitter = 0.88 + ((cb.id * 17) % 25) / 100;
-                        const speed = baseSpeed * distFactor * jitter;
-
-                        cb.vx = Math.cos(spreadAngle) * speed;
-                        cb.vy = Math.sin(spreadAngle) * speed;
-                      }
+                    if (cue && Math.abs(cue.spinY) > 0.05 && preSpeed > 0.5) {
+                      // Authentic follow/draw: spin transfers smoothly via cloth friction after impact,
+                      // producing a true parabolic curve from the 90-deg tangent line on cut shots
+                      cue.followDirX = preDirX;
+                      cue.followDirY = preDirY;
+                      cue.followVel = cue.spinY * preSpeed * 0.72;
+                      cue.spinY *= 0.15;
                     }
-
-                    // Cue ball stops near the center of table with realistic slight rebound
-                    cue.vx = -shotDirX * (breakPower * 0.05);
-                    cue.vy = ny * (cue === b1 ? -1 : 1) * 1.5;
                   }
-                }
-
-                if (!isClusterBreak) {
-                  // Authentic phenolic resin ball collision impulse (restitution e ≈ 0.97 -> impulse factor 0.985)
-                  b1.vx -= p * nx * 0.985;
-                  b1.vy -= p * ny * 0.985;
-                  b2.vx += p * nx * 0.985;
-                  b2.vy += p * ny * 0.985;
-                }
-
-                if (cue && Math.abs(cue.spinY) > 0.05 && preSpeed > 0.5) {
-                  // Authentic follow/draw: spin transfers smoothly via cloth friction after impact,
-                  // producing a true parabolic curve from the 90-deg tangent line on cut shots
-                  cue.followDirX = preDirX;
-                  cue.followDirY = preDirY;
-                  cue.followVel = cue.spinY * preSpeed * 0.72;
-                  cue.spinY *= 0.15;
                 }
               }
             }
           }
+        }
+
+        // Pass B: Symmetric Iterative Multi-Body Contact Solver
+        // Resolves simultaneous rack & cluster collisions with alternating sweep direction
+        // so momentum propagates naturally and symmetrically through all balls without order bias.
+        for (let iter = 0; iter < 6; iter++) {
+          let anyContact = false;
+          const reverse = (iter % 2 === 1);
+          for (let iIdx = 0; iIdx < balls.length; iIdx++) {
+            const i = reverse ? (balls.length - 1 - iIdx) : iIdx;
+            for (let jIdx = iIdx + 1; jIdx < balls.length; jIdx++) {
+              const j = reverse ? (balls.length - 1 - jIdx) : jIdx;
+              const b1 = balls[i];
+              const b2 = balls[j];
+              if (b1.pocketed || b2.pocketed) continue;
+              if (b1.z > TABLE.ballRadius * 1.25 || b2.z > TABLE.ballRadius * 1.25) continue;
+
+              const dx = b2.x - b1.x;
+              const dy = b2.y - b1.y;
+              const dSq = dx * dx + dy * dy;
+              if (dSq <= minDistSq) {
+                anyContact = true;
+                const d = Math.sqrt(dSq);
+                let nx = 1, ny = 0;
+                if (d > 0.0001) {
+                  nx = dx / d;
+                  ny = dy / d;
+                  const overlap = (minDist - d) * 0.5 + 0.005;
+                  b1.x -= nx * overlap;
+                  b1.y -= ny * overlap;
+                  b2.x += nx * overlap;
+                  b2.y += ny * overlap;
+                }
+
+                if (b1.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b2.id;
+                if (b2.id === 0 && shotStats.firstHitBall === null) shotStats.firstHitBall = b1.id;
+
+                const cue = b1.id === 0 ? b1 : (b2.id === 0 ? b2 : null);
+                let preSpeed = 0, preDirX = 0, preDirY = 0;
+                if (cue) {
+                  preSpeed = Math.hypot(cue.vx, cue.vy);
+                  if (preSpeed > 0.1) {
+                    preDirX = cue.vx / preSpeed;
+                    preDirY = cue.vy / preSpeed;
+                  }
+                }
+
+                const kx = b1.vx - b2.vx;
+                const ky = b1.vy - b2.vy;
+                const p = nx * kx + ny * ky;
+                if (p > 0) {
+                  if (iter === 0) playBallClackSound(p / 14);
+                  b1.vx -= p * nx * 0.985;
+                  b1.vy -= p * ny * 0.985;
+                  b2.vx += p * nx * 0.985;
+                  b2.vy += p * ny * 0.985;
+
+                  if (cue && Math.abs(cue.spinY) > 0.05 && preSpeed > 0.5) {
+                    cue.followDirX = preDirX;
+                    cue.followDirY = preDirY;
+                    cue.followVel = cue.spinY * preSpeed * 0.72;
+                    cue.spinY *= 0.15;
+                  }
+                }
+              }
+            }
+          }
+          if (!anyContact) break;
         }
 
         // 2. Advance remaining horizontal positions & apply realistic worsted cloth friction
