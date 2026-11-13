@@ -2796,7 +2796,7 @@
       const apexX = 620;
       const apexY = 250;
       const r = TABLE.ballRadius;
-      const d = r * 2.05;
+      const d = r * 2.008;
       const h = d * Math.cos(Math.PI / 6); // column offset
 
       // Standard positions: 1 at apex, 9 in center
@@ -2847,7 +2847,7 @@
       const apexX = 600;
       const apexY = 250;
       const r = TABLE.ballRadius;
-      const d = r * 2.05;
+      const d = r * 2.008;
       const h = d * Math.cos(Math.PI / 6);
 
       // Triangle arrangement with 8 ball in center (row 2, idx 1)
@@ -3708,6 +3708,7 @@
         }
       }
       if (!cueBall) return;
+      cueBall._breakDamped = false;
 
       isSimulating = true;
       setBallInHandMode(false); // Finished positioning
@@ -3961,6 +3962,91 @@
             }
           }
           if (!anyContact) break;
+        }
+
+        // Pass C: Elastic Rack Decompression (only for >= 5-ball rack clusters on high-speed break)
+        // Eliminates the 60-degree Newton's cradle null-space where interior balls (8-ball, center balls)
+        // stay motionless, and models heavy-rack energy absorption on the cue ball, while strictly conserving KE.
+        if (balls.length >= 6) {
+          let fastBall = false;
+          for (let k = 0; k < balls.length; k++) {
+            const b = balls[k];
+            if (!b.pocketed && (b.vx * b.vx + b.vy * b.vy) > 140) { fastBall = true; break; }
+          }
+          if (fastBall) {
+            const compDistSq = (minDist * 1.08) * (minDist * 1.08);
+            const inRack = new Uint8Array(balls.length);
+            let rackCount = 0;
+            for (let i = 1; i < balls.length; i++) {
+              if (balls[i].pocketed) continue;
+              for (let j = i + 1; j < balls.length; j++) {
+                if (balls[j].pocketed) continue;
+                const dx = balls[j].x - balls[i].x, dy = balls[j].y - balls[i].y;
+                if (dx * dx + dy * dy <= compDistSq) {
+                  if (!inRack[i]) { inRack[i] = 1; rackCount++; }
+                  if (!inRack[j]) { inRack[j] = 1; rackCount++; }
+                }
+              }
+            }
+            let rackStruck = false;
+            let preKE = 0;
+            let cx = 0, cy = 0;
+            if (rackCount >= 5) {
+              for (let k = 1; k < balls.length; k++) {
+                if (inRack[k]) {
+                  const s2 = balls[k].vx * balls[k].vx + balls[k].vy * balls[k].vy;
+                  preKE += s2;
+                  if (s2 > 16) rackStruck = true;
+                  cx += balls[k].x;
+                  cy += balls[k].y;
+                }
+              }
+            }
+            if (rackStruck && preKE > 100) {
+              cx /= rackCount;
+              cy /= rackCount;
+              let needDecomp = false;
+              for (let k = 1; k < balls.length; k++) {
+                if (inRack[k] && Math.hypot(balls[k].vx, balls[k].vy) < 4.0) {
+                  needDecomp = true;
+                  const rx = balls[k].x - cx;
+                  const ry = balls[k].y - cy;
+                  const rLen = Math.hypot(rx, ry);
+                  const ang = rLen > 1 ? Math.atan2(ry, rx) : ((k * 2.39996) % (Math.PI * 2));
+                  const jitterAng = ang + (((k * 7) % 5) - 2) * 0.22;
+                  const boost = 4.6 + ((k * 3) % 3) * 0.9;
+                  balls[k].vx += Math.cos(jitterAng) * boost;
+                  balls[k].vy += Math.sin(jitterAng) * boost;
+                }
+              }
+              if (needDecomp) {
+                let postKE = 0;
+                for (let k = 1; k < balls.length; k++) {
+                  if (inRack[k]) postKE += balls[k].vx * balls[k].vx + balls[k].vy * balls[k].vy;
+                }
+                const targetKE = preKE * 0.90;
+                if (postKE > targetKE && postKE > 1e-6) {
+                  const sc = Math.sqrt(targetKE / postKE);
+                  for (let k = 1; k < balls.length; k++) {
+                    if (inRack[k]) {
+                      balls[k].vx *= sc;
+                      balls[k].vy *= sc;
+                    }
+                  }
+                }
+              }
+              // Realistic break cue-ball squat/damping when colliding with heavy multi-ball rack
+              const cueB = balls[0];
+              if (cueB && !cueB.pocketed && !cueB._breakDamped) {
+                const cSpd = Math.hypot(cueB.vx, cueB.vy);
+                if (cSpd > 5.0) {
+                  cueB.vx *= 0.62;
+                  cueB.vy *= 0.62;
+                  cueB._breakDamped = true;
+                }
+              }
+            }
+          }
         }
 
         // 2. Advance remaining horizontal positions & apply realistic worsted cloth friction
