@@ -5256,14 +5256,11 @@
         }
       }
 
-      const showFullAimLine = aids.ghost || aids.bounce;
-      const aimLineEndX = showFullAimLine ? ghostX : (cueBall.x + dirX * Math.min(hitDist, 75));
-      const aimLineEndY = showFullAimLine ? ghostY : (cueBall.y + dirY * Math.min(hitDist, 75));
       ctx.beginPath();
       ctx.moveTo(cueBall.x, cueBall.y);
-      ctx.lineTo(aimLineEndX, aimLineEndY);
-      ctx.strokeStyle = showFullAimLine ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.40)';
-      ctx.lineWidth = showFullAimLine ? 2.2 : 1.6;
+      ctx.lineTo(ghostX, ghostY);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.80)';
+      ctx.lineWidth = 2.0;
       ctx.setLineDash([7, 5]);
       ctx.stroke();
       ctx.setLineDash([]);
