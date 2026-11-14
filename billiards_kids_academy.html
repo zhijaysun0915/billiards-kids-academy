@@ -1262,6 +1262,7 @@
           <span id="p2GroupTag" style="font-size:0.75rem; color:#fde047;"></span>
           <span class="match-score-num" id="p2Score">0</span>
         </div>
+        <button class="btn-action" id="matchAidsBtn" style="padding:4px 8px; font-size:0.78rem; background:#334155;" onclick="toggleMatchAids()" title="在對戰模式開啟或關閉假想球與所有瞄準輔助線">🎯 輔助線: 關</button>
         <button class="btn-action" style="padding:4px 8px; font-size:0.78rem;" onclick="resetMatchGame()">重開局</button>
       </div>
     </div>
@@ -2553,6 +2554,11 @@
         matchScoreboard.style.display = 'flex';
         tableTurnBanner.style.display = 'flex';
         demoBtn.style.display = 'none';
+        aids.ghost = false;
+        aids.bounce = false;
+        aids.trail = false;
+        aids.diamonds = true;
+        syncAidTogglesUI();
       } else {
         document.body.classList.remove('match-mode-expanded');
         levelBar.style.display = mode === 'academy' ? 'flex' : 'none';
@@ -2561,6 +2567,11 @@
         matchScoreboard.style.display = 'none';
         tableTurnBanner.style.display = 'none';
         demoBtn.style.display = 'block';
+        aids.ghost = true;
+        aids.bounce = true;
+        aids.trail = true;
+        aids.diamonds = true;
+        syncAidTogglesUI();
       }
 
       if (mode === 'academy') {
@@ -3499,15 +3510,36 @@
       document.getElementById('angleReadout').textContent = `角度: ${deg.toFixed(1)}°`;
     }
 
-    function toggleAid(key) {
-      aids[key] = !aids[key];
+    function syncAidTogglesUI() {
       const mapId = {
         ghost: 'toggleGhost',
         bounce: 'toggleBounce',
         trail: 'toggleTrail',
         diamonds: 'toggleDiamonds'
       };
-      document.getElementById(mapId[key]).classList.toggle('active', aids[key]);
+      for (const k of Object.keys(mapId)) {
+        const el = document.getElementById(mapId[k]);
+        if (el) el.classList.toggle('active', !!aids[k]);
+      }
+      const matchBtn = document.getElementById('matchAidsBtn');
+      if (matchBtn) {
+        const anyOn = aids.ghost || aids.bounce;
+        matchBtn.textContent = anyOn ? '🎯 輔助線: 開' : '🎯 輔助線: 關';
+        matchBtn.style.background = anyOn ? '#0284c7' : '#334155';
+      }
+    }
+
+    function toggleAid(key) {
+      aids[key] = !aids[key];
+      syncAidTogglesUI();
+    }
+
+    function toggleMatchAids() {
+      const turnOn = !(aids.ghost || aids.bounce);
+      aids.ghost = turnOn;
+      aids.bounce = turnOn;
+      aids.trail = turnOn;
+      syncAidTogglesUI();
     }
 
     function getCanvasMousePos(e) {
@@ -5035,7 +5067,7 @@
         : (0.595 + ((normP - 0.70) / 0.30) * 0.405);
 
       // --- 1. Jump Shot Trajectory Preview ---
-      if (cueType === 'jump') {
+      if (cueType === 'jump' && (aids.ghost || aids.bounce)) {
         const thetaZ = (elevationAngle * Math.PI) / 180;
         const totalSpd = powerScale * 35.0;
         const vXY = totalSpd * Math.cos(thetaZ) * 0.90;
@@ -5149,7 +5181,7 @@
       }
 
       // --- 2. Masse Shot Curve Trajectory Preview ---
-      if (cueType === 'masse') {
+      if (cueType === 'masse' && (aids.ghost || aids.bounce)) {
         ctx.save();
         ctx.beginPath();
         let simX = cueBall.x;
@@ -5224,11 +5256,14 @@
         }
       }
 
+      const showFullAimLine = aids.ghost || aids.bounce;
+      const aimLineEndX = showFullAimLine ? ghostX : (cueBall.x + dirX * Math.min(hitDist, 75));
+      const aimLineEndY = showFullAimLine ? ghostY : (cueBall.y + dirY * Math.min(hitDist, 75));
       ctx.beginPath();
       ctx.moveTo(cueBall.x, cueBall.y);
-      ctx.lineTo(ghostX, ghostY);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-      ctx.lineWidth = 2.2;
+      ctx.lineTo(aimLineEndX, aimLineEndY);
+      ctx.strokeStyle = showFullAimLine ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.40)';
+      ctx.lineWidth = showFullAimLine ? 2.2 : 1.6;
       ctx.setLineDash([7, 5]);
       ctx.stroke();
       ctx.setLineDash([]);
