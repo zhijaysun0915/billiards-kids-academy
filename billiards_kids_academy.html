@@ -1421,6 +1421,7 @@
         <div class="toggle-group">
           <span style="font-size:0.85rem; font-weight:800; color:#94a3b8;">🔍 科學透視輔助：</span>
           <button class="toggle-chip active" id="toggleGhost" onclick="toggleAid('ghost')">👻 假想球 (Ghost Ball)</button>
+          <button class="toggle-chip active" id="toggleObjectLine" onclick="toggleAid('objectLine')">🟡 子球目標線</button>
           <button class="toggle-chip active" id="toggleBounce" onclick="toggleAid('bounce')">📐 顆星反射預測線</button>
           <button class="toggle-chip active" id="toggleTrail" onclick="toggleAid('trail')">✨ 實際軌跡線</button>
           <button class="toggle-chip active" id="toggleDiamonds" onclick="toggleAid('diamonds')">💎 鑽石刻度尺 (0~8)</button>
@@ -2066,6 +2067,7 @@
     // Visual Toggles
     let aids = {
       ghost: true,
+      objectLine: true,
       bounce: true,
       trail: true,
       diamonds: true
@@ -2555,6 +2557,7 @@
         tableTurnBanner.style.display = 'flex';
         demoBtn.style.display = 'none';
         aids.ghost = false;
+        aids.objectLine = false;
         aids.bounce = false;
         aids.trail = false;
         aids.diamonds = true;
@@ -2568,6 +2571,7 @@
         tableTurnBanner.style.display = 'none';
         demoBtn.style.display = 'block';
         aids.ghost = true;
+        aids.objectLine = true;
         aids.bounce = true;
         aids.trail = true;
         aids.diamonds = true;
@@ -3513,6 +3517,7 @@
     function syncAidTogglesUI() {
       const mapId = {
         ghost: 'toggleGhost',
+        objectLine: 'toggleObjectLine',
         bounce: 'toggleBounce',
         trail: 'toggleTrail',
         diamonds: 'toggleDiamonds'
@@ -3537,6 +3542,7 @@
     function toggleMatchAids() {
       const turnOn = !(aids.ghost || aids.bounce);
       aids.ghost = turnOn;
+      aids.objectLine = false; // Match mode only shows cue-ball lines, never object-ball target line
       aids.bounce = turnOn;
       aids.trail = turnOn;
       syncAidTogglesUI();
@@ -5280,12 +5286,14 @@
         // Object Ball Target Line
         const obDirX = (hitBall.x - ghostX) / (2 * r);
         const obDirY = (hitBall.y - ghostY) / (2 * r);
-        ctx.beginPath();
-        ctx.moveTo(hitBall.x, hitBall.y);
-        ctx.lineTo(hitBall.x + obDirX * 190, hitBall.y + obDirY * 190);
-        ctx.strokeStyle = '#fde047';
-        ctx.lineWidth = 3;
-        ctx.stroke();
+        if (aids.objectLine && !currentMode.startsWith('match_')) {
+          ctx.beginPath();
+          ctx.moveTo(hitBall.x, hitBall.y);
+          ctx.lineTo(hitBall.x + obDirX * 190, hitBall.y + obDirY * 190);
+          ctx.strokeStyle = '#fde047';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
 
         // Cue Ball Tangent Line
         const dot = dirX * obDirX + dirY * obDirY;
