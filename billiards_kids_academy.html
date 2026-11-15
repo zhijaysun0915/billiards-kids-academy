@@ -4116,17 +4116,19 @@
           b.spinX *= Math.pow(0.990, 1 / subSteps);
           b.spinY *= Math.pow(0.988, 1 / subSteps);
 
-          // Pockets (subtle lip gravity + clean capture)
+          // Pockets (subtle lip gravity + clean capture; side pockets have tighter threshold so parallel rail shots don't get sucked in)
           for (const p of POCKETS) {
             const distToPocket = Math.hypot(b.x - p.x, b.y - p.y);
+            const funnelR = p.type === 'side' ? 25 : TABLE.pocketFunnelRadius;
+            const catchR = p.type === 'side' ? 21 : TABLE.pocketRadius;
 
-            if (distToPocket < TABLE.pocketFunnelRadius && b.z < TABLE.ballRadius * 1.2) {
-              const pullFactor = (1 - distToPocket / TABLE.pocketFunnelRadius) * (0.24 / subSteps);
+            if (distToPocket < funnelR && b.z < TABLE.ballRadius * 1.2) {
+              const pullFactor = (1 - distToPocket / funnelR) * (0.24 / subSteps);
               b.vx += ((p.x - b.x) / distToPocket) * pullFactor;
               b.vy += ((p.y - b.y) / distToPocket) * pullFactor;
             }
 
-            if (distToPocket < TABLE.pocketRadius && b.z < TABLE.ballRadius * 1.4) {
+            if (distToPocket < catchR && b.z < TABLE.ballRadius * 1.4) {
               b.pocketed = true;
               b.vx = 0;
               b.vy = 0;
