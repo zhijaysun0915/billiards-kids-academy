@@ -1152,46 +1152,156 @@
     }
 
     /* =========================================================================
-       8號 / 9號 比賽模式專用：精緻雙欄對戰佈局（球桌 + 即時打點下塞側邊欄）
+       8號 / 9號 比賽模式 & 全景滿版大球桌模式專用：極簡大球桌佈局（比照 Image 2 經典規格）
        ========================================================================= */
     body.match-mode-expanded .coach-banner,
     body.match-mode-expanded #levelSelectorBar,
     body.match-mode-expanded #sandboxBar,
-    body.match-mode-expanded .helpers-bar {
+    body.match-mode-expanded .helpers-bar,
+    body.match-mode-expanded .control-sidebar,
+    body.arcade-fullscreen .coach-banner,
+    body.arcade-fullscreen .control-sidebar,
+    body.arcade-fullscreen #levelSelectorBar,
+    body.arcade-fullscreen #sandboxBar,
+    body.arcade-fullscreen .helpers-bar {
       display: none !important;
     }
 
-    body.match-mode-expanded .main-container {
-      display: grid !important;
-      grid-template-columns: 1fr 340px !important;
-      gap: 16px !important;
-      max-width: 1320px !important;
-      width: 100% !important;
-      margin: 0 auto !important;
-      padding: 10px 16px 24px !important;
+    body.match-mode-expanded,
+    body.arcade-fullscreen {
+      background: #09090b !important;
     }
 
-    body.match-mode-expanded .stage-area {
-      width: 100% !important;
-      max-width: 940px !important;
+    body.match-mode-expanded .main-container,
+    body.arcade-fullscreen .main-container {
+      display: flex !important;
+      flex-direction: column !important;
       align-items: center !important;
-      gap: 10px !important;
+      max-width: 1440px !important;
+      width: 98vw !important;
+      padding: 8px 12px 24px 12px !important;
     }
 
-    body.match-mode-expanded .table-wrapper {
-      max-width: 920px !important;
+    body.match-mode-expanded .stage-area,
+    body.arcade-fullscreen .stage-area {
       width: 100% !important;
-      border-radius: 22px !important;
-      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 0 3px #0f172a !important;
+      max-width: 1380px !important;
+      align-items: center !important;
+      gap: 12px !important;
     }
 
-    body.match-mode-expanded .table-direct-controls {
-      max-width: 920px !important;
+    body.match-mode-expanded .table-wrapper,
+    body.arcade-fullscreen .table-wrapper {
+      max-width: 1360px !important;
       width: 100% !important;
-      background: rgba(15, 23, 42, 0.94) !important;
-      border: 1.5px solid #334155 !important;
-      border-radius: 16px !important;
-      padding: 10px 14px !important;
+      border-radius: 28px !important;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.9), 0 0 0 5px #020617 !important;
+    }
+
+    /* Image 2 經典街機風格底欄 HUD (Arcade HUD) */
+    .arcade-classic-hud {
+      width: 100%;
+      max-width: 920px;
+      background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+      border: 2px solid #78350f;
+      border-radius: 20px;
+      padding: 14px 18px 18px;
+      box-shadow: 0 14px 36px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.25s ease;
+    }
+
+    body.match-mode-expanded .arcade-classic-hud,
+    body.arcade-fullscreen .arcade-classic-hud {
+      max-width: 1360px !important;
+      border-color: #b45309;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.85), inset 0 2px 0 rgba(251, 191, 36, 0.3);
+    }
+
+    .arcade-stats-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 18px;
+      background: radial-gradient(ellipse at 50% 50%, #1c1917 0%, #09090b 100%);
+      border: 1.5px solid #451a03;
+      border-radius: 14px;
+      box-shadow: inset 0 3px 10px rgba(0,0,0,0.95);
+      flex-wrap: wrap;
+    }
+
+    .arcade-ball-tray {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #000000;
+      border: 1.5px solid #292524;
+      padding: 6px 14px;
+      border-radius: 999px;
+      min-width: 140px;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.95);
+    }
+
+    .tray-title {
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: #a8a29e;
+      letter-spacing: 1px;
+    }
+
+    .tray-slots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 22px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      max-width: 220px;
+    }
+
+    .mini-tray-ball {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 900;
+      color: #0f172a;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.9);
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .arcade-counter-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 110px;
+    }
+
+    .arcade-counter-label {
+      font-family: 'Cinzel', 'Georgia', serif;
+      font-size: 0.88rem;
+      font-weight: 900;
+      color: #fbbf24;
+      text-shadow: 0 1px 0 #78350f, 0 2px 4px rgba(0,0,0,0.9);
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    .arcade-counter-val {
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      font-size: 1.8rem;
+      line-height: 1.1;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(251, 191, 36, 0.75), 0 0 4px #f59e0b;
+      letter-spacing: 1px;
     }
 
     @media (max-width: 960px) {
@@ -1199,6 +1309,120 @@
         display: flex !important;
         flex-direction: column !important;
       }
+=======
+    body.match-mode-expanded .table-wrapper,
+    body.arcade-fullscreen .table-wrapper {
+      max-width: 1360px !important;
+      width: 100% !important;
+      border-radius: 28px !important;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.9), 0 0 0 5px #020617 !important;
+    }
+
+    /* Image 2 經典街機風格底欄 HUD (Arcade HUD) */
+    .arcade-classic-hud {
+      width: 100%;
+      max-width: 920px;
+      background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+      border: 2px solid #78350f;
+      border-radius: 20px;
+      padding: 14px 18px 18px;
+      box-shadow: 0 14px 36px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.25s ease;
+    }
+
+    body.match-mode-expanded .arcade-classic-hud,
+    body.arcade-fullscreen .arcade-classic-hud {
+      max-width: 1360px !important;
+      border-color: #b45309;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.85), inset 0 2px 0 rgba(251, 191, 36, 0.3);
+    }
+
+    .arcade-stats-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 18px;
+      background: radial-gradient(ellipse at 50% 50%, #1c1917 0%, #09090b 100%);
+      border: 1.5px solid #451a03;
+      border-radius: 14px;
+      box-shadow: inset 0 3px 10px rgba(0,0,0,0.95);
+      flex-wrap: wrap;
+    }
+
+    .arcade-ball-tray {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #000000;
+      border: 1.5px solid #292524;
+      padding: 6px 14px;
+      border-radius: 999px;
+      min-width: 140px;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.95);
+    }
+
+    .tray-title {
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: #a8a29e;
+      letter-spacing: 1px;
+    }
+
+    .tray-slots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 22px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      max-width: 220px;
+    }
+
+    .mini-tray-ball {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 900;
+      color: #0f172a;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.9);
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .arcade-counter-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 110px;
+    }
+
+    .arcade-counter-label {
+      font-family: 'Cinzel', 'Georgia', serif;
+      font-size: 0.88rem;
+      font-weight: 900;
+      color: #fbbf24;
+      text-shadow: 0 1px 0 #78350f, 0 2px 4px rgba(0,0,0,0.9);
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    .arcade-counter-val {
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      font-size: 1.8rem;
+      line-height: 1.1;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(251, 191, 36, 0.75), 0 0 4px #f59e0b;
+      letter-spacing: 1px;
+>>>>>>> Stashed changes
     }
   </style>
 </head>
@@ -1234,6 +1458,7 @@
         <button class="tab-btn" onclick="switchMode('match_8ball')" id="tab-match_8ball">⚔️ 8 號球對戰 (15顆)</button>
       </div>
 
+      <button class="tab-btn" onclick="toggleArcadeFullscreen()" id="tab-fullscreen">🖥️ 滿版全景大球桌 (Image 2 經典模式)</button>
       <button class="tab-btn" onclick="openEncyclopedia()">📖 規則百科</button>
     </div>
 
@@ -1340,8 +1565,35 @@
         <canvas id="poolCanvas" width="920" height="500"></canvas>
       </div>
 
-      <!-- Compact Quick Shot Controls directly below Pool Table (出桿力道與角度微調移至球桌正下方) -->
-      <div class="table-direct-controls">
+      <!-- Image 2 經典街機風格 HUD & 專注出桿控制面板 (Classic Arcade HUD) -->
+      <div class="arcade-classic-hud table-direct-controls" id="arcadeClassicHud">
+        <!-- Arcade Stats Bar (比照 Image 2 經典黑漆木紋與黃金立體雕刻數值) -->
+        <div class="arcade-stats-header">
+          <!-- Left: Ball Return Pocket Channel (進球軌道/母球置球槽) -->
+          <div class="arcade-ball-tray">
+            <span class="tray-title">POCKETED</span>
+            <div class="tray-slots" id="arcadePocketedTray"></div>
+          </div>
+
+          <!-- 4 Classic Gold Counters (Image 2 經典街機四大儀表) -->
+          <div class="arcade-counter-block">
+            <div class="arcade-counter-label">MULTIPLIER</div>
+            <div class="arcade-counter-val" id="hudMultiplier">1</div>
+          </div>
+          <div class="arcade-counter-block">
+            <div class="arcade-counter-label">TIME / TURN</div>
+            <div class="arcade-counter-val" id="hudTurn">P1</div>
+          </div>
+          <div class="arcade-counter-block">
+            <div class="arcade-counter-label">SCORE</div>
+            <div class="arcade-counter-val" id="hudScore">0</div>
+          </div>
+          <div class="arcade-counter-block">
+            <div class="arcade-counter-label">RACK</div>
+            <div class="arcade-counter-val" id="hudRack">1</div>
+          </div>
+        </div>
+
         <div class="power-row">
           <!-- Cue Stick Switcher & Ball-in-Hand Mode -->
           <div class="cue-selector-row">
@@ -1885,9 +2137,9 @@
     const CLOTH_THEMES = {
       green: {
         name: '經典綠布',
-        c0: '#0d9488', c1: '#0f766e', c2: '#115e59',
-        rail0: '#0c524b', rail1: '#0f766e', rail2: '#134e4a',
-        railStroke: '#042f2e', nose: 'rgba(45, 212, 191, 0.65)'
+        c0: '#228343', c1: '#196b34', c2: '#0e4a21',
+        rail0: '#0c401d', rail1: '#196532', rail2: '#0f4c22',
+        railStroke: '#072b13', nose: 'rgba(74, 222, 128, 0.65)'
       },
       blue: {
         name: '賽事藍布',
@@ -2550,6 +2802,13 @@
 
       if (mode.startsWith('match_')) {
         document.body.classList.add('match-mode-expanded');
+        document.body.classList.add('arcade-fullscreen');
+        isArcadeFullscreen = true;
+        const fsBtn = document.getElementById('tab-fullscreen');
+        if (fsBtn) {
+          fsBtn.classList.add('active');
+          fsBtn.textContent = '🔙 退出全景模式';
+        }
         levelBar.style.display = 'none';
         if (sandboxBar) sandboxBar.style.display = 'none';
         academyBadge.style.display = 'none';
@@ -2564,6 +2823,13 @@
         syncAidTogglesUI();
       } else {
         document.body.classList.remove('match-mode-expanded');
+        document.body.classList.remove('arcade-fullscreen');
+        isArcadeFullscreen = false;
+        const fsBtn = document.getElementById('tab-fullscreen');
+        if (fsBtn) {
+          fsBtn.classList.remove('active');
+          fsBtn.textContent = '🖥️ 滿版全景大球桌 (Image 2 模式)';
+        }
         levelBar.style.display = mode === 'academy' ? 'flex' : 'none';
         if (sandboxBar) sandboxBar.style.display = mode === 'sandbox' ? 'flex' : 'none';
         academyBadge.style.display = 'flex';
@@ -2591,6 +2857,7 @@
       } else if (mode === 'match_8ball') {
         setupMatch8Ball(false);
       }
+      updateArcadeHUD();
     }
 
     function loadAcademyLevel(idx) {
@@ -2964,6 +3231,7 @@
       document.getElementById('turnPlayerText').textContent = isAITurn
         ? `🤖 ${curName} 思考瞄準中...`
         : `輪到 ${curName} 出桿！`;
+      updateArcadeHUD();
     }
 
     // =========================================================================
@@ -3304,6 +3572,81 @@
           executePlayerShot();
         }
       }, 480);
+    }
+
+    let isArcadeFullscreen = false;
+    function toggleArcadeFullscreen() {
+      isArcadeFullscreen = !isArcadeFullscreen;
+      document.body.classList.toggle('arcade-fullscreen', isArcadeFullscreen);
+      const fsBtn = document.getElementById('tab-fullscreen');
+      if (fsBtn) {
+        fsBtn.classList.toggle('active', isArcadeFullscreen);
+        fsBtn.textContent = isArcadeFullscreen ? '🔙 退出全景模式' : '🖥️ 滿版全景大球桌 (Image 2 模式)';
+      }
+      showToast(isArcadeFullscreen ? '🖥️ 已啟用滿版全景大球桌模式（Image 2 街機經典佈局）！' : '🔙 已切換回雙欄特訓模式！');
+    }
+
+    function updateArcadeHUD() {
+      // 1. Multiplier / Game Mode
+      const multEl = document.getElementById('hudMultiplier');
+      if (multEl) {
+        if (currentMode === 'match_8ball') multEl.textContent = '8-BALL';
+        else if (currentMode === 'match_9ball') multEl.textContent = '9-BALL';
+        else if (currentMode === 'academy') multEl.textContent = 'STAGE ' + (currentLevelIdx + 1);
+        else multEl.textContent = 'PHYSICS';
+      }
+
+      // 2. Turn / Time
+      const turnEl = document.getElementById('hudTurn');
+      if (turnEl) {
+        if (currentMode.startsWith('match_')) {
+          turnEl.textContent = (matchState.currentPlayer === 1 ? '🔵 P1' : '🔴 P2');
+        } else {
+          turnEl.textContent = 'SOLO';
+        }
+      }
+
+      // 3. Score
+      const scoreEl = document.getElementById('hudScore');
+      if (scoreEl) {
+        if (currentMode.startsWith('match_')) {
+          scoreEl.textContent = `${matchState.player1Score} : ${matchState.player2Score}`;
+        } else {
+          scoreEl.textContent = totalPocketedCount.toString();
+        }
+      }
+
+      // 4. Rack / Round
+      const rackEl = document.getElementById('hudRack');
+      if (rackEl) {
+        if (currentMode.startsWith('match_')) {
+          const roundNum = matchState.player1Score + matchState.player2Score + 1;
+          rackEl.textContent = 'RACK ' + roundNum;
+        } else {
+          rackEl.textContent = 'LV ' + (currentLevelIdx + 1);
+        }
+      }
+
+      // 5. Pocketed balls display in the arcade tray
+      const traySlots = document.getElementById('arcadePocketedTray');
+      if (traySlots) {
+        traySlots.innerHTML = '';
+        const pocketed = balls.filter(b => b.id !== 0 && b.pocketed);
+        if (pocketed.length === 0) {
+          traySlots.innerHTML = '<span style="color:#71717a; font-size:0.75rem;">尚無進球</span>';
+        } else {
+          pocketed.slice(-8).forEach(b => {
+            const ballDiv = document.createElement('span');
+            ballDiv.className = 'mini-tray-ball';
+            ballDiv.style.backgroundColor = b.color;
+            if (b.isStripe) {
+              ballDiv.style.background = `linear-gradient(to bottom, #ffffff 20%, ${b.color} 20%, ${b.color} 80%, #ffffff 80%)`;
+            }
+            ballDiv.textContent = b.id;
+            traySlots.appendChild(ballDiv);
+          });
+        }
+      }
     }
 
     function resetCurrentScene() {
@@ -4143,6 +4486,7 @@
                 shotStats.pocketedBalls.push(b.id);
                 totalPocketedCount++;
                 document.getElementById('pocketCount').textContent = totalPocketedCount;
+                updateArcadeHUD();
               }
               break;
             }
@@ -4233,6 +4577,7 @@
               shotStats.pocketedBalls.push(b.id);
               totalPocketedCount++;
               document.getElementById('pocketCount').textContent = totalPocketedCount;
+              updateArcadeHUD();
             }
           }
         }
@@ -4557,54 +4902,144 @@
       const midX = TABLE.left + TABLE.width / 2;
       const theme = CLOTH_THEMES[currentClothTheme] || CLOTH_THEMES.green;
 
-      // 1. Outer Wood Frame (經典胡桃木質邊框)
-      const woodGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      woodGrad.addColorStop(0, '#5c2408');
-      woodGrad.addColorStop(0.3, '#3b1504');
-      woodGrad.addColorStop(0.7, '#4a1c06');
-      woodGrad.addColorStop(1, '#2c0e03');
-      ctx.fillStyle = woodGrad;
+      // 1. Hardwood Outer Frame with Longitudinal Grain & Bevel (經典胡桃木質外框，比照 Image 2 規格)
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(0, 0, canvas.width, canvas.height, 22);
+      ctx.clip();
+
+      // Deep wood base
+      ctx.fillStyle = '#2d1105';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Wood rail inner bevel border
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+      // Top rail wood (Horizontal grain with satin specular sheen)
+      const topWoodGrad = ctx.createLinearGradient(0, 0, 0, TABLE.top);
+      topWoodGrad.addColorStop(0, '#421a08');
+      topWoodGrad.addColorStop(0.3, '#6e2b0e');
+      topWoodGrad.addColorStop(0.58, '#8c3a14');
+      topWoodGrad.addColorStop(0.85, '#56210a');
+      topWoodGrad.addColorStop(1, '#2c0f04');
+      ctx.fillStyle = topWoodGrad;
+      ctx.fillRect(0, 0, canvas.width, TABLE.top);
 
-      // 1.5 Metallic Corner & Side Castings (經典美式撞球桌金屬轉角包角與中袋修邊)
-      const cornerBrackets = [
-        { x: 10, y: 10, w: 76, h: 66, r: [16, 4, 4, 4] },
-        { x: canvas.width - 86, y: 10, w: 76, h: 66, r: [4, 16, 4, 4] },
-        { x: 10, y: canvas.height - 76, w: 76, h: 66, r: [4, 4, 4, 16] },
-        { x: canvas.width - 86, y: canvas.height - 76, w: 76, h: 66, r: [4, 4, 16, 4] }
+      // Bottom rail wood (Horizontal grain)
+      const botWoodGrad = ctx.createLinearGradient(0, TABLE.bottom, 0, canvas.height);
+      botWoodGrad.addColorStop(0, '#2c0f04');
+      botWoodGrad.addColorStop(0.15, '#56210a');
+      botWoodGrad.addColorStop(0.42, '#8c3a14');
+      botWoodGrad.addColorStop(0.7, '#6e2b0e');
+      botWoodGrad.addColorStop(1, '#421a08');
+      ctx.fillStyle = botWoodGrad;
+      ctx.fillRect(0, TABLE.bottom, canvas.width, canvas.height - TABLE.bottom);
+
+      // Left rail wood (Vertical grain)
+      const leftWoodGrad = ctx.createLinearGradient(0, 0, TABLE.left, 0);
+      leftWoodGrad.addColorStop(0, '#421a08');
+      leftWoodGrad.addColorStop(0.35, '#732d0f');
+      leftWoodGrad.addColorStop(0.65, '#8c3a14');
+      leftWoodGrad.addColorStop(1, '#2c0f04');
+      ctx.fillStyle = leftWoodGrad;
+      ctx.fillRect(0, 0, TABLE.left, canvas.height);
+
+      // Right rail wood (Vertical grain)
+      const rightWoodGrad = ctx.createLinearGradient(TABLE.right, 0, canvas.width, 0);
+      rightWoodGrad.addColorStop(0, '#2c0f04');
+      rightWoodGrad.addColorStop(0.35, '#8c3a14');
+      rightWoodGrad.addColorStop(0.65, '#732d0f');
+      rightWoodGrad.addColorStop(1, '#421a08');
+      ctx.fillStyle = rightWoodGrad;
+      ctx.fillRect(TABLE.right, 0, canvas.width - TABLE.right, canvas.height);
+
+      // Procedural fine wood fibers (實木纖維紋理)
+      ctx.save();
+      ctx.lineWidth = 1;
+      const grainYs = [5, 9, 14, 19, 25, 31, 37, 42, 458, 463, 469, 475, 481, 487, 493];
+      grainYs.forEach((gy, i) => {
+        ctx.beginPath();
+        ctx.moveTo(8, gy);
+        ctx.lineTo(canvas.width - 8, gy);
+        ctx.strokeStyle = (i % 2 === 0) ? 'rgba(0, 0, 0, 0.18)' : 'rgba(255, 255, 255, 0.06)';
+        ctx.stroke();
+      });
+      const grainXs = [7, 13, 20, 27, 34, 41, 49, 870, 878, 886, 894, 902, 910];
+      grainXs.forEach((gx, i) => {
+        ctx.beginPath();
+        ctx.moveTo(gx, 8);
+        ctx.lineTo(gx, canvas.height - 8);
+        ctx.strokeStyle = (i % 2 === 0) ? 'rgba(0, 0, 0, 0.18)' : 'rgba(255, 255, 255, 0.06)';
+        ctx.stroke();
+      });
+      ctx.restore();
+
+      // Outer wood 3D bevel outline
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(2, 2, canvas.width - 4, canvas.height - 4, 20);
+      ctx.stroke();
+
+      // Inner wood edge dark shadow groove
+      ctx.strokeStyle = '#180701';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(TABLE.left - 1, TABLE.top - 1, TABLE.width + 2, TABLE.height + 2);
+      ctx.restore();
+
+      // 1.5 Chrome Metallic Corner Castings & Side Pocket Plates (經典美式鍍鉻金屬轉角包角與中袋金屬修邊 - 比照 Image 2)
+      const cornerCastings = [
+        // Top-Left
+        { x: 0, y: 0, w: 78, h: 68, r: [22, 4, 4, 4], riv: [[22, 16], [58, 16], [16, 52]] },
+        // Top-Right
+        { x: canvas.width - 78, y: 0, w: 78, h: 68, r: [4, 22, 4, 4], riv: [[canvas.width - 22, 16], [canvas.width - 58, 16], [canvas.width - 16, 52]] },
+        // Bottom-Left
+        { x: 0, y: canvas.height - 68, w: 78, h: 68, r: [4, 4, 4, 22], riv: [[22, canvas.height - 16], [58, canvas.height - 16], [16, canvas.height - 52]] },
+        // Bottom-Right
+        { x: canvas.width - 78, y: canvas.height - 68, w: 78, h: 68, r: [4, 4, 22, 4], riv: [[canvas.width - 22, canvas.height - 16], [canvas.width - 58, canvas.height - 16], [canvas.width - 16, canvas.height - 52]] }
       ];
 
-      cornerBrackets.forEach(cb => {
+      cornerCastings.forEach(cc => {
         ctx.save();
-        const metalGrad = ctx.createLinearGradient(cb.x, cb.y, cb.x + cb.w, cb.y + cb.h);
-        metalGrad.addColorStop(0, '#94a3b8');
-        metalGrad.addColorStop(0.3, '#f1f5f9');
-        metalGrad.addColorStop(0.65, '#475569');
-        metalGrad.addColorStop(1, '#1e293b');
+        const metalGrad = ctx.createLinearGradient(cc.x, cc.y, cc.x + cc.w, cc.y + cc.h);
+        metalGrad.addColorStop(0, '#1e293b');
+        metalGrad.addColorStop(0.25, '#64748b');
+        metalGrad.addColorStop(0.5, '#f8fafc'); // High specular chrome highlight
+        metalGrad.addColorStop(0.72, '#94a3b8');
+        metalGrad.addColorStop(1, '#0f172a');
         ctx.fillStyle = metalGrad;
         ctx.beginPath();
-        ctx.roundRect(cb.x, cb.y, cb.w, cb.h, cb.r);
+        ctx.roundRect(cc.x, cc.y, cc.w, cc.h, cc.r);
         ctx.fill();
         ctx.strokeStyle = '#334155';
         ctx.lineWidth = 1.5;
         ctx.stroke();
+
+        // 3D inner bevel stroke
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Silver Rivets / Bolts
+        cc.riv.forEach(([rx, ry]) => {
+          ctx.beginPath();
+          ctx.arc(rx, ry, 2.8, 0, Math.PI * 2);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.fill();
+          ctx.strokeStyle = '#475569';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        });
         ctx.restore();
       });
 
-      // Side pocket outer brackets (中袋外側金屬/皮革座，貼齊邊框不凸出呢布)
+      // Side pocket metal brackets flanking the pocket opening
       [
-        { x: midX - 32, y: 10, w: 64, h: 40, r: [6, 6, 0, 0] },
-        { x: midX - 32, y: TABLE.bottom, w: 64, h: 40, r: [0, 0, 6, 6] }
+        { x: midX - 32, y: 0, w: 64, h: 32, r: [6, 6, 0, 0] },
+        { x: midX - 32, y: canvas.height - 32, w: 64, h: 32, r: [0, 0, 6, 6] }
       ].forEach(sp => {
         ctx.save();
         const spGrad = ctx.createLinearGradient(sp.x, sp.y, sp.x, sp.y + sp.h);
-        spGrad.addColorStop(0, '#334155');
-        spGrad.addColorStop(0.5, '#64748b');
+        spGrad.addColorStop(0, '#475569');
+        spGrad.addColorStop(0.45, '#f1f5f9');
+        spGrad.addColorStop(0.8, '#64748b');
         spGrad.addColorStop(1, '#1e293b');
         ctx.fillStyle = spGrad;
         ctx.beginPath();
@@ -4616,29 +5051,44 @@
         ctx.restore();
       });
 
-      // 2. Central Playing Cloth Surface (主題配色細緻球桌呢布)
+      // 2. Central Playing Cloth Surface (主題配色細緻球桌呢布 - 比照 Image 2 經典規格)
       const clothGrad = ctx.createRadialGradient(
-        canvas.width / 2, canvas.height / 2, 60,
-        canvas.width / 2, canvas.height / 2, 520
+        midX, 250, 60,
+        midX, 250, 480
       );
       clothGrad.addColorStop(0, theme.c0);
-      clothGrad.addColorStop(0.7, theme.c1);
+      clothGrad.addColorStop(0.65, theme.c1);
       clothGrad.addColorStop(1, theme.c2);
       ctx.fillStyle = clothGrad;
       ctx.fillRect(TABLE.left, TABLE.top, TABLE.width, TABLE.height);
 
-      // Head string line & Foot spot (開球發球線與排球置球點)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      // Head string line & Baulk "D" Arc (發球線與排球標示)
+      ctx.save();
+      const kitchenX = TABLE.left + TABLE.width * 0.25; // 260
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(TABLE.left + TABLE.width * 0.25, TABLE.top);
-      ctx.lineTo(TABLE.left + TABLE.width * 0.25, TABLE.bottom);
+      ctx.moveTo(kitchenX, TABLE.top);
+      ctx.lineTo(kitchenX, TABLE.bottom);
       ctx.stroke();
 
+      // Classic British/American Pool "D" Arc
       ctx.beginPath();
-      ctx.arc(TABLE.left + TABLE.width * 0.75, TABLE.top + TABLE.height * 0.5, 3.5, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.arc(kitchenX, 250, 58, Math.PI * 0.5, Math.PI * 1.5);
+      ctx.stroke();
+
+      // Head Spot & Foot Spot
+      ctx.beginPath();
+      ctx.arc(kitchenX, 250, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
       ctx.fill();
+
+      const footSpotX = TABLE.left + TABLE.width * 0.75; // 660
+      ctx.beginPath();
+      ctx.arc(footSpotX, 250, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.fill();
+      ctx.restore();
 
       // 3. The 6 Realistic Cushion Rails (立體顆星橡膠條，兩端精緻 45 度袋口斜切)
       const cushionSegments = [
@@ -4684,7 +5134,7 @@
         ctx.save();
         const cg = ctx.createLinearGradient(...seg.grad);
         cg.addColorStop(0, theme.rail0);
-        cg.addColorStop(0.7, theme.rail1);
+        cg.addColorStop(0.65, theme.rail1);
         cg.addColorStop(1, theme.rail2);
         ctx.fillStyle = cg;
         ctx.beginPath();
@@ -4708,42 +5158,42 @@
         ctx.restore();
       });
 
-      // 4. The 6 Realistic Pockets (中袋切齊桌布邊不凸出，角袋經典圓形)
+      // 4. The 6 Realistic Pockets (中袋切齊桌布邊絕不向內凸出，角袋經典圓形)
       POCKETS.forEach((p, idx) => {
         ctx.save();
         const isSide = p.type === 'side';
 
         if (isSide) {
-          // Side pockets: Recessed into rail, cutting flush with cloth edge (切桌布邊，絕不向呢布凸出)
+          // Side pockets: Recessed into rail, cutting strictly flush with cloth edge (水平切桌布邊，絕不向呢布凸出)
           const isTop = (p.side === 'top');
-          const holeCenterY = isTop ? 31 : 469;
-          const holeR = 21;
+          const holeCenterY = isTop ? 32 : 468;
+          const holeR = 22;
 
           // Clip to rail region only so pocket never bulges past cloth edge
           ctx.beginPath();
           if (isTop) {
-            ctx.rect(midX - 36, 0, 72, TABLE.top);
+            ctx.rect(midX - 38, 0, 76, TABLE.top);
           } else {
-            ctx.rect(midX - 36, TABLE.bottom, 72, canvas.height - TABLE.bottom);
+            ctx.rect(midX - 38, TABLE.bottom, 76, canvas.height - TABLE.bottom);
           }
           ctx.clip();
 
           // Outer dark leather rim in rail
           ctx.beginPath();
-          ctx.arc(p.x, holeCenterY, 26, 0, Math.PI * 2);
-          ctx.fillStyle = '#18181b';
+          ctx.arc(p.x, holeCenterY, 27, 0, Math.PI * 2);
+          ctx.fillStyle = '#1c1917';
           ctx.fill();
-          ctx.strokeStyle = '#27272a';
-          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = '#292524';
+          ctx.lineWidth = 1.8;
           ctx.stroke();
 
-          // Inner drop hole with 3D depth gradient
+          // Inner drop hole with deep 3D black gradient
           const holeGrad = ctx.createRadialGradient(
             p.x, holeCenterY, 2,
             p.x, holeCenterY, holeR
           );
           holeGrad.addColorStop(0, '#000000');
-          holeGrad.addColorStop(0.7, '#050505');
+          holeGrad.addColorStop(0.7, '#070707');
           holeGrad.addColorStop(1, '#0f172a');
 
           ctx.beginPath();
@@ -4758,7 +5208,7 @@
           // Soft 3D drop shadow inside pocket mouth
           ctx.beginPath();
           ctx.arc(p.x, holeCenterY, holeR - 1.5, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
           ctx.lineWidth = 2;
           ctx.stroke();
 
@@ -4781,8 +5231,8 @@
             ctx.restore();
           }
         } else {
-          // Corner pockets: Classic circular deep black pockets
-          const outerR = 31;
+          // Corner pockets: Classic circular deep black pockets with silver metallic surround
+          const outerR = 32;
           const innerR = TABLE.pocketHoleRadius;
 
           // Outer dark leather pocket rim
@@ -4815,7 +5265,7 @@
           // Soft 3D drop shadow ring inside pocket mouth
           ctx.beginPath();
           ctx.arc(p.x, p.y, innerR - 1.5, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
           ctx.lineWidth = 2;
           ctx.stroke();
 
@@ -4833,27 +5283,31 @@
         }
       });
 
-      // 5. Diamond Sights (木框上的鑽石刻度點)
-      if (aids.diamonds) {
-        ctx.fillStyle = '#fde047';
-        ctx.font = 'bold 11px sans-serif';
-        ctx.textAlign = 'center';
-
-        for (let i = 1; i <= 7; i++) {
-          if (i === 4) continue;
-          const dx = TABLE.left + (TABLE.width / 8) * i;
-          drawDiamondMark(dx, TABLE.top - 30);
-          ctx.fillText(i.toString(), dx, TABLE.top - 37);
-          drawDiamondMark(dx, TABLE.bottom + 30);
-          ctx.fillText(i.toString(), dx, TABLE.bottom + 45);
+      // 5. Permanent Inlaid Diamond Sights (木框上的經典鑽石/珍珠瞄準點，共 18 點 - 比照 Image 2)
+      for (let i = 1; i <= 7; i++) {
+        if (i === 4) continue;
+        const dx = TABLE.left + (TABLE.width / 8) * i;
+        drawDiamondMark(dx, TABLE.top - 25);
+        drawDiamondMark(dx, TABLE.bottom + 25);
+        if (aids.diamonds) {
+          ctx.fillStyle = '#fde047';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(i.toString(), dx, TABLE.top - 35);
+          ctx.fillText(i.toString(), dx, TABLE.bottom + 42);
         }
+      }
 
-        for (let j = 1; j <= 3; j++) {
-          const dy = TABLE.top + (TABLE.height / 4) * j;
-          drawDiamondMark(TABLE.left - 30, dy);
-          ctx.fillText(j.toString(), TABLE.left - 44, dy + 4);
-          drawDiamondMark(TABLE.right + 30, dy);
-          ctx.fillText(j.toString(), TABLE.right + 44, dy + 4);
+      for (let j = 1; j <= 3; j++) {
+        const dy = TABLE.top + (TABLE.height / 4) * j;
+        drawDiamondMark(TABLE.left - 25, dy);
+        drawDiamondMark(TABLE.right + 25, dy);
+        if (aids.diamonds) {
+          ctx.fillStyle = '#fde047';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(j.toString(), TABLE.left - 38, dy + 4);
+          ctx.fillText(j.toString(), TABLE.right + 38, dy + 4);
         }
       }
 
@@ -5054,14 +5508,28 @@
     function drawDiamondMark(x, y) {
       ctx.save();
       ctx.translate(x, y);
+      // Soft drop shadow
       ctx.beginPath();
-      ctx.moveTo(0, -5);
-      ctx.lineTo(5, 0);
-      ctx.lineTo(0, 5);
-      ctx.lineTo(-5, 0);
-      ctx.closePath();
-      ctx.fillStyle = '#fde047';
+      ctx.arc(0.5, 0.5, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
       ctx.fill();
+
+      // Inlaid Mother-of-Pearl / Golden Diamond (Image 2 經典珍珠/黃金鑲嵌瞄準點)
+      ctx.beginPath();
+      ctx.moveTo(0, -4.5);
+      ctx.lineTo(4, 0);
+      ctx.lineTo(0, 4.5);
+      ctx.lineTo(-4, 0);
+      ctx.closePath();
+      const dotGrad = ctx.createLinearGradient(-3, -3, 3, 3);
+      dotGrad.addColorStop(0, '#ffffff');
+      dotGrad.addColorStop(0.5, '#fef08a');
+      dotGrad.addColorStop(1, '#ca8a04');
+      ctx.fillStyle = dotGrad;
+      ctx.fill();
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
       ctx.restore();
     }
 
@@ -5386,8 +5854,8 @@
         ctx.ellipse(b.x + 2, b.y + 4, r * shadowScale, (r * 0.72) * shadowScale, 0, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
       } else {
-        ctx.arc(b.x + 2, b.y + 3, r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
+        ctx.ellipse(b.x + 1.5, b.y + 2.5, r * 1.05, r * 0.85, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
       }
       ctx.fill();
 
