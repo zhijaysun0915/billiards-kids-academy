@@ -1172,6 +1172,30 @@
       background: #09090b !important;
     }
 
+    body.match-mode-expanded header,
+    body.arcade-fullscreen header {
+      padding: 6px 14px !important;
+      margin-bottom: 2px !important;
+      gap: 6px !important;
+    }
+
+    body.match-mode-expanded .brand p,
+    body.arcade-fullscreen .brand p,
+    body.match-mode-expanded .brand span,
+    body.arcade-fullscreen .brand span {
+      display: none !important;
+    }
+
+    body.match-mode-expanded .brand h1,
+    body.arcade-fullscreen .brand h1 {
+      font-size: 1.12rem !important;
+    }
+
+    body.match-mode-expanded .nav-tabs,
+    body.arcade-fullscreen .nav-tabs {
+      margin-bottom: 2px !important;
+    }
+
     body.match-mode-expanded .main-container,
     body.arcade-fullscreen .main-container {
       display: flex !important;
@@ -1309,120 +1333,6 @@
         display: flex !important;
         flex-direction: column !important;
       }
-=======
-    body.match-mode-expanded .table-wrapper,
-    body.arcade-fullscreen .table-wrapper {
-      max-width: 1360px !important;
-      width: 100% !important;
-      border-radius: 28px !important;
-      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.9), 0 0 0 5px #020617 !important;
-    }
-
-    /* Image 2 經典街機風格底欄 HUD (Arcade HUD) */
-    .arcade-classic-hud {
-      width: 100%;
-      max-width: 920px;
-      background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
-      border: 2px solid #78350f;
-      border-radius: 20px;
-      padding: 14px 18px 18px;
-      box-shadow: 0 14px 36px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.12);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: all 0.25s ease;
-    }
-
-    body.match-mode-expanded .arcade-classic-hud,
-    body.arcade-fullscreen .arcade-classic-hud {
-      max-width: 1360px !important;
-      border-color: #b45309;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.85), inset 0 2px 0 rgba(251, 191, 36, 0.3);
-    }
-
-    .arcade-stats-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 10px 18px;
-      background: radial-gradient(ellipse at 50% 50%, #1c1917 0%, #09090b 100%);
-      border: 1.5px solid #451a03;
-      border-radius: 14px;
-      box-shadow: inset 0 3px 10px rgba(0,0,0,0.95);
-      flex-wrap: wrap;
-    }
-
-    .arcade-ball-tray {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #000000;
-      border: 1.5px solid #292524;
-      padding: 6px 14px;
-      border-radius: 999px;
-      min-width: 140px;
-      box-shadow: inset 0 3px 8px rgba(0,0,0,0.95);
-    }
-
-    .tray-title {
-      font-size: 0.72rem;
-      font-weight: 900;
-      color: #a8a29e;
-      letter-spacing: 1px;
-    }
-
-    .tray-slots {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      min-height: 22px;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      max-width: 220px;
-    }
-
-    .mini-tray-ball {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8px;
-      font-weight: 900;
-      color: #0f172a;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.9);
-      flex-shrink: 0;
-      border: 1px solid rgba(255,255,255,0.4);
-    }
-
-    .arcade-counter-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-width: 110px;
-    }
-
-    .arcade-counter-label {
-      font-family: 'Cinzel', 'Georgia', serif;
-      font-size: 0.88rem;
-      font-weight: 900;
-      color: #fbbf24;
-      text-shadow: 0 1px 0 #78350f, 0 2px 4px rgba(0,0,0,0.9);
-      letter-spacing: 1.8px;
-      text-transform: uppercase;
-    }
-
-    .arcade-counter-val {
-      font-family: 'Impact', 'Arial Black', sans-serif;
-      font-size: 1.8rem;
-      line-height: 1.1;
-      color: #ffffff;
-      text-shadow: 0 2px 10px rgba(251, 191, 36, 0.75), 0 0 4px #f59e0b;
-      letter-spacing: 1px;
->>>>>>> Stashed changes
     }
   </style>
 </head>
@@ -1598,11 +1508,15 @@
           <!-- Cue Stick Switcher & Ball-in-Hand Mode -->
           <div class="cue-selector-row">
             <div class="cue-pill-group">
+              <span style="font-size:0.84rem; font-weight:800; color:#fbbf24; display:flex; align-items:center; gap:4px;">🎯 選擇球桿：</span>
               <button class="cue-pill active" id="cuePillStandard" onclick="selectCueType('standard')">
-                <span>🎱 標準打桿</span>
+                <span>🎱 標準桿</span>
+              </button>
+              <button class="cue-pill" id="cuePillBreak" onclick="selectCueType('break')">
+                <span>🚀 重裝衝桿 (Break)</span>
               </button>
               <button class="cue-pill" id="cuePillJump" onclick="selectCueType('jump')">
-                <span>🦘 專業短跳桿 (Jump Shot)</span>
+                <span>🦘 專業跳桿 (Jump)</span>
               </button>
               <button class="cue-pill" id="cuePillMasse" onclick="selectCueType('masse')">
                 <span>🌀 扎桿弧線 (Massé)</span>
@@ -2663,6 +2577,7 @@
       document.querySelectorAll('.cue-pill').forEach(b => b.classList.remove('active'));
       const btnMap = {
         standard: 'cuePillStandard',
+        break: 'cuePillBreak',
         jump: 'cuePillJump',
         masse: 'cuePillMasse'
       };
@@ -2673,7 +2588,10 @@
       if (type === 'jump') {
         if (elevRow) elevRow.style.display = 'flex';
         setElevationAngle(elevationAngle || 45);
-        showToast('🦘 已裝備「短跳桿」！利用 45° 俯角將白球向下壓縮石板，騰空飛越障礙球！');
+        showToast('🦘 已裝備「專業短跳桿」！利用 45° 俯角將白球向下壓縮石板，騰空飛越障礙球！');
+      } else if (type === 'break') {
+        if (elevRow) elevRow.style.display = 'none';
+        showToast('🚀 已裝備「重裝衝桿 (Break Cue)」！強力碳纖維桿身釋放 125% 爆發能量，專為 8/9 號開球衝桿設計！');
       } else if (type === 'masse') {
         if (elevRow) elevRow.style.display = 'none';
         showToast('🌀 已裝備「扎桿」！配合側旋，白球將在球呢上走出神奇 C 型弧線！');
@@ -3097,9 +3015,9 @@
         balls.push(createBall(rackOrder[i], apexX + p.c * h, apexY + p.r * d));
       }
 
-      selectCueType('standard');
+      selectCueType('break');
       setSpinPreset(0, 0.2);
-      shotPower = 85; // Break shot
+      shotPower = 95; // Opening break shot
       updatePowerSlider();
       aimAngle = 0;
       updateAngleUI();
@@ -3150,9 +3068,9 @@
         }
       }
 
-      selectCueType('standard');
+      selectCueType('break');
       setSpinPreset(0, 0.2);
-      shotPower = 88; // Break shot
+      shotPower = 95; // Opening break shot
       updatePowerSlider();
       aimAngle = 0;
       updateAngleUI();
@@ -4136,6 +4054,14 @@
         cueBall.vz = vZ;
         cueBall.z = 1.0;
         cueBall.curveRate = 0;
+      } else if (cueType === 'break') {
+        // Break Shot: Explosive break power with 1.25x speed multiplier and high stability
+        const speed = powerScale * 38.0;
+        cueBall.vx = Math.cos(launchAngle) * speed;
+        cueBall.vy = Math.sin(launchAngle) * speed;
+        cueBall.vz = 0;
+        cueBall.z = 0;
+        cueBall.curveRate = 0;
       } else if (cueType === 'masse') {
         // Masse Shot: Steep vertical stick with heavy side english curves across the felt
         const totalSpd = powerScale * 29.0;
@@ -4763,6 +4689,11 @@
         }
       }
 
+      if (cueType === 'break') {
+        selectCueType('standard');
+        shotPower = 55;
+        updatePowerSlider();
+      }
       checkAndTriggerAI();
     }
 
@@ -5958,6 +5889,32 @@
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(`🦘 ${elevationAngle}° 短跳桿`, -20, pullBack + 62);
+        ctx.restore();
+      } else if (cueType === 'break') {
+        // Heavy carbon-fiber break cue (Matte carbon black with fiery orange collar and phenolic tip)
+        const stickLen = 220;
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(pullBack, -3.5, 6, 7.0);
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(pullBack + 6, -3.5, 5, 7.0);
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(pullBack + 11, -3.5);
+        ctx.lineTo(pullBack + stickLen, -8.0);
+        ctx.lineTo(pullBack + stickLen, 8.0);
+        ctx.lineTo(pullBack + 11, 3.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(pullBack + 70, -4.8, 4, 9.6);
+        ctx.fillRect(pullBack + 140, -6.2, 4, 12.4);
+
+        ctx.save();
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillStyle = '#fb923c';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🚀 衝桿 (Break)', -20, pullBack + 52);
         ctx.restore();
       } else if (cueType === 'masse') {
         // Masse cue: Thick conical cue

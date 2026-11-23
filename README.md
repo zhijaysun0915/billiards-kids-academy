@@ -1,6 +1,6 @@
 # 🎱 小小撞球神射手：四年級撞球科學與實戰學院 (Billiards Kids Academy)
 
-[![版本 v4.2](https://img.shields.io/badge/版本-v4.2_經典街機大球桌_×_實木金屬包角_×_黃金HUD-38bdf8?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
+[![版本 v4.3](https://img.shields.io/badge/版本-v4.3_經典街機大球桌_×_實木金屬包角_×_黃金HUD-38bdf8?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
 [![立即線上遊玩 Play Online](https://img.shields.io/badge/🎱_立即線上遊玩_Play_Now-GitHub_Pages-22c55e?style=for-the-badge)](https://zhijaysun0915.github.io/billiards-kids-academy/)
 
 專為**國小四年級學童與初學者**設計的互動式撞球科學與實戰教學網頁程式！  
@@ -15,7 +15,7 @@
 
 ---
 
-## 🆕 v4.2 重大更新亮點 (比照經典街機滿版大球桌、實木金屬包角、黃金立體 HUD)
+## 🆕 v4.3 重大更新亮點 (比照經典街機滿版大球桌、實木金屬包角、黃金立體 HUD)
 
 ### 1. 🖥️ 比照經典撞球遊戲：滿版全景大球桌 (98vw / 1360px 滿版視野)
 - **球桌放大佔滿螢幕**：進入 8 號球或 9 號球對戰時，自動切換至滿版全景大球桌（亦可於上方導覽列隨時手動切換 `🖥️ 滿版全景大球桌`），收起複雜教學側邊欄，桌台大幅擴展至 1360px（佔據螢幕 98% 寬度），球桌視覺震撼、視野一覽無遺！

@@ -8,7 +8,7 @@
 ## 📌 專案概覽 (Project Overview)
 
 * **專案名稱**：小小撞球神射手：四年級撞球科學與實戰學院 (Billiards Kids Academy)
-* **當前版本**：`v4.2`（比照 Image 2 經典街機大球桌 1360px × 實木金屬包角 × 經典黃金 HUD × AI 智慧對戰旗艦版）
+* **當前版本**：`v4.3`（滿版全景大球桌 1360px × 實木金屬包角 × 經典街機 HUD × 重裝衝桿與專業短跳桿旗艦版）
 * **線上部署 (GitHub Pages)**：[https://zhijaysun0915.github.io/billiards-kids-academy/](https://zhijaysun0915.github.io/billiards-kids-academy/)
 * **Git 遠端倉庫**：`https://github.com/zhijaysun0915/billiards-kids-academy.git` (分支：`main`)
 * **本地工作目錄**：`/Users/jaysun/Downloads/billiards-kids-academy`
